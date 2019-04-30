@@ -12,4 +12,11 @@
         tools:layout="@layout/fragment_home" >
     </fragment>
 
+    <fragment
+            android:id="@+id/detail_event_fragment"
+            android:name="com.example.event_app.ui.fragment.DetailEventFragment"
+            android:label="My Detail"
+            tools:layout="@layout/fragment_detail_event" >
+    </fragment>
+
 </navigation>

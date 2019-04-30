@@ -5,16 +5,20 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
 import com.example.event_app.repository.UserRepository
+import com.example.event_app.viewmodel.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
+import org.kodein.di.android.x.closestKodein
+import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private lateinit var mAuth: FirebaseAuth
     private var userRepository = UserRepository.getInstance(this)
+    private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
         fun start(fromActivity: AppCompatActivity) {
@@ -61,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun userLogin(email: String, password: String) {
-        userRepository.logUser(email, password)
+        viewModel.logIn(email, password)
     }
 
     override fun onStop() {

@@ -1,14 +1,11 @@
 package com.example.event_app.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
+import com.example.event_app.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 
@@ -17,6 +14,15 @@ import timber.log.Timber
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var mAuth: FirebaseAuth
+    private var userRepository = UserRepository.getInstance(this)
+
+    companion object {
+        fun start(fromActivity: AppCompatActivity) {
+            fromActivity.startActivity(
+                Intent(fromActivity, LoginActivity::class.java)
+            )
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,32 +38,15 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-
-
         // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance()
 
-        // Write a message to the database
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("users")
-
+        mAuth = userRepository.fireBaseAuth
+        val myRef = userRepository.usersRef
 
 
         // Read from the database
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                val value = dataSnapshot.getValue(String::class.java)
-                Timber.d("Value is: $value")
+        userRepository.addListenerOnRef(myRef)
 
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Timber.w("Failed to read value. ${error.toException()}")
-            }
-        })
 
         loginButton.setOnClickListener {
             val email = (email_et.text ?: "").toString()
@@ -72,63 +61,29 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun userLogin(email: String, password: String) {
+        userRepository.logUser(email, password)
+    }
 
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) {
-                if (it.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Timber.d("signInWithEmail:success")
-                    val user = mAuth.currentUser
-                    //updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Timber.w("signInWithEmail:failure ${it.exception}")
-                    Toast.makeText(
-                        this, "Authentication failed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    //updateUI(null)
-                }
-
-            }
+    override fun onStop() {
+        super.onStop()
+        finish()
     }
 
 
-
     private fun userRegister(email: String, password: String) {
-
-        val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("users")
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) {
-                    if (it.isSuccessful) {
-                        val user = mAuth.currentUser
-                        Timber.d("current User : $user")
-                        myRef.child(user?.uid!!).setValue("Hello, World!")
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Timber.w( "createUserWithEmail:failure ${it.exception}")
-                        Toast.makeText(this, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show()
-                    }
-
-                }
-        }
+        userRepository.registerUser(email, password)
     }
 
 
     override fun onStart() {
         super.onStart()
         val currentUser = mAuth.currentUser
-        //updateUI(currentUser)
         Timber.d( "current User : $currentUser")
         if (currentUser != null) {
             // Name, email address, and profile photo Url
             val name = currentUser.displayName
             val email = currentUser.email
             val photoUrl = currentUser.photoUrl
-
             // Check if user's email is verified
             val emailVerified = currentUser.isEmailVerified
 
@@ -140,49 +95,3 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
-
-/*
-* mAuth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    updateUI(user);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show();
-                    updateUI(null);
-                }
-
-                // ...
-            }
-        });
-* */
-
-/*
-* mAuth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    updateUI(user);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.getException());
-                    Toast.makeText(EmailPasswordActivity.this, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show();
-                    updateUI(null);
-                }
-
-                // ...
-            }
-        });
-* */

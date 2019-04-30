@@ -13,7 +13,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -21,16 +21,54 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+
+    //Kotlin
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //Android X
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    // Material Design
+    implementation "com.google.android.material:material:$versions.material"
+
+    // Rx
+    implementation "io.reactivex.rxjava2:rxjava:$versions.rxjava"
+    implementation "io.reactivex.rxjava2:rxkotlin:$versions.rxkotlin"
+    implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:$versions.rxbinding"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7:$versions.rxbinding"
+    implementation "com.jakewharton.rxbinding2:rxbinding-design:$versions.rxbinding"
+    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$versions.rxbinding"
+    implementation "com.jakewharton.rxrelay2:rxrelay:$versions.rxrelay"
+    implementation 'com.gojuno.koptional:koptional-rxjava2-extensions:1.6.0'
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$versions.timber"
+
+    // KodeIn
+    implementation "org.kodein.di:kodein-di-generic-jvm:$versions.kodein"
+    implementation "org.kodein.di:kodein-di-framework-android-x:$versions.kodein"
+
+    //Picasso
+    implementation "com.squareup.picasso:picasso:$versions.picasso"
+
+    //QR code
+    implementation 'me.dm7.barcodescanner:zxing:1.9.8'
+    implementation 'com.google.zxing:core:3.3.0'
+
+    //Firebase
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }

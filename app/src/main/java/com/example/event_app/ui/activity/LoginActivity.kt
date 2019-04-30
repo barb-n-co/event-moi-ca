@@ -65,7 +65,14 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun userLogin(email: String, password: String) {
-        viewModel.logIn(email, password)
+        viewModel.logIn(email, password).subscribe(
+            {
+                MainActivity.start(this)
+            },
+            {
+                Timber.e(it)
+            }
+        )
     }
 
     override fun onStop() {

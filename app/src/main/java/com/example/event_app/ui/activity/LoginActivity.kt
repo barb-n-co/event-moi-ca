@@ -93,5 +93,9 @@ class LoginActivity : AppCompatActivity() {
             val uid = currentUser.uid
             Timber.d( "User info : uid = $uid , name = $name , email = $email , photo URL = $photoUrl , is email verified ? $emailVerified")
         }
+
+        val intent = Intent(this, PhotoActivity::class.java)
+
+        startActivity(intent)
     }
 }

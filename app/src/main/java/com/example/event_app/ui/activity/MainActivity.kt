@@ -1,7 +1,8 @@
-package com.example.event_app
+package com.example.event_app.ui.activity
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.event_app.R
 
 class MainActivity : AppCompatActivity() {
 

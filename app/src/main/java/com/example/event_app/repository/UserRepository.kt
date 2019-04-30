@@ -38,45 +38,53 @@ class UserRepository private constructor(private val context: Context) {
     }
 
     fun logUser(email: String, password: String) {
-        fireBaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(context as LoginActivity) {
-                if (it.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
+
+        fireBaseAuth.addAuthStateListener {
+            Timber.d(it.uid)
+            if (it.currentUser != null) {
                     Timber.d("signInWithEmail:success")
                     val user = fireBaseAuth.currentUser
                     val newUser = User(user?.uid, user?.displayName, user?.email, user?.photoUrl)
                     currentUser = newUser
-                    MainActivity.start(context)
+                    MainActivity.start(context as LoginActivity)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Timber.w("signInWithEmail:failure ${it.exception}")
+                    Timber.w("signInWithEmail:failure ${it.pendingAuthResult?.exception}")
+                    
                     Toast.makeText(
                         context, "Authentication failed.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
+
+        }
+        fireBaseAuth.signInWithEmailAndPassword(email,password)
+
     }
 
     fun registerUser(email: String, password: String) {
         if (email.isNotEmpty() && password.isNotEmpty()) {
-            fireBaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(context as LoginActivity) {
-                    if (it.isSuccessful) {
-                        val user = fireBaseAuth.currentUser
-                        Timber.d("current User : $user")
-                        usersRef.child(user?.uid!!).setValue("Hello, World!")
-                        val newUser = User(user.uid, user.displayName, user.email, user.photoUrl)
-                        currentUser = newUser
-                        MainActivity.start(context)
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Timber.w( "createUserWithEmail:failure ${it.exception}")
-                        Toast.makeText(context, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show()
-                    }
 
+            fireBaseAuth.addAuthStateListener {
+                Timber.d(it.uid)
+                if (it.currentUser != null) {
+                    Timber.d("current User : ${it.currentUser}")
+                    val user = fireBaseAuth.currentUser
+                    val newUser = User(user?.uid, user?.displayName, user?.email, user?.photoUrl)
+                    currentUser = newUser
+                    MainActivity.start(context as LoginActivity)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Timber.w("createUserWithEmail:failure ${it.pendingAuthResult?.exception}")
+                    Toast.makeText(
+                        context, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
+            }
+
+            fireBaseAuth.createUserWithEmailAndPassword(email, password)
         }
     }
 }

@@ -7,13 +7,32 @@
         android:layout_height="match_parent"
         tools:context=".ui.activity.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:elevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/title_home"
+                android:background="?attr/colorPrimary"
+                app:titleTextColor="@color/colorAccent"
+                android:theme="@style/ToolbarTheme" />
+    </com.google.android.material.appbar.AppBarLayout>
+
     <FrameLayout
             android:id="@+id/content_home_wrapper"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@id/app_bar"
-            app:layout_constraintBottom_toTopOf="@id/navigation">
+            app:layout_constraintTop_toBottomOf="@id/app_bar">
 
         <fragment
                 android:id="@+id/content_home"

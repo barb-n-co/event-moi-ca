@@ -2,6 +2,7 @@ package com.example.event_app
 
 import android.app.Application
 import android.content.Context
+import com.example.lpiem.theelderscrolls.injection.viewModelModule
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind
@@ -17,6 +18,7 @@ class App : Application(), KodeinAware {
         bind<Context>() with singleton { instance<Application>() }
 
         //import(networkModule)
+        import(viewModelModule)
     }
 
     override fun onCreate() {

@@ -12,8 +12,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-
-
 class LoginActivity : BaseActivity() {
 
     private lateinit var mAuth: FirebaseAuth
@@ -92,7 +90,6 @@ class LoginActivity : BaseActivity() {
                 Toast.makeText(this,"${it.message}",Toast.LENGTH_SHORT).show()
             }
         ).addTo(viewDisposable)
-        //userRepository.registerUser(email, password)
     }
 
 

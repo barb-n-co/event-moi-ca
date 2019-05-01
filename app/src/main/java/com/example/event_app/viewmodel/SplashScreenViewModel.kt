@@ -4,26 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.User
 import com.example.event_app.repository.UserRepository
+import com.google.firebase.auth.FirebaseUser
 
-class MainActivityViewModel(private val userRepository: UserRepository) : BaseViewModel() {
+class SplashScreenViewModel(private val userRepository: UserRepository): BaseViewModel() {
 
-    fun logout() {
-        userRepository.fireBaseAuth.signOut()
+    fun getCurrentUser(): FirebaseUser? {
+        return userRepository.fireBaseAuth.currentUser
     }
 
-    fun getCurrentUser(): User? {
-        return userRepository.currentUser
-    }
-
-    fun getCurrentUserToDisplay(): String {
-        val email = userRepository.currentUser?.email ?: ""
-        return "Bienvenue !\n$email"
+    fun setCurrentUser(user: User) {
+        userRepository.currentUser = user
     }
 
     class Factory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return MainActivityViewModel(userRepository) as T
+            return SplashScreenViewModel(userRepository) as T
         }
     }
 }

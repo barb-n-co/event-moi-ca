@@ -3,14 +3,23 @@ package com.example.lpiem.theelderscrolls.injection
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.ui.activity.SplashScreenActivity
+import com.example.event_app.viewmodel.HomeFragmentViewModel
 import com.example.event_app.viewmodel.LoginViewModel
 import com.example.event_app.viewmodel.MainActivityViewModel
+import com.example.event_app.viewmodel.SplashScreenViewModel
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
 import org.kodein.di.generic.factory
 import org.kodein.di.generic.instance
+import org.kodein.di.generic.singleton
 
 val viewModelModule = Kodein.Module("ViewModelModule") {
+
+    bind<SplashScreenViewModel>() with factory { activity: SplashScreenActivity ->
+        val factory = SplashScreenViewModel.Factory(instance())
+        ViewModelProvider(activity, factory).get(SplashScreenViewModel::class.java)
+    }
 
     bind<MainActivityViewModel>() with factory { activity: MainActivity ->
         val factory = MainActivityViewModel.Factory(instance())
@@ -22,4 +31,5 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
         ViewModelProvider(activity, factory).get(LoginViewModel::class.java)
     }
 
+    bind<HomeFragmentViewModel>() with singleton { HomeFragmentViewModel(instance()) }
 }

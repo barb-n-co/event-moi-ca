@@ -15,7 +15,6 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
         val user = userRepository.fireBaseAuth.currentUser
-
         Handler().postDelayed({
             if (user != null) {
                 userRepository.currentUser = User(user.uid, user.displayName, user.email, user.photoUrl)

@@ -1,22 +1,41 @@
 package com.example.event_app.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.User
 import com.example.event_app.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 import io.reactivex.Flowable
-import timber.log.Timber
 
 class LoginViewModel(private val userRepository: UserRepository): BaseViewModel() {
 
-    fun logIn(email: String, password: String): Flowable<Boolean> {
+    fun logIn(email: String, password: String): Flowable<FirebaseUser> {
         return userRepository.logUser(email, password)
+    }
+
+    fun register(email: String, password: String): Flowable<FirebaseUser> {
+        return userRepository.registerUser(email, password)
+    }
+
+    fun fillCurrentUser(firebaseUser: FirebaseUser) {
+        val user = User(firebaseUser.uid, firebaseUser.displayName, firebaseUser.email, firebaseUser.photoUrl)
+        userRepository.currentUser = user
+    }
+
+    fun getFirebaseAuth(): FirebaseAuth {
+        return userRepository.fireBaseAuth
+    }
+
+    fun getUsersRef(): DatabaseReference {
+        return userRepository.usersRef
     }
 
     class Factory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return MainActivityViewModel(userRepository) as T
+            return LoginViewModel(userRepository) as T
         }
     }
 }

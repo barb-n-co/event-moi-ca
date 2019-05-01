@@ -43,3 +43,7 @@ X
 app/build.gradle,f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164
 t
 Dapp/src/main/java/com/example/event_app/ui/activity/LoginActivity.kt,2/5/252987621eb46c959d8072799863f9af5b912e15
+e
+5app/src/main/java/com/example/event_app/model/User.kt,2/7/27924102c2b8e306419ba9920a2b02cd8bf5de96
+{
+Kapp/src/main/java/com/example/event_app/ui/activity/SplashScreenActivity.kt,e/6/e6c690776cb6a50cc878f5198b18bb1cf9777a24

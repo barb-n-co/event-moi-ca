@@ -1,21 +1,17 @@
 package com.example.event_app.repository
 
 import android.content.Context
-import android.widget.Toast
 import com.example.event_app.model.User
-import com.example.event_app.ui.activity.LoginActivity
-import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.SingletonHolder
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import timber.log.Timber
-import android.R.attr.password
-import android.util.Log
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
+
+
 
 
 class UserRepository private constructor(private val context: Context) {
@@ -70,20 +66,20 @@ class UserRepository private constructor(private val context: Context) {
         }*/
     }
 
-    fun logUser(email: String, password: String): Flowable<Boolean> {
+    fun logUser(email: String, password: String): Flowable<FirebaseUser> {
 
-        return RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
-            .map { authResult -> authResult.user != null }
-            .repeat()
+         return RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
+            .map { authResult -> authResult.user  }
+            .toFlowable()
         //fireBaseAuth.signInWithEmailAndPassword(email,password)
 
     }
 
-    fun registerUser(email: String, password: String): Flowable<Boolean>{
+    fun registerUser(email: String, password: String): Flowable<FirebaseUser>{
 
         return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
-            .map { authResult -> authResult.user != null }
-            .repeat()
+            .map { authResult -> authResult.user }
+            .toFlowable()
         //fireBaseAuth.createUserWithEmailAndPassword(email, password)
     }
 }

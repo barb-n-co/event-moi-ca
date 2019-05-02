@@ -80,7 +80,6 @@ class DetailEventFragment : BaseFragment() {
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false);
         adapter.photosClickPublisher.subscribe(
             {
-                Log.d("DETAIl", ""+it)
                 val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(it)
                 NavHostFragment.findNavController(this).navigate(action)
             },

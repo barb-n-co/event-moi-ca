@@ -1,5 +1,6 @@
 package com.example.event_app.repository
 
+import android.util.Log
 import com.example.event_app.model.User
 import com.example.event_app.model.UserResponse
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +45,7 @@ object UserRepository {
     }
 
     fun getUserNameFromFirebase() {
-        fireBaseAuth.currentUser?.uid?.let {
+        fireBaseAuth.currentUser?.uid?.let { it ->
             RxFirebaseDatabase.observeSingleValueEvent(
                 usersRef.child(it)
             ) { dataSnapshot ->
@@ -54,6 +55,8 @@ object UserRepository {
                     user?.let {
                         currentUser.onNext(it)
                     }
+                }, {
+                    Timber.e(it)
                 })
         }
     }

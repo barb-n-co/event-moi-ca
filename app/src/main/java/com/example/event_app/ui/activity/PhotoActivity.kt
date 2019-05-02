@@ -4,28 +4,19 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.os.Build
-
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.provider.MediaStore
-import android.widget.Toast
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.event_app.R
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_photo.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-
-
-
 class PhotoActivity : AppCompatActivity() {
-    val REQUEST_PERM_WRITE_STORAGE = 102
+    private val PERMISSION_ALL = 1
     private val CAPTURE_PHOTO = 104
     internal var imagePath: String? = ""
 
@@ -34,41 +25,30 @@ class PhotoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_photo)
 
         btn_take_photo.setOnClickListener{
+            val permissions = arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                val PERMISSION_ALL = 1
-                val PERMISSIONS = arrayOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-
-                )
-
-                if (ActivityCompat.checkSelfPermission(applicationContext,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                         {
-                    ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL)
-                }
-
-
-                // Use
-                val handler = Handler()
-                handler.postDelayed({
-                    takePhotoByCamera()
-                }, 3000L)
+            if (ActivityCompat.checkSelfPermission(applicationContext,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                     {
+                ActivityCompat.requestPermissions(this, permissions, PERMISSION_ALL)
+            } else {
+                takePhotoByCamera()
             }
-
-
-
-
-
         }
     }
 
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
+            takePhotoByCamera()
+        }
+    }
 
-
-    fun takePhotoByCamera() {
+    private fun takePhotoByCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAPTURE_PHOTO)
     }
@@ -80,13 +60,10 @@ class PhotoActivity : AppCompatActivity() {
             when (requestCode) {
 
                 CAPTURE_PHOTO -> {
-
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
-
                     saveImage(capturedBitmap)
                     imgv_capture_image_preview.setImageBitmap(capturedBitmap)
                 }
-
 
                 else -> {
                 }
@@ -105,8 +82,8 @@ class PhotoActivity : AppCompatActivity() {
         val generator = Random()
         var n = 10000
         n = generator.nextInt(n)
-        val OutletFname = "Image-$n.jpg"
-        val file = File(myDir, OutletFname)
+        val outletFrame = "Image-$n.jpg"
+        val file = File(myDir, outletFrame)
         if (file.exists()) file.delete()
         try {
             val out = FileOutputStream(file)
@@ -114,8 +91,6 @@ class PhotoActivity : AppCompatActivity() {
             imagePath = file.absolutePath
             out.flush()
             out.close()
-
-
         } catch (e: Exception) {
             e.printStackTrace()
 

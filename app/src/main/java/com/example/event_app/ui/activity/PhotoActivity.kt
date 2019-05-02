@@ -20,7 +20,7 @@ class PhotoActivity : AppCompatActivity() {
     private val PERMISSION_IMPORT = 2
     private val IMAGE_PICK_CODE = 1000
     private val CAPTURE_PHOTO = 104
-    internal var imagePath: String? = ""
+    private var imagePath: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,6 @@ class PhotoActivity : AppCompatActivity() {
                 takePhotoByCamera()
             }
 
-
         }
 
         btn_import_photo.setOnClickListener{
@@ -58,11 +57,7 @@ class PhotoActivity : AppCompatActivity() {
                 pickImageFromGallery()
             }
 
-
         }
-
-
-
     }
 
 
@@ -111,7 +106,7 @@ class PhotoActivity : AppCompatActivity() {
     private fun saveImage(finalBitmap: Bitmap) {
 
         val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File(root + "/")
+        val myDir = File("$root/")
         myDir.mkdirs()
         val generator = Random()
         var n = 10000
@@ -127,7 +122,6 @@ class PhotoActivity : AppCompatActivity() {
             out.close()
         } catch (e: Exception) {
             e.printStackTrace()
-
         }
 
     }

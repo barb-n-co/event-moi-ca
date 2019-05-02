@@ -3,6 +3,7 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="title_qr_code">CODE QR</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>

@@ -11,10 +11,9 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.example.event_app.R
-import kotlinx.android.synthetic.main.activity_photo.*
+import kotlinx.android.synthetic.main.fragment_photo.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
@@ -22,7 +21,7 @@ import java.util.*
 class PhotoFragment : BaseFragment() {
     companion object {
         const val TAG = "PHOTOFRAGMENT"
-        private val PERMISSION_ALL = 1
+        private val PERMISSION_CAMERA = 1
         private val PERMISSION_IMPORT = 2
         private val IMAGE_PICK_CODE = 1000
         private val CAPTURE_PHOTO = 104
@@ -48,7 +47,7 @@ class PhotoFragment : BaseFragment() {
             if (checkSelfPermission(context!!,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             {
-                requestPermissions( permissions, PERMISSION_ALL)
+                requestPermissions( permissions, PERMISSION_CAMERA)
             } else {
                 takePhotoByCamera()
             }
@@ -76,7 +75,7 @@ class PhotoFragment : BaseFragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
+        if (requestCode == PERMISSION_CAMERA && grantResults.size == 2) {
             takePhotoByCamera()
         }
 

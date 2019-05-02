@@ -7,11 +7,12 @@ import com.google.firebase.database.*
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
 object UserRepository {
 
-    var currentUser: User? = null
+    var currentUser: BehaviorSubject<User> = BehaviorSubject.create()
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     val database = FirebaseDatabase.getInstance()
     val usersRef: DatabaseReference = database.getReference("users")
@@ -39,17 +40,45 @@ object UserRepository {
             .map { authResult -> authResult.currentUser != null }
     }
 
-    fun logUser(email: String, password: String): Flowable<FirebaseUser> {
-         return RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
+    fun logUser(email: String, password: String): Flowable<Boolean> {
+         val obs = RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult -> authResult.user  }
             .toFlowable()
 
+        obs.subscribe(
+            {
+                val user = User(it.uid, it.displayName, it.email, it.photoUrl)
+                currentUser.onNext(user)
+            },
+            {
+                Timber.e(it)
+            }
+        )
+
+        return obs.map {
+                authResult -> authResult != null
+        }
+
     }
 
-    fun registerUser(email: String, password: String): Flowable<FirebaseUser>{
+    fun registerUser(email: String, password: String): Flowable<Boolean>{
 
-        return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
+        val obs = RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult -> authResult.user }
             .toFlowable()
+
+        obs.subscribe(
+            {
+                val user = User(it.uid, it.displayName, it.email, it.photoUrl)
+                currentUser.onNext(user)
+            },
+            {
+                Timber.e(it)
+            }
+        )
+
+        return obs.map {
+                authResult -> authResult != null
+        }
     }
 }

@@ -63,8 +63,7 @@ class LoginActivity : BaseActivity() {
     private fun userLogin(email: String, password: String) {
         viewModel.logIn(email, password).subscribe(
             {
-                viewModel.fillCurrentUser(it)
-                MainActivity.start(this)
+                if(it) MainActivity.start(this)
             },
             {
                 Timber.e(it)
@@ -82,8 +81,7 @@ class LoginActivity : BaseActivity() {
     private fun userRegister(email: String, password: String) {
         viewModel.register(email, password).subscribe(
             {
-                viewModel.fillCurrentUser(it)
-                MainActivity.start(this)
+                if(it) MainActivity.start(this)
             },
             {
                 Timber.e(it)

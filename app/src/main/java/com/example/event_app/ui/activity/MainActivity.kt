@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
 import com.example.event_app.viewmodel.MainActivityViewModel
 import org.kodein.di.generic.instance
+import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
@@ -29,7 +30,14 @@ class MainActivity : BaseActivity() {
 
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        Toast.makeText(this, viewModel.getCurrentUserToDisplay(), Toast.LENGTH_LONG).show()
+        viewModel.user.subscribe(
+            {
+                Toast.makeText(this, getString(R.string.toast_welcome_user, it.name), Toast.LENGTH_LONG).show()
+            },
+            {
+                Timber.e(it)
+            }
+        ).dispose()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

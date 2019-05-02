@@ -9,11 +9,11 @@ import com.google.firebase.auth.FirebaseUser
 class SplashScreenViewModel(private val userRepository: UserRepository): BaseViewModel() {
 
     fun getCurrentUser(): FirebaseUser? {
-        return userRepository.fireBaseAuth.currentUser
-    }
-
-    fun setCurrentUser(user: User) {
-        userRepository.currentUser = user
+        val user = userRepository.fireBaseAuth.currentUser
+        user?.let {
+            userRepository.currentUser.onNext(User(it.uid, it.displayName, it.email, it.photoUrl))
+        }
+        return user
     }
 
     class Factory(private val userRepository: UserRepository) : ViewModelProvider.Factory {

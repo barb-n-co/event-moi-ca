@@ -11,17 +11,12 @@ import io.reactivex.Flowable
 
 class LoginViewModel(private val userRepository: UserRepository): BaseViewModel() {
 
-    fun logIn(email: String, password: String): Flowable<FirebaseUser> {
+    fun logIn(email: String, password: String): Flowable<Boolean> {
         return userRepository.logUser(email, password)
     }
 
-    fun register(email: String, password: String): Flowable<FirebaseUser> {
+    fun register(email: String, password: String): Flowable<Boolean> {
         return userRepository.registerUser(email, password)
-    }
-
-    fun fillCurrentUser(firebaseUser: FirebaseUser) {
-        val user = User(firebaseUser.uid, firebaseUser.displayName, firebaseUser.email, firebaseUser.photoUrl)
-        userRepository.currentUser = user
     }
 
     fun getFirebaseAuth(): FirebaseAuth {

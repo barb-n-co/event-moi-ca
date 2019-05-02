@@ -18,15 +18,15 @@ class SplashScreenActivity : BaseActivity() {
         val user = viewModel.getCurrentUser()
         Handler().postDelayed({
             if (user != null) {
-                val newUser = User(user.uid, user.displayName, user.email, user.photoUrl)
-                viewModel.setCurrentUser(newUser)
                 MainActivity.start(this)
             } else {
                 LoginActivity.start(this)
             }
         }, 2000L)
+    }
 
-
-
+    override fun onStop() {
+        super.onStop()
+        finish()
     }
 }

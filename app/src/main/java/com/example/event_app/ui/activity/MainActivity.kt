@@ -2,14 +2,18 @@ package com.example.event_app.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
-import com.example.event_app.repository.UserRepository
+import com.example.event_app.viewmodel.MainActivityViewModel
+import org.kodein.di.generic.instance
+import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
-    private var userRepository = UserRepository.getInstance(this)
+    private val viewModel : MainActivityViewModel by instance(arg = this)
     companion object {
 
         fun start(fromActivity: AppCompatActivity) {
@@ -24,7 +28,34 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Toast.makeText(this, "Current User : ${userRepository.currentUser}", Toast.LENGTH_LONG).show()
+        setSupportActionBar(findViewById(R.id.toolbar))
+
+        viewModel.user.subscribe(
+            {
+                Toast.makeText(this, getString(R.string.toast_welcome_user, it.name), Toast.LENGTH_LONG).show()
+            },
+            {
+                Timber.e(it)
+            }
+        ).dispose()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.action_bar_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_logout -> {
+            viewModel.logout()
+            Toast.makeText(this, "sign out", Toast.LENGTH_SHORT).show()
+            LoginActivity.start(this)
+            finish()
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
     }
 }
 

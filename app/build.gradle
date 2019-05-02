@@ -33,7 +33,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     //Kotlin
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //Android X
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -71,8 +71,11 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
+    implementation 'com.github.FrangSierra:RxFirebase:1.5.6'
 
     //Navigation component
     implementation "android.arch.navigation:navigation-fragment:$versions.navigationVersion"
     implementation "android.arch.navigation:navigation-ui:$versions.navigationVersion"
+
+
 }

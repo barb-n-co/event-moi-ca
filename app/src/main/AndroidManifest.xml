@@ -13,17 +13,17 @@
             android:theme="@style/AppTheme">
 
         <activity android:name=".ui.activity.SplashScreenActivity">
-
-        </activity>
-        <activity android:name=".ui.activity.LoginActivity">
-
-        </activity>
-        <activity android:name=".ui.activity.PhotoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.activity.LoginActivity">
+
+        </activity>
+        <activity android:name=".ui.activity.PhotoActivity">
+
         </activity>
         <activity android:name=".ui.activity.MainActivity">
 

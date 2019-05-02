@@ -1,10 +1,12 @@
 package com.example.event_app.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -12,8 +14,10 @@ import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.json.JSONObject
+import timber.log.Timber
 
 
 class DetailEventFragment : BaseFragment() {
@@ -38,7 +42,10 @@ class DetailEventFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         json.put("url","https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+        json.put("id",1)
         json2.put("url","https://rickandmortyapi.com/api/character/avatar/2.jpeg")
+        json2.put("id",2)
+
         json3.put("url","https://rickandmortyapi.com/api/character/avatar/3.jpeg")
         json4.put("url","https://rickandmortyapi.com/api/character/avatar/4.jpeg")
         json5.put("url","https://rickandmortyapi.com/api/character/avatar/5.jpeg")
@@ -65,13 +72,25 @@ class DetailEventFragment : BaseFragment() {
 
 
 
-        val adapter = CustomAdapter(imageIdList)
+        val adapter = CustomAdapter()
         //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         val mGrid = GridLayoutManager(context, 2)
         rv_listImage.layoutManager = mGrid
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false);
-        adapter.notifyDataSetChanged()
+        adapter.photosClickPublisher.subscribe(
+            {
+                Log.d("DETAIl", ""+it)
+                val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        adapter.submitList(imageIdList)
+
     }
 
 

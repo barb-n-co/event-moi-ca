@@ -8,10 +8,13 @@ class Photo (photoJSON: JSONObject) : Serializable {
 
     lateinit var url: String
         private set
+     var id: Int? = null
+        private set
 
     init {
         try {
             url = photoJSON.getString(PHOTO_URL)
+            id = photoJSON.getInt(PHOTO_ID)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -19,6 +22,7 @@ class Photo (photoJSON: JSONObject) : Serializable {
 
     companion object {
         private val PHOTO_URL = "url"
+        private val PHOTO_ID = "id"
     }
 
 }

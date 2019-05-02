@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_home"
-    app:startDestination="@id/detail_event_fragment">
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/navigation_home"
+            app:startDestination="@id/detail_event_fragment">
 
     <fragment
-        android:id="@+id/my_home_fragment"
-        android:name="com.example.event_app.ui.fragment.HomeFragment"
-        android:label="MyHomeFragment"
-        tools:layout="@layout/fragment_home" >
+            android:id="@+id/my_home_fragment"
+            android:name="com.example.event_app.ui.fragment.HomeFragment"
+            android:label="MyHomeFragment"
+            tools:layout="@layout/fragment_home">
     </fragment>
 
     <fragment
             android:id="@+id/detail_event_fragment"
             android:name="com.example.event_app.ui.fragment.DetailEventFragment"
             android:label="My Detail"
-            tools:layout="@layout/fragment_detail_event" >
+            tools:layout="@layout/fragment_detail_event">
     </fragment>
+
 
 </navigation>

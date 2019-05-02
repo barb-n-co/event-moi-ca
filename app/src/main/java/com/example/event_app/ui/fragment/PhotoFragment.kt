@@ -1,4 +1,5 @@
-package com.example.event_app.ui.activity
+package com.example.event_app.ui.fragment
+
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -7,35 +8,47 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.example.event_app.R
-import kotlinx.android.synthetic.main.activity_photo.*
+import kotlinx.android.synthetic.main.fragment_photo.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-class PhotoActivity : AppCompatActivity() {
-    private val PERMISSION_ALL = 1
-    private val PERMISSION_IMPORT = 2
-    private val IMAGE_PICK_CODE = 1000
-    private val CAPTURE_PHOTO = 104
-    private var imagePath: String? = ""
+class PhotoFragment : BaseFragment() {
+    companion object {
+        const val TAG = "PHOTOFRAGMENT"
+        private val PERMISSION_ALL = 1
+        private val PERMISSION_IMPORT = 2
+        private val IMAGE_PICK_CODE = 1000
+        private val CAPTURE_PHOTO = 104
+        private var imagePath: String? = ""
+        fun newInstance(): PhotoFragment = PhotoFragment()
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_photo)
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+
+        return inflater.inflate(R.layout.fragment_photo, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         btn_take_photo.setOnClickListener{
             val permissions = arrayOf(
                 Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
 
-            if (ActivityCompat.checkSelfPermission(applicationContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                     {
-                ActivityCompat.requestPermissions(this, permissions, PERMISSION_ALL)
+            if (checkSelfPermission(context!!,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions( permissions, PERMISSION_ALL)
             } else {
                 takePhotoByCamera()
             }
@@ -49,17 +62,17 @@ class PhotoActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
 
-            if (ActivityCompat.checkSelfPermission(applicationContext,
+            if (checkSelfPermission(context!!,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             {
-                ActivityCompat.requestPermissions(this, permissions, PERMISSION_IMPORT)
+                requestPermissions(permissions, PERMISSION_IMPORT)
             } else {
                 pickImageFromGallery()
             }
 
         }
-    }
 
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -134,4 +147,7 @@ class PhotoActivity : AppCompatActivity() {
 
 
     }
+
+
+
 }

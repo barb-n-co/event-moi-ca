@@ -1,23 +1,33 @@
 package com.example.event_app.adapter
 
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.model.Event
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.item_myevent.view.*
+import kotlinx.android.synthetic.main.item_invitation.view.*
+import java.util.*
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
-class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(DiffCardCallback()) {
+
+class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventViewHolder>(DiffCardCallback()) {
 
     private val eventsClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    val acceptClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    val refuseClickPublisher: PublishSubject<Int> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_myevent, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_invitation, parent, false)
         return EventViewHolder(view, eventsClickPublisher)
     }
 
@@ -30,12 +40,17 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Di
 
         fun bind(event: Event) {
             //disposition
-            itemView.tv_name_myevents_item.text = event.name
-            itemView.tv_description_myevents_item.text = event.description
-            itemView.tv_startDate_myevents_item.text = event.dateStart
-            itemView.tv_endDate_myevents_item.text = event.dateEnd
+            itemView.tv_name_invitation_item.text = event.name
+            itemView.tv_description_invitation_item.text = event.description
+            itemView.tv_startDate_invitation_item.text = "Du " + stringToDate(event.dateStart) + " au " + stringToDate(event.dateEnd) + ""
 
-            Log.d("MYEVENTSFRAGMENT", "adpater")
+            itemView.b_accept_item_invitation_item.setOnClickListener {
+                acceptClickPublisher.onNext(event.idEvent)
+            }
+
+            itemView.b_refuse_invitation_item.setOnClickListener {
+                refuseClickPublisher.onNext(event.idEvent)
+            }
 
             bindPositionClick(event.idEvent)
         }
@@ -44,6 +59,10 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Di
             itemView.setOnClickListener {
                 eventsClickPublisher.onNext(idEvent)
             }
+        }
+
+        private fun stringToDate(oldDate: String?) : String? {
+            return oldDate
         }
     }
 

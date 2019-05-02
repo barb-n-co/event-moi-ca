@@ -2,7 +2,7 @@ package com.example.event_app
 
 import android.app.Application
 import android.content.Context
-import com.example.lpiem.theelderscrolls.injection.viewModelModule
+import com.example.event_app.injection.viewModelModule
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.bind

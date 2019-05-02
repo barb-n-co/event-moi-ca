@@ -11,7 +11,7 @@ class HomeFragmentViewModel(private val eventsRepository: EventRepository) : Bas
 
     fun getEvents() {
         eventsRepository.fectchEvents()
-            .
+            .subscribe()
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

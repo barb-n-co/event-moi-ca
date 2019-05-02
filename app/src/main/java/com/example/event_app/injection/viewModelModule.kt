@@ -1,4 +1,4 @@
-package com.example.lpiem.theelderscrolls.injection
+package com.example.event_app.injection
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider

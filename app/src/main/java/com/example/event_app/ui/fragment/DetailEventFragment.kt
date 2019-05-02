@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
+import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.model.Event
@@ -15,10 +17,24 @@ class DetailEventFragment : BaseFragment() {
     var imageIdList = arrayOf<Int>(
         R.drawable.pic1,
         R.drawable.pic2,
+        R.drawable.pic3,
+        R.drawable.pic1,
+        R.drawable.pic2,
+        R.drawable.pic3,
+        R.drawable.pic1,
+        R.drawable.pic2,
+        R.drawable.pic3,
+        R.drawable.pic2,
+        R.drawable.pic3,
+        R.drawable.pic1,
+        R.drawable.pic2,
+        R.drawable.pic3,
+        R.drawable.pic1,
+        R.drawable.pic2,
         R.drawable.pic3
     )
     var loremIpsum =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc arcu orci, laoreet id nisl a, faucibus eleifend tellus. In lectus sapien, gravida commodo volutpat ut, gravida ut erat. Mauris maximus metus quis bibendum mattis. Maecenas vitae ultricies velit, quis pretium tellus. Aliquam ac augue accumsan arcu lobortis tincidunt. Morbi fringilla a nibh non dignissim. Integer faucibus tortor sed tellus vulputate vestibulum. Nunc ut erat non dolor congue commodo a venenatis dui. Maecenas non rutrum ipsum. Donec rhoncus ligula eget nulla feugiat porta. "
+        "Lorem ipvitae ultricies velit, quis pretium tellus. Aliquam ac augue accumsan arcu lobortis tincidunt. Morbi fringilla a nibh non dignissim. Integer faucibus tortor sed tellus vulputate vestibulum. Nunc ut erat non dolor congue commodo a venenatis dui. Maecenas non rutrum ipsum. Donec rhoncus ligula eget nulla feugiat porta. "
 
     companion object {
         const val TAG = "DETAIL_EVENT_FRAGMENT"
@@ -43,9 +59,12 @@ class DetailEventFragment : BaseFragment() {
         tv_eventDateEnd.text = mockEvent.dateEnd
         tv_eventDescription.text = mockEvent.description
 
-        val adapter = CustomAdapter(context!!, imageIdList)
-        listImage.adapter = adapter
-        listImage.setNestedScrollingEnabled(false);
+        val adapter = CustomAdapter(imageIdList)
+        val mGrid = GridLayoutManager(context,3)
+        rv_listImage.layoutManager = mGrid
+        rv_listImage.adapter = adapter
+        ViewCompat.setNestedScrollingEnabled(rv_listImage, false);
+        adapter.notifyDataSetChanged()
     }
 
 }

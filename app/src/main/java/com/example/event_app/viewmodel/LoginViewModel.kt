@@ -15,8 +15,8 @@ class LoginViewModel(private val userRepository: UserRepository): BaseViewModel(
         return userRepository.logUser(email, password)
     }
 
-    fun register(email: String, password: String): Flowable<Boolean> {
-        return userRepository.registerUser(email, password)
+    fun register(email: String, password: String, name: String): Flowable<Boolean> {
+        return userRepository.registerUser(email, password, name)
     }
 
     fun getFirebaseAuth(): FirebaseAuth {

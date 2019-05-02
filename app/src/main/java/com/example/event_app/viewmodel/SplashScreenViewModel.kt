@@ -11,7 +11,7 @@ class SplashScreenViewModel(private val userRepository: UserRepository): BaseVie
     fun getCurrentUser(): FirebaseUser? {
         val user = userRepository.fireBaseAuth.currentUser
         user?.let {
-            userRepository.currentUser.onNext(User(it.uid, it.displayName, it.email, it.photoUrl))
+            userRepository.currentUser.onNext(User(it.uid, it.displayName, it.email))
         }
         return user
     }

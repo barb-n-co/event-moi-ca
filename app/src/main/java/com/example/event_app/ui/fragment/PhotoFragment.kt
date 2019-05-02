@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.example.event_app.R
 import kotlinx.android.synthetic.main.fragment_photo.*

@@ -3,6 +3,8 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="tb_invites">INVITATIONS</string>
+    <string name="tb_myevents">MES EVENEMENTS</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>

@@ -78,6 +78,7 @@ dependencies {
     //Navigation component
     implementation "android.arch.navigation:navigation-fragment:$versions.navigationVersion"
     implementation "android.arch.navigation:navigation-ui:$versions.navigationVersion"
+    implementation 'com.google.firebase:firebase-firestore:18.2.0'
 
 
 }

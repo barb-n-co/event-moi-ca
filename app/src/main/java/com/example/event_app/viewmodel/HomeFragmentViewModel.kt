@@ -1,9 +1,31 @@
 package com.example.event_app.viewmodel
 
-import com.example.event_app.repository.UserRepository
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.Event
+import com.example.event_app.repository.EventRepository
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
-class HomeFragmentViewModel(private val userRepository: UserRepository): BaseViewModel() {
+class HomeFragmentViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
 
+    val eventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
 
+    fun getEvents() {
+        eventsRepository.fetchEvents().subscribe(
+            {
+                eventList.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
+    }
 
+    class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return HomeFragmentViewModel(eventsRepository) as T
+        }
+    }
 }

@@ -8,6 +8,7 @@ import android.os.Build
 
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.widget.Toast
 
@@ -19,6 +20,9 @@ import kotlinx.android.synthetic.main.activity_photo.*
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+
+
+
 
 class PhotoActivity : AppCompatActivity() {
     val REQUEST_PERM_WRITE_STORAGE = 102
@@ -32,21 +36,32 @@ class PhotoActivity : AppCompatActivity() {
         btn_take_photo.setOnClickListener{
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this@PhotoActivity, arrayOf(Manifest.permission.CAMERA), 1)
+
+                val PERMISSION_ALL = 1
+                val PERMISSIONS = arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+                )
+
+                if (ActivityCompat.checkSelfPermission(applicationContext,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                         {
+                    ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL)
                 }
 
 
+                // Use
+                val handler = Handler()
+                handler.postDelayed({
+                    takePhotoByCamera()
+                }, 3000L)
             }
-            if (ActivityCompat.checkSelfPermission(applicationContext,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                ActivityCompat.requestPermissions(this@PhotoActivity,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_PERM_WRITE_STORAGE)
-                takePhotoByCamera()
-            }
-            //Permissions déja autorisé
-            else {takePhotoByCamera()}
+
+
+
+
         }
     }
 
@@ -85,7 +100,7 @@ class PhotoActivity : AppCompatActivity() {
     private fun saveImage(finalBitmap: Bitmap) {
 
         val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File(root + "/")
+        val myDir = File(root + "/DCIM/Camera/")
         myDir.mkdirs()
         val generator = Random()
         var n = 10000

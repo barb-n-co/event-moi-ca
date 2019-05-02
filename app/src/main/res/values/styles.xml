@@ -12,4 +12,9 @@
         <item name="colorControlNormal">@color/colorAccent</item>
     </style>
 
+    <style name="Subtitle">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/subtitle</item>
+    </style>
+
 </resources>

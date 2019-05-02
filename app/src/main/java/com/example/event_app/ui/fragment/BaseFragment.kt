@@ -14,7 +14,7 @@ import org.kodein.di.generic.instance
 abstract class BaseFragment: Fragment(), KodeinAware{
 
     override val kodein by closestKodein()
-    protected val viewDisposable: CompositeDisposable = CompositeDisposable()
+    val viewDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onDestroyView() {
         viewDisposable.clear()

@@ -17,6 +17,8 @@ import java.util.*
 
 class PhotoActivity : AppCompatActivity() {
     private val PERMISSION_ALL = 1
+    private val PERMISSION_IMPORT = 2
+    private val IMAGE_PICK_CODE = 1000
     private val CAPTURE_PHOTO = 104
     internal var imagePath: String? = ""
 
@@ -37,7 +39,30 @@ class PhotoActivity : AppCompatActivity() {
             } else {
                 takePhotoByCamera()
             }
+
+
         }
+
+        btn_import_photo.setOnClickListener{
+
+            val permissions = arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+
+            if (ActivityCompat.checkSelfPermission(applicationContext,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, permissions, PERMISSION_IMPORT)
+            } else {
+                pickImageFromGallery()
+            }
+
+
+        }
+
+
+
     }
 
 
@@ -45,6 +70,10 @@ class PhotoActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
             takePhotoByCamera()
+        }
+
+        if (requestCode == PERMISSION_IMPORT && grantResults.size == 2) {
+            pickImageFromGallery()
         }
     }
 
@@ -63,6 +92,11 @@ class PhotoActivity : AppCompatActivity() {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
                     saveImage(capturedBitmap)
                     imgv_capture_image_preview.setImageBitmap(capturedBitmap)
+                }
+
+                IMAGE_PICK_CODE ->{
+
+                    imgv_capture_image_preview.setImageURI(returnIntent?.data)
                 }
 
                 else -> {
@@ -95,6 +129,15 @@ class PhotoActivity : AppCompatActivity() {
             e.printStackTrace()
 
         }
+
+    }
+
+    private fun pickImageFromGallery(){
+
+        val intent = Intent (Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent,IMAGE_PICK_CODE)
+
 
     }
 }

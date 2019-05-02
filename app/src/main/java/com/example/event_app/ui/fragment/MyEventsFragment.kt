@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,6 +63,15 @@ class MyEventsFragment : BaseFragment() {
         rv_myevents_fragment.itemAnimator = DefaultItemAnimator()
         rv_myevents_fragment.adapter = adapter
         adapter.submitList(eventList)
+        adapter.eventsClickPublisher.subscribe(
+            {
+                val action = HomeFragmentDirections.actionMyEventFragmentToDetailEventFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
         swiperefresh_fragment_myevents.isRefreshing = false
     }
 }

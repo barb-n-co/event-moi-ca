@@ -3,9 +3,9 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="title_qr_code">QR CODE</string>
     <string name="tb_invites">INVITATIONS</string>
     <string name="tb_myevents">MES EVENEMENTS</string>
-    <string name="title_qr_code">CODE QR</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
@@ -41,4 +41,7 @@
     <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
 
   <string name="disconnection">Déconnexion</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

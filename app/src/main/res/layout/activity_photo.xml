@@ -16,6 +16,15 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="56dp"
             app:layout_constraintHorizontal_bias="0.901"/>
+    <Button
+            android:id="@+id/btn_import_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Import Photo"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="132dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="116dp"
+            app:layout_constraintHorizontal_bias="0.901"/>
 
     <ImageView
             android:id="@+id/imgv_capture_image_preview"

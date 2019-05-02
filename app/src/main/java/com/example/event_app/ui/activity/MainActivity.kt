@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.viewmodel.MainActivityViewModel
 import org.kodein.di.generic.instance
@@ -16,7 +17,7 @@ class MainActivity : BaseActivity() {
     private val viewModel : MainActivityViewModel by instance(arg = this)
     companion object {
 
-        fun start(fromActivity: AppCompatActivity) {
+        fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
                 Intent(fromActivity, MainActivity::class.java)
             )
@@ -32,7 +33,7 @@ class MainActivity : BaseActivity() {
 
         viewModel.user.subscribe(
             {
-                Toast.makeText(this, getString(R.string.toast_welcome_user, it.name), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.toast_welcome_user_main_activity, it.name), Toast.LENGTH_LONG).show()
             },
             {
                 Timber.e(it)

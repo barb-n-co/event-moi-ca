@@ -12,7 +12,7 @@ import org.kodein.di.generic.instance
 
 class HomeFragment : BaseFragment() {
 
-    private val viewModel: HomeFragmentViewModel by instance()
+    private val viewModel : HomeFragmentViewModel by instance()
 
     companion object {
         const val TAG = "HOMEFRAGMENT"

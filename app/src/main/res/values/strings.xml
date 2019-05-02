@@ -7,7 +7,27 @@
     <string name="tb_myevents">MES EVENEMENTS</string>
 
     <!-- Main Activity -->
-    <string name="toast_welcome_user">Bienvenue %s</string>
+    <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
+
+    <!-- Activity Authentification -->
+    <string name="tv_description_authentification_activity">Veuillez vous inscrire ou vous connecter</string>
+    <string name="ti_login_authentification_activity">Connexion</string>
+    <string name="ti_signup_authentification_activity">Inscription</string>
+
+    <!-- Log In Fragment -->
+    <string name="tv_email_login_fragment">Email</string>
+    <string name="tv_password_login_fragment">Mot de passe</string>
+    <string name="b_signin_login_fragment">Se connecter</string>
+    <string name="tv_login_success_login_fragment">Vous êtes connectés</string>
+
+    <!-- Sign Up Fragment -->
+    <string name="tv_lastname_signup_fragment">Nom</string>
+    <string name="tv_firstname_signup_fragment">Prenom</string>
+    <string name="tv_email_signup_fragment">Email</string>
+    <string name="tv_password_signup_fragment">Mot de passe</string>
+    <string name="tv_confirm_password_signup_fragment">Confirmation du mot de passe</string>
+    <string name="b_signup_signup_fragment">S\'inscrire</string>
+    <string name="tv_signup_success_signup_fragment">Vous êtes bien inscrits</string>
 
   <string name="disconnection">Déconnexion</string>
 </resources>

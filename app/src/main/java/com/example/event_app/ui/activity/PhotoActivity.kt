@@ -100,7 +100,7 @@ class PhotoActivity : AppCompatActivity() {
     private fun saveImage(finalBitmap: Bitmap) {
 
         val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File(root + "/DCIM/Camera/")
+        val myDir = File(root + "/")
         myDir.mkdirs()
         val generator = Random()
         var n = 10000

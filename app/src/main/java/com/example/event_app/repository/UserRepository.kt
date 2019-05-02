@@ -41,44 +41,37 @@ object UserRepository {
     }
 
     fun logUser(email: String, password: String): Flowable<Boolean> {
-         val obs = RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
-            .map { authResult -> authResult.user  }
-            .toFlowable()
-
-        obs.subscribe(
-            {
-                val user = User(it.uid, it.displayName, it.email, it.photoUrl)
-                currentUser.onNext(user)
-            },
-            {
-                Timber.e(it)
+        return RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
+            .map { authResult ->
+                authResult.user?.let {
+                    val user = User(
+                        authResult.user.uid,
+                        authResult.user.displayName,
+                        authResult.user.email,
+                        authResult.user.photoUrl
+                    )
+                    currentUser.onNext(user)
+                }
+                authResult.user != null
             }
-        )
-
-        return obs.map {
-                authResult -> authResult != null
-        }
-
+            .toFlowable()
     }
 
-    fun registerUser(email: String, password: String): Flowable<Boolean>{
+    fun registerUser(email: String, password: String): Flowable<Boolean> {
 
-        val obs = RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
-            .map { authResult -> authResult.user }
-            .toFlowable()
-
-        obs.subscribe(
-            {
-                val user = User(it.uid, it.displayName, it.email, it.photoUrl)
-                currentUser.onNext(user)
-            },
-            {
-                Timber.e(it)
+        return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
+            .map { authResult ->
+                authResult.user?.let {
+                    val user = User(
+                        authResult.user.uid,
+                        authResult.user.displayName,
+                        authResult.user.email,
+                        authResult.user.photoUrl
+                    )
+                    currentUser.onNext(user)
+                }
+                authResult.user!= null
             }
-        )
-
-        return obs.map {
-                authResult -> authResult != null
-        }
+            .toFlowable()
     }
 }

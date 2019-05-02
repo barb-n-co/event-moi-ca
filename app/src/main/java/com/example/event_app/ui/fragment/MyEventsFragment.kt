@@ -1,13 +1,22 @@
 package com.example.event_app.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
+import com.example.event_app.adapter.ListEventAdapter
+import com.example.event_app.model.Event
 import com.example.event_app.viewmodel.HomeFragmentViewModel
+import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.fragment_myevents.*
 import org.kodein.di.direct
 import org.kodein.di.generic.instance
+import timber.log.Timber
 
 private lateinit var viewModel: HomeFragmentViewModel
 
@@ -25,5 +34,34 @@ class MyEventsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = kodein.direct.instance(arg = this)
+
+
+
+        swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getEvents() }
+
+        Log.d(TAG, "fragment")
+
+        viewModel.eventList.subscribe(
+            {
+                initAdapter(it)
+                swiperefresh_fragment_myevents.isRefreshing = false
+            },
+            {
+                Timber.e(it)
+                swiperefresh_fragment_myevents.isRefreshing = false
+            })
+            .addTo(viewDisposable)
+
+        viewModel.getEvents()
+    }
+
+    private fun initAdapter(eventList: List<Event>) {
+        val adapter = ListEventAdapter()
+        val mLayoutManager = LinearLayoutManager(this.context)
+        rv_myevents_fragment.layoutManager = mLayoutManager
+        rv_myevents_fragment.itemAnimator = DefaultItemAnimator()
+        rv_myevents_fragment.adapter = adapter
+        adapter.submitList(eventList)
+        swiperefresh_fragment_myevents.isRefreshing = false
     }
 }

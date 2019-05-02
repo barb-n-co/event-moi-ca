@@ -7,16 +7,22 @@ import android.view.ViewGroup
 import com.example.event_app.R
 import com.example.event_app.adapter.HomeViewPagerAdapter
 import kotlinx.android.synthetic.main.fragment_home.*
+import com.example.event_app.viewmodel.HomeFragmentViewModel
+import org.kodein.di.generic.instance
 
-class HomeFragment: BaseFragment() {
+class HomeFragment : BaseFragment() {
+
+    private val viewModel: HomeFragmentViewModel by instance()
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
         fun newInstance(): HomeFragment = HomeFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
@@ -24,10 +30,11 @@ class HomeFragment: BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager()
-
+/*
         fab_fragment_home.setOnClickListener {
 
         }
+        */
     }
 
     private fun setupViewPager() {

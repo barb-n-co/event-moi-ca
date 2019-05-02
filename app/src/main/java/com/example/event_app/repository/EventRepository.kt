@@ -1,28 +1,20 @@
 package com.example.event_app.repository
 
-import android.util.Log
 import com.example.event_app.model.Event
 import com.google.firebase.database.*
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import com.google.firebase.database.DatabaseReference
+import durdinapps.rxfirebase2.DataSnapshotMapper
 import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
 
-class EventRepository {
+object EventRepository {
 
     private val database = FirebaseDatabase.getInstance()
-    private val eventsRef : DatabaseReference = database.getReference("allEvents")
-    private val eventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
+    private val eventsRef: DatabaseReference = EventRepository.database.getReference("events")
 
-    fun fectchEvents() {
-        eventsRef.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val post = dataSnapshot.getValue(Event::class.java)
-                Log.d("FIREBASE", post.toString())
-            }
-        })
+    fun fetchEvents() : Flowable<List<Event>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            eventsRef, DataSnapshotMapper.listOf(Event::class.java)
+        ).toFlowable()
     }
 }

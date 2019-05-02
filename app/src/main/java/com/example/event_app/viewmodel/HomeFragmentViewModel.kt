@@ -4,14 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
 class HomeFragmentViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
+
     val eventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
 
     fun getEvents() {
-        eventsRepository.fectchEvents()
-            .subscribe()
+        eventsRepository.fetchEvents().subscribe(
+            {
+                eventList.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

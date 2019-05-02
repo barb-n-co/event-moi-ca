@@ -7,12 +7,12 @@
         android:layout_height="match_parent">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swiperefresh_fragment_buy"
+            android:id="@+id/swiperefresh_fragment_invitation"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_cards_buy_fragment"
+                android:id="@+id/rv_invitation_fragment"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:scrollbars="vertical"
@@ -21,12 +21,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_invite"/>
+                tools:listitem="@layout/item_myevent"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
-            android:id="@+id/progress_bar_buy_fragment"
+            android:id="@+id/progress_bar_invitation_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">Event-App</string>
 
+    <!-- Title -->
     <string name="title_home">Evenements</string>
     <string name="tb_invites">INVITATIONS</string>
     <string name="tb_myevents">MES EVENEMENTS</string>
+
+    <!-- Main Activity -->
+    <string name="toast_welcome_user">Bienvenue %s</string>
+
+  <string name="disconnection">Déconnexion</string>
 </resources>

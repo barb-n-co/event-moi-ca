@@ -8,15 +8,15 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.viewmodel.DetailEventViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.json.JSONObject
+import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
@@ -26,6 +26,7 @@ class DetailEventFragment : BaseFragment() {
     private var json3 = JSONObject()
     private var json4 = JSONObject()
     private var json5 = JSONObject()
+    private val viewModel : DetailEventViewModel by instance(arg = this)
 
 
     var imageIdList = ArrayList<Photo>()
@@ -64,13 +65,25 @@ class DetailEventFragment : BaseFragment() {
         tv_eventDateEnd.text = mockEvent.dateEnd
         tv_eventDescription.text = mockEvent.description
 
+
+        viewModel.fetchImagesFromFolder("jpg.png").subscribe(
+                {
+                    uri ->
+                    imageIdList.add(Photo(JSONObject().put("url", uri.toString())))
+                },
+                {
+                        throwable -> Log.e("RxFirebaseSample", throwable.toString())
+                }).addTo(viewDisposable)
+
         imageIdList.add(Photo(json))
         imageIdList.add(Photo(json2))
         imageIdList.add(Photo(json3))
         imageIdList.add(Photo(json4))
         imageIdList.add(Photo(json5))
 
+        val image = context!!.getDrawable(R.drawable.pic1)
 
+        viewModel.putImage(image)
 
         val adapter = CustomAdapter()
         //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)

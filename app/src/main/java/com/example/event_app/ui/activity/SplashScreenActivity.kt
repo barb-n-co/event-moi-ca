@@ -2,30 +2,31 @@ package com.example.event_app.ui.activity
 
 import android.os.Bundle
 import android.os.Handler
-import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
 import com.example.event_app.model.User
-import com.example.event_app.repository.UserRepository
+import com.example.event_app.viewmodel.SplashScreenViewModel
+import org.kodein.di.generic.instance
 
-class SplashScreenActivity : AppCompatActivity() {
 
-    private var userRepository = UserRepository.getInstance(this)
+class SplashScreenActivity : BaseActivity() {
+
+    private val viewModel : SplashScreenViewModel by instance(arg = this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
-        val user = userRepository.fireBaseAuth.currentUser
-
+        val user = viewModel.getCurrentUser()
         Handler().postDelayed({
             if (user != null) {
-                userRepository.currentUser = User(user.uid, user.displayName, user.email, user.photoUrl)
                 MainActivity.start(this)
             } else {
                 LoginActivity.start(this)
             }
         }, 2000L)
+    }
 
-
-
+    override fun onStop() {
+        super.onStop()
+        finish()
     }
 }

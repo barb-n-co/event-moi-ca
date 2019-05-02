@@ -2,19 +2,20 @@ package com.example.event_app.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.event_app.R
-import com.example.event_app.repository.UserRepository
+import com.example.event_app.viewmodel.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_login.*
+import org.kodein.di.generic.instance
 import timber.log.Timber
 
-
-
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private lateinit var mAuth: FirebaseAuth
-    private var userRepository = UserRepository.getInstance(this)
+    private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
         fun start(fromActivity: AppCompatActivity) {
@@ -40,12 +41,11 @@ class LoginActivity : AppCompatActivity() {
 
         // Initialize Firebase Auth
 
-        mAuth = userRepository.fireBaseAuth
-        val myRef = userRepository.usersRef
+        mAuth = viewModel.getFirebaseAuth()
 
 
         // Read from the database
-        userRepository.addListenerOnRef(myRef)
+        //userRepository.addListenerOnRef(myRef)
 
 
         loginButton.setOnClickListener {
@@ -61,7 +61,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun userLogin(email: String, password: String) {
-        userRepository.logUser(email, password)
+        viewModel.logIn(email, password).subscribe(
+            {
+                if(it) MainActivity.start(this)
+            },
+            {
+                Timber.e(it)
+                Toast.makeText(this,"${it.message}",Toast.LENGTH_SHORT).show()
+            }
+        ).addTo(viewDisposable)
     }
 
     override fun onStop() {
@@ -71,7 +79,15 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun userRegister(email: String, password: String) {
-        userRepository.registerUser(email, password)
+        viewModel.register(email, password).subscribe(
+            {
+                if(it) MainActivity.start(this)
+            },
+            {
+                Timber.e(it)
+                Toast.makeText(this,"${it.message}",Toast.LENGTH_SHORT).show()
+            }
+        ).addTo(viewDisposable)
     }
 
 

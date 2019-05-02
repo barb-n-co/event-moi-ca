@@ -71,8 +71,11 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
+    implementation 'com.github.FrangSierra:RxFirebase:1.5.6'
 
     //Navigation component
     implementation "android.arch.navigation:navigation-fragment:$versions.navigationVersion"
     implementation "android.arch.navigation:navigation-ui:$versions.navigationVersion"
+
+
 }

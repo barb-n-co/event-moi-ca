@@ -8,7 +8,7 @@ import com.google.zxing.Result
 import me.dm7.barcodescanner.core.BarcodeScannerView
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import android.app.Activity
-
+import androidx.fragment.app.FragmentActivity
 
 
 class ScannerQrCodeActivity: BaseActivity(), ZXingScannerView.ResultHandler {
@@ -19,7 +19,7 @@ class ScannerQrCodeActivity: BaseActivity(), ZXingScannerView.ResultHandler {
         val QrCodeRequestCode = 10
         val QrCodeKey = "QrCodeResponse"
 
-        fun start(fromActivity: AppCompatActivity) {
+        fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivityForResult(
                     Intent(fromActivity, ScannerQrCodeActivity::class.java), QrCodeRequestCode
             )

@@ -3,6 +3,8 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="tb_invites">INVITATIONS</string>
+    <string name="tb_myevents">MES EVENEMENTS</string>
     <string name="title_qr_code">CODE QR</string>
 
     <!-- Main Activity -->
@@ -27,6 +29,16 @@
     <string name="tv_confirm_password_signup_fragment">Confirmation du mot de passe</string>
     <string name="b_signup_signup_fragment">S\'inscrire</string>
     <string name="tv_signup_success_signup_fragment">Vous êtes bien inscrits</string>
+
+    <!-- Home Fragment -->
+    <string name="fab_qrcode_title">Scanner un QR Code</string>
+    <string name="fab_add_event_title">Ajouter un évènement</string>
+
+    <!-- Add Event Fragment -->
+    <string name="tv_name_add_event_fragment">Nom</string>
+    <string name="tv_description_add_event_fragment">Description</string>
+    <string name="chip_date_start_add_event_fragment">Choisir la date de début</string>
+    <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
 
   <string name="disconnection">Déconnexion</string>
 </resources>

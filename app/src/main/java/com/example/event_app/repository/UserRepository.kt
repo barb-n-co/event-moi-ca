@@ -1,14 +1,17 @@
 package com.example.event_app.repository
 
 import com.example.event_app.model.User
+import com.example.event_app.model.UserResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+
+
 
 object UserRepository {
 
@@ -40,38 +43,52 @@ object UserRepository {
             .map { authResult -> authResult.currentUser != null }
     }
 
+    fun getUserNameFromFirebase() {
+        fireBaseAuth.currentUser?.uid?.let {
+            RxFirebaseDatabase.observeSingleValueEvent(
+                usersRef.child(it)
+            ) { dataSnapshot ->
+                dataSnapshot.getValue(User::class.java)
+            }
+                .subscribe({ user ->
+                    user?.let {
+                        currentUser.onNext(it)
+                    }
+                })
+        }
+    }
+
     fun logUser(email: String, password: String): Flowable<Boolean> {
         return RxFirebaseAuth.signInWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult ->
                 authResult.user?.let {
-                    val user = User(
-                        authResult.user.uid,
-                        authResult.user.displayName,
-                        authResult.user.email,
-                        authResult.user.photoUrl
-                    )
-                    currentUser.onNext(user)
+                    getUserNameFromFirebase()
                 }
                 authResult.user != null
             }
             .toFlowable()
     }
 
-    fun registerUser(email: String, password: String): Flowable<Boolean> {
+    fun registerUser(email: String, password: String, name: String): Flowable<Boolean> {
 
         return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult ->
                 authResult.user?.let {
                     val user = User(
-                        authResult.user.uid,
-                        authResult.user.displayName,
-                        authResult.user.email,
-                        authResult.user.photoUrl
+                        it.uid,
+                        name,
+                        it.email
                     )
                     currentUser.onNext(user)
+                    setNameFirebase(it.uid, name, email)
                 }
                 authResult.user!= null
             }
             .toFlowable()
+    }
+
+    fun setNameFirebase(uid: String, name: String, email: String){
+        val user = User(uid, name, email)
+        usersRef.child(uid).setValue(user)
     }
 }

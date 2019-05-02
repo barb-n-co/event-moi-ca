@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_home"
-    app:startDestination="@id/my_home_fragment">
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/navigation_home"
+            app:startDestination="@id/my_home_fragment">
 
     <fragment
-        android:id="@+id/my_home_fragment"
-        android:name="com.example.event_app.ui.fragment.HomeFragment"
-        android:label="MyHomeFragment"
-        tools:layout="@layout/fragment_home" />
+            android:id="@+id/my_home_fragment"
+            android:name="com.example.event_app.ui.fragment.HomeFragment"
+            android:label="MyHomeFragment"
+            tools:layout="@layout/fragment_home">
+        <action android:id="@+id/action_my_event_fragment_to_detail_event_fragment"
+                app:destination="@id/detail_event_fragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/detail_event_fragment"
+            android:name="com.example.event_app.ui.fragment.DetailEventFragment"
+            android:label="My Detail"
+            tools:layout="@layout/fragment_detail_event">
+        <argument
+                android:name="eventId"
+                app:argType="integer" />
+        <action android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
+                app:destination="@id/detailPhotoFragment"/>
+    </fragment>
+
+    <fragment
+            android:id="@+id/detailPhotoFragment"
+            android:name="com.example.event_app.ui.fragment.DetailPhotoFragment"
+            android:label="fragment_detail_photo"
+            tools:layout="@layout/fragment_detail_photo">
+        <argument
+                android:name="photoId"
+                app:argType="integer" />
+    </fragment>
+
 
 </navigation>

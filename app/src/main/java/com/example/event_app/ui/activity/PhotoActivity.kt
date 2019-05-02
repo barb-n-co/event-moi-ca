@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -29,21 +30,23 @@ class PhotoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_photo)
 
         btn_take_photo.setOnClickListener{
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this@PhotoActivity, arrayOf(Manifest.permission.CAMERA), 1)
                 }
 
+
             }
             if (ActivityCompat.checkSelfPermission(applicationContext,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                takePhotoByCamera()
-                ActivityCompat.requestPermissions(this@PhotoActivity,
-                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_PERM_WRITE_STORAGE)
 
-            } else {
+                ActivityCompat.requestPermissions(this@PhotoActivity,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_PERM_WRITE_STORAGE)
                 takePhotoByCamera()
             }
+            //Permissions déja autorisé
+            else {takePhotoByCamera()}
         }
     }
 
@@ -82,7 +85,7 @@ class PhotoActivity : AppCompatActivity() {
     private fun saveImage(finalBitmap: Bitmap) {
 
         val root = Environment.getExternalStorageDirectory().toString()
-        val myDir = File(root + "/capture_photo")
+        val myDir = File(root + "/")
         myDir.mkdirs()
         val generator = Random()
         var n = 10000
@@ -92,7 +95,7 @@ class PhotoActivity : AppCompatActivity() {
         if (file.exists()) file.delete()
         try {
             val out = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 20, out)
             imagePath = file.absolutePath
             out.flush()
             out.close()

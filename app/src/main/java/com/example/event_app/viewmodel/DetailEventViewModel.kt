@@ -1,30 +1,46 @@
 package com.example.event_app.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.Event
+import com.example.event_app.repository.EventRepository
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.repository.EventRepository
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
-import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
 
-class DetailEventViewModel(private val eventRepository: EventRepository) : BaseViewModel() {
+class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
 
+    val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val url = "https://firebasestorage.googleapis.com/v0/b/event-moi-ca.appspot.com/o/"
 
+    fun getEventInfo(eventId: Int) {
+        eventsRepository.getEventDetail(eventId).subscribe(
+            {
+                Log.d("DetailEvent","vm"+it.name)
+                event.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
+
+    }
+
     fun fetchImagesFromFolder(url: String): Observable<Uri> {
-        return RxFirebaseStorage.getDownloadUrl(eventRepository.db.getReferenceFromUrl(fullURL(url))).toObservable()
+        return RxFirebaseStorage.getDownloadUrl(eventsRepository.db.getReferenceFromUrl(fullURL(url))).toObservable()
     }
 
     fun putImageWithBitmap(bitmap: Bitmap) {
@@ -37,7 +53,7 @@ class DetailEventViewModel(private val eventRepository: EventRepository) : BaseV
         var n = 10000
         n = generator.nextInt(n)
 
-        RxFirebaseStorage.putBytes(eventRepository.ref.child("images/image$n.png"),data).toFlowable().subscribe(
+        RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/image$n.png"),data).toFlowable().subscribe(
             {
                 Log.d("youpee", it.uploadSessionUri.toString())
             },
@@ -87,10 +103,10 @@ class DetailEventViewModel(private val eventRepository: EventRepository) : BaseV
         return intent
     }
 
-    class Factory(private val eventRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return DetailEventViewModel(eventRepository) as T
+            return DetailEventViewModel(eventsRepository) as T
         }
     }
 }

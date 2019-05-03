@@ -1,5 +1,6 @@
 package com.example.event_app.repository
 
+import android.util.Log
 import com.example.event_app.model.Event
 import com.google.firebase.database.*
 import com.example.event_app.model.Photo
@@ -17,8 +18,10 @@ object EventRepository {
     val ref = db.reference
     val allImgRef = ref.child("allImages")
     private val database = FirebaseDatabase.getInstance()
-    private val eventsRef: DatabaseReference = EventRepository.database.getReference("events")
-    private val photoRef: DatabaseReference = EventRepository.database.getReference("photos")
+
+    private val eventsRef = database.reference.child("events")
+    private val myEventsRef = database.reference.child("my-events")
+    private val photoRef = database.reference.child("photos")
 
 
     fun fetchEvents(): Flowable<List<Event>> {
@@ -27,7 +30,8 @@ object EventRepository {
         ).toFlowable()
     }
 
-    fun addEvent(event: Event) {
+    fun addEvent(idOrganizer: String, event: Event){
+        RxFirebaseDatabase.setValue(myEventsRef.child(event.idEvent), idOrganizer).subscribe()
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 
@@ -41,5 +45,6 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             photoRef.child(eventId).child(photoId.toString()), Photo::class.java
         )
+
     }
 }

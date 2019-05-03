@@ -5,15 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListEventAdapter
+import com.example.event_app.adapter.ListInvitationAdapter
 import com.example.event_app.model.Event
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.fragment_invitation.*
 import kotlinx.android.synthetic.main.fragment_myevents.*
 import org.kodein.di.direct
 import org.kodein.di.generic.instance
@@ -36,11 +38,7 @@ class MyEventsFragment : BaseFragment() {
 
         viewModel = kodein.direct.instance(arg = this)
 
-
-
         swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getEvents() }
-
-        Log.d(TAG, "fragment")
 
         viewModel.eventList.subscribe(
             {
@@ -63,6 +61,16 @@ class MyEventsFragment : BaseFragment() {
         rv_myevents_fragment.itemAnimator = DefaultItemAnimator()
         rv_myevents_fragment.adapter = adapter
         adapter.submitList(eventList)
+        swiperefresh_fragment_myevents.isRefreshing = false
+
+        adapter.refuseClickPublisher.subscribe(
+            {
+                //viewModel.acceptInvitation(it)
+                Toast.makeText(context, "Quitter événement", Toast.LENGTH_SHORT).show()
+            },
+            { Timber.e(it) }
+        ).addTo(viewDisposable)
+
         adapter.eventsClickPublisher.subscribe(
             {
                 val action = HomeFragmentDirections.actionMyEventFragmentToDetailEventFragment(it)
@@ -72,6 +80,5 @@ class MyEventsFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
-        swiperefresh_fragment_myevents.isRefreshing = false
     }
 }

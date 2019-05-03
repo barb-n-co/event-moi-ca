@@ -87,9 +87,7 @@ class DetailEventFragment: BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
-
         adapter.submitList(imageIdList)
-
     }
 
 

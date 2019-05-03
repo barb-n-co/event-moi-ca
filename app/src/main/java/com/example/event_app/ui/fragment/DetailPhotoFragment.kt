@@ -61,7 +61,7 @@ class DetailPhotoFragment : BaseFragment() {
                 Log.d("PhotoDetail", it.toString())
                 tv_auteur.text = it.auteur
                 tv_like.text = "${it.likes} Likes !!"
-                Picasso.get().load(it.url).into(iv_photo)
+                Picasso.get().load(it.url).resize(1000 ,1000).centerInside().into(iv_photo)
             },
             {
                 Timber.e(it)

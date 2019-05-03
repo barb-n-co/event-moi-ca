@@ -1,6 +1,7 @@
 package com.example.event_app.repository
 
 import android.util.Log
+import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventInvitation
 import com.example.event_app.model.Photo
@@ -8,6 +9,7 @@ import com.gojuno.koptional.toOptional
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import durdinapps.rxfirebase2.DataSnapshotMapper
@@ -33,6 +35,7 @@ object EventRepository {
     private val eventsInvitationsRef = database.reference.child("events-invitations")
     private val myEventsRef = database.reference.child("my-events")
     private val photoRef = database.reference.child("photos")
+    private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
 
     init {
         fetchEventsInvitations()
@@ -50,7 +53,7 @@ object EventRepository {
         ).toObservable()
     }
 
-    fun addEvent(idOrganizer: String, event: Event) {
+   fun addEvent(idOrganizer: String, event: Event) {
         myEventsRef.child(event.idEvent).push().setValue(idOrganizer)
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
@@ -77,5 +80,11 @@ object EventRepository {
 
     fun getCurrentEventId(): String? {
         return currentEventId
+    }
+
+    fun fetchCommentaires(photoId: Int): Flowable<List<Commentaire>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            commentsRef.child(photoId.toString()), DataSnapshotMapper.listOf(Commentaire::class.java)
+        ).toFlowable()
     }
 }

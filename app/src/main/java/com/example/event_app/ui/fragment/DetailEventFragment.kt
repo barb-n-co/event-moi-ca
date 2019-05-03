@@ -29,7 +29,6 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import org.json.JSONObject
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
@@ -66,12 +65,6 @@ class DetailEventFragment : BaseFragment() {
 
         requestPermissions()
 
-        var json = JSONObject()
-        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-        json.put("id", 42)
-        json.put("auteur", "pouet")
-        imageIdList.add(Photo(json))
-
         setFab()
 
         Log.d("DetailEvent", "event id :" + eventId)
@@ -92,8 +85,7 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.getEventInfo(eventId)
 
-        //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
-        val mGrid = GridLayoutManager(context, 2)
+        val mGrid = GridLayoutManager(context, 3)
         rv_listImage.layoutManager = mGrid
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
@@ -163,7 +155,7 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.fetchImagesFromFolder("images/image2.png").subscribe(
             { uri ->
-                imageIdList.add(Photo(JSONObject().put("url", uri.toString())))
+                imageIdList.add(Photo(uri.toString(), 0))
                 adapter.submitList(imageIdList)
                 adapter.notifyDataSetChanged()
             },
@@ -173,7 +165,11 @@ class DetailEventFragment : BaseFragment() {
             .addTo(viewDisposable)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
             takePhotoByCamera()

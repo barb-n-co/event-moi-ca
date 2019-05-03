@@ -19,12 +19,11 @@ class CustomAdapter :
 
     val photosClickPublisher: PublishSubject<Int> = PublishSubject.create()
 
-    override fun onBindViewHolder(holder: CustomAdapter.ViewHolder, position: Int) {
-        //holder.iv?.setImageResource(imageIdList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindPhoto(getItem(position))
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflateView = LayoutInflater.from(parent.context).inflate(R.layout.list_pic_event, parent, false)
         return ViewHolder(inflateView, photosClickPublisher)
     }
@@ -46,14 +45,13 @@ class CustomAdapter :
 
         fun bindPhoto(photo: Photo) {
             v.setOnClickListener {
-                Log.d("CutomAd", photo.toString())
                 photo.id?.let {
                     photosClickPublisher.onNext(photo.id!!)
                 }
             }
 
             this.photo = photo
-            Picasso.get().load(photo.url).into(iv)
+            Picasso.get().load(photo.url).resize(350,350).centerCrop().into(iv)
         }
     }
 

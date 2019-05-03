@@ -4,40 +4,34 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.Serializable
 
-class Photo (photoJSON: JSONObject) : Serializable {
+class Photo {
 
-    lateinit var url: String
-        private set
-     var id: Int? = null
-        private set
-    //var commentaires: MutableList<String> = ArrayList()
-    //    private set
-    var numberOfLike: Int = 0
-        private set
+    var url: String = ""
+    var id: Int = -1
+    var commentaires: MutableList<Commentaire> = ArrayList()
+    var likes: Int = 0
     var auteur: String =""
-    private set
 
-    init {
-        try {
-            url = photoJSON.getString(PHOTO_URL)
-            auteur = photoJSON.getString(PHOTO_AUTEUR)
-            id = photoJSON.getInt(PHOTO_ID)
-            //commentaires = photoJSON.getJSONObject("commentaire");
-            numberOfLike = photoJSON.getInt(PHOTO_LIKES)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+
+
+    constructor(url: String, id: Int, commentaires: MutableList<Commentaire>, likes: Int, auteur: String) {
+        this.url = url
+        this.id = id
+        this.commentaires = commentaires
+        this.likes = likes
+        this.auteur = auteur
     }
 
-    companion object {
-        private val PHOTO_URL = "url"
-        private val PHOTO_ID = "id"
-        private val PHOTO_AUTEUR = "auteur"
-        private val PHOTO_LIKES = "likes"
+    constructor(url: String, id: Int) {
+        this.url = url
+        this.id = id
     }
+
+    constructor() { }
+
 
     override fun toString(): String {
-        return "Photo(url='$url', id=$id, numberOfLike=$numberOfLike, auteur='$auteur')"
+        return "Photo(url='$url', id=$id, numberOfLike=$likes, auteur='$auteur')"
     }
 
 

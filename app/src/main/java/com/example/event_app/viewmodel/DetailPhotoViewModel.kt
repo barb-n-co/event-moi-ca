@@ -3,6 +3,7 @@ package com.example.event_app.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import io.reactivex.rxkotlin.addTo
@@ -11,6 +12,8 @@ import timber.log.Timber
 
 class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
+    val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+
 
     fun getPhotoDetail(eventId: String?, photoId: Int) {
         eventId?.let {
@@ -23,6 +26,16 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
                     Timber.e(it)
                 }).addTo(disposeBag)
         }
+        eventsRepository.fetchCommentaires(photoId).subscribe(
+            {
+                Log.d("DetailEvent", "getCommentaires ${it.get(0)}")
+                commentaires.onNext(it)
+            },
+            {
+
+                Timber.e(it)
+            }).addTo(disposeBag)
+
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

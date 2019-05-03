@@ -13,6 +13,7 @@ import com.example.event_app.viewmodel.DetailPhotoViewModel
 import com.squareup.picasso.Picasso
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.fragment_detail_photo.*
 
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -53,14 +54,14 @@ class DetailPhotoFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("PhotoDetail", "event : ${eventId}, photo : ${photoId}")
 
         viewModel.photo.subscribe(
             {
                 Log.d("PhotoDetail", it.toString())
                 tv_auteur.text = it.auteur
-                tv_like.text = "${it.numberOfLike} Likes !!"
+                tv_like.text = "${it.likes} Likes !!"
                 Picasso.get().load(it.url).into(iv_photo)
-
             },
             {
                 Timber.e(it)

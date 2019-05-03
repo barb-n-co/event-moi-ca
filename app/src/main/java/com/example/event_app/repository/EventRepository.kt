@@ -1,5 +1,6 @@
 package com.example.event_app.repository
 
+import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.google.firebase.database.DatabaseReference
@@ -14,6 +15,7 @@ object EventRepository {
     private val database = FirebaseDatabase.getInstance()
     private val eventsRef: DatabaseReference = EventRepository.database.getReference("events")
     private val photoRef: DatabaseReference = EventRepository.database.getReference("photos")
+    private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
 
 
     fun fetchEvents(): Flowable<List<Event>> {
@@ -36,5 +38,11 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             photoRef.child(eventId).child(photoId.toString()), Photo::class.java
         )
+    }
+
+    fun fetchCommentaires(photoId: Int): Flowable<List<Commentaire>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            commentsRef.child(photoId.toString()), DataSnapshotMapper.listOf(Commentaire::class.java)
+        ).toFlowable()
     }
 }

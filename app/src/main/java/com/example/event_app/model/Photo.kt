@@ -9,16 +9,16 @@ class Photo {
     var url: String = ""
     var id: Int = -1
     var commentaires: MutableList<Commentaire> = ArrayList()
-    var numberOfLike: Int = 0
+    var likes: Int = 0
     var auteur: String =""
 
 
 
-    constructor(url: String, id: Int, commentaires: MutableList<Commentaire>, numberOfLike: Int, auteur: String) {
+    constructor(url: String, id: Int, commentaires: MutableList<Commentaire>, likes: Int, auteur: String) {
         this.url = url
         this.id = id
         this.commentaires = commentaires
-        this.numberOfLike = numberOfLike
+        this.likes = likes
         this.auteur = auteur
     }
 
@@ -27,16 +27,11 @@ class Photo {
         this.id = id
     }
 
+    constructor() { }
 
-    companion object {
-        private val PHOTO_URL = "url"
-        private val PHOTO_ID = "id"
-        private val PHOTO_AUTEUR = "auteur"
-        private val PHOTO_LIKES = "likes"
-    }
 
     override fun toString(): String {
-        return "Photo(url='$url', id=$id, numberOfLike=$numberOfLike, auteur='$auteur')"
+        return "Photo(url='$url', id=$id, numberOfLike=$likes, auteur='$auteur')"
     }
 
 

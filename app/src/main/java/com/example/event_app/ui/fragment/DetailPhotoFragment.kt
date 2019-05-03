@@ -13,6 +13,7 @@ import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
+import kotlinx.android.synthetic.main.fragment_detail_photo.*
 
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -59,8 +60,6 @@ class DetailPhotoFragment : BaseFragment() {
         viewModel.photo.subscribe(
             {
                 Log.d("PhotoDetail", it.toString())
-                tv_n
-
             },
             {
                 Timber.e(it)

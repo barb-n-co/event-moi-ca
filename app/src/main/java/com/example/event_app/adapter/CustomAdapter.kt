@@ -1,5 +1,6 @@
 package com.example.event_app.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,7 @@ class CustomAdapter :
 
         fun bindPhoto(photo: Photo) {
             v.setOnClickListener {
+                Log.d("CutomAd", photo.toString())
                 photo.id?.let {
                     photosClickPublisher.onNext(photo.id!!)
                 }

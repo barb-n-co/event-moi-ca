@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -19,9 +20,9 @@ import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
 import org.kodein.di.generic.instance
 
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), HomeInterface {
 
-    private val viewModel : HomeFragmentViewModel by instance()
+    private val viewModel : HomeFragmentViewModel by instance(arg = this)
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
@@ -44,7 +45,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setFab() {
-        fabmenu.setMenuListener(object : SimpleMenuListenerAdapter() {
+        fabmenu_home.setMenuListener(object : SimpleMenuListenerAdapter() {
             override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
                 this@HomeFragment.onOptionsItemSelected(menuItem)
         })
@@ -85,4 +86,12 @@ class HomeFragment : BaseFragment() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_home))
     }
+
+    override fun getInvitation(idEvent: String) {
+        viewModel.addInvitation(idEvent)
+    }
+}
+
+interface HomeInterface {
+    fun getInvitation(idEvent: String)
 }

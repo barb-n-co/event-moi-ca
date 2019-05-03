@@ -1,21 +1,21 @@
 package com.example.event_app.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.model.Event
-import com.example.event_app.repository.EventRepository
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.Event
+import com.example.event_app.repository.EventRepository
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -27,7 +27,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val url = "https://firebasestorage.googleapis.com/v0/b/event-moi-ca.appspot.com/o/"
 
-    fun getEventInfo(eventId: Int) {
+    fun getEventInfo(eventId: String) {
         eventsRepository.getEventDetail(eventId).subscribe(
             {
                 Log.d("DetailEvent","vm"+it.name)

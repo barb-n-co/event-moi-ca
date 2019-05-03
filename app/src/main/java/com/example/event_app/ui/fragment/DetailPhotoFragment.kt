@@ -12,14 +12,10 @@ import com.example.event_app.model.Photo
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.android.synthetic.main.fragment_detail_event.*
-import kotlinx.android.synthetic.main.fragment_detail_photo.*
 
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 

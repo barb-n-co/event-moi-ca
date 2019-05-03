@@ -41,14 +41,14 @@ class DetailEventFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        json.put("url","https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-        json.put("id",1)
-        json2.put("url","https://rickandmortyapi.com/api/character/avatar/2.jpeg")
-        json2.put("id",2)
+        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+        json.put("id", 1)
+        json2.put("url", "https://rickandmortyapi.com/api/character/avatar/2.jpeg")
+        json2.put("id", 2)
 
-        json3.put("url","https://rickandmortyapi.com/api/character/avatar/3.jpeg")
-        json4.put("url","https://rickandmortyapi.com/api/character/avatar/4.jpeg")
-        json5.put("url","https://rickandmortyapi.com/api/character/avatar/5.jpeg")
+        json3.put("url", "https://rickandmortyapi.com/api/character/avatar/3.jpeg")
+        json4.put("url", "https://rickandmortyapi.com/api/character/avatar/4.jpeg")
+        json5.put("url", "https://rickandmortyapi.com/api/character/avatar/5.jpeg")
 
 
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
@@ -71,7 +71,6 @@ class DetailEventFragment : BaseFragment() {
         imageIdList.add(Photo(json5))
 
 
-
         val adapter = CustomAdapter()
         //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         val mGrid = GridLayoutManager(context, 2)
@@ -87,11 +86,6 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
-
         adapter.submitList(imageIdList)
-
     }
-
-
-
 }

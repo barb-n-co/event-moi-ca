@@ -27,7 +27,7 @@ object EventRepository {
 
     fun addEvent(idOrganizer: String, event: Event){
         RxFirebaseDatabase.setValue(myEventsRef.child(event.idEvent), idOrganizer).subscribe()
-        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent).child("participants"), event).subscribe()
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

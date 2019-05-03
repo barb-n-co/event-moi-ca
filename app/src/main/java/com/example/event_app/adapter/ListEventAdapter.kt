@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.item_myevent.view.*
 
 class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(DiffCardCallback()) {
 
-    val eventsClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    val eventsClickPublisher: PublishSubject<String> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_myevent, parent, false)
@@ -25,7 +25,7 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Di
         holder.bind(getItem(position))
     }
 
-    inner class EventViewHolder(itemView: View, private val eventsClickPublisher: PublishSubject<Int>) :
+    inner class EventViewHolder(itemView: View, private val eventsClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(event: Event) {
@@ -40,7 +40,7 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Di
             bindPositionClick(event.idEvent)
         }
 
-        private fun bindPositionClick(idEvent: Int) {
+        private fun bindPositionClick(idEvent: String) {
             itemView.setOnClickListener {
                 eventsClickPublisher.onNext(idEvent)
             }

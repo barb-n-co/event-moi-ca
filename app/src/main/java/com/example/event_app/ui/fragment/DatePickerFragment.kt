@@ -24,7 +24,9 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
         val date = Calendar.getInstance()
-        date.set(year, month, day)
+        date.set(Calendar.YEAR, year)
+        date.set(Calendar.MONTH, month)
+        date.set(Calendar.DAY_OF_MONTH, day)
 
         val intent = Intent()
         intent.putExtra("args", date)

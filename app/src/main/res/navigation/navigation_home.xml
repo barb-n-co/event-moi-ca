@@ -31,7 +31,7 @@
             tools:layout="@layout/fragment_detail_event">
         <argument
                 android:name="eventId"
-                app:argType="integer" />
+                app:argType="string" />
         <action android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
                 app:destination="@id/detailPhotoFragment"/>
     </fragment>

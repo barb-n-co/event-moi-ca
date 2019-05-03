@@ -1,7 +1,8 @@
 package com.example.event_app.model
 
 class Event {
-        var idEvent: Int = 0
+        var idEvent: String = ""
+        var organizer: String = ""
         var name: String = ""
         var description: String? = null
         var dateStart: String = ""
@@ -9,8 +10,9 @@ class Event {
 
         constructor() { }
 
-        constructor(idEvent: Int, name: String, description: String?, dateStart: String, dateEnd: String) {
+        constructor(idEvent: String, organizer: String, name: String, description: String?, dateStart: String, dateEnd: String) {
                 this.idEvent = idEvent
+                this.organizer = organizer
                 this.name = name
                 this.description = description
                 this.dateStart = dateStart

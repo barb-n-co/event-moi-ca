@@ -1,5 +1,6 @@
 package com.example.event_app.repository
 
+import android.util.Log
 import com.example.event_app.model.Event
 import com.google.firebase.database.*
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -16,5 +17,9 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsRef, DataSnapshotMapper.listOf(Event::class.java)
         ).toFlowable()
+    }
+
+    fun addEvent(event: Event){
+        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 }

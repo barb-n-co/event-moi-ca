@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import java.util.*
 import kotlin.math.min
 
-class TimePickerFragment: DialogFragment(), TimePickerDialog.OnTimeSetListener {
+class TimePickerFragment(): DialogFragment(), TimePickerDialog.OnTimeSetListener {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val c = Calendar.getInstance()
@@ -23,7 +23,8 @@ class TimePickerFragment: DialogFragment(), TimePickerDialog.OnTimeSetListener {
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         val date = Calendar.getInstance()
-        date.set(hourOfDay, minute)
+        date.set(Calendar.HOUR, hourOfDay)
+        date.set(Calendar.MINUTE, minute)
 
         val intent = Intent()
         intent.putExtra("args", date)

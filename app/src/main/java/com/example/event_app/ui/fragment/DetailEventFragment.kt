@@ -56,7 +56,7 @@ class DetailEventFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var mockEvent = Event(42, "MockEvent", loremIpsum, "Maintenant", "Jamais !!")
+        var mockEvent = Event("42", "Orga","MockEvent", loremIpsum, "Maintenant", "Jamais !!")
 
         tv_eventOrga.text = "Tritri"
         tv_eventName.text = mockEvent.name

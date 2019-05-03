@@ -35,10 +35,13 @@
     <string name="fab_add_event_title">Ajouter un évènement</string>
 
     <!-- Add Event Fragment -->
-    <string name="tv_name_add_event_fragment">Nom</string>
+    <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>
+    <string name="tv_name_add_event_fragment">Nom de l\'évènement</string>
     <string name="tv_description_add_event_fragment">Description</string>
     <string name="chip_date_start_add_event_fragment">Choisir la date de début</string>
     <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
+    <string name="b_validate_add_event_fragment">Créer l\'évènement</string>
+    <string name="error_empty_field_add_event_fragment">Vous n\'avez pas complété tous les champs</string>
 
   <string name="disconnection">Déconnexion</string>
 

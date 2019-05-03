@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
                                                    android:layout_width="match_parent"
-                                                   android:layout_height="match_parent"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto">
+                                                   android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_name_add_event_fragment"
+            android:id="@+id/til_organizer_add_event_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -16,12 +16,33 @@
             app:layout_constraintTop_toTopOf="parent">
 
         <EditText
+                android:id="@+id/et_organizer_add_event_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/tv_organizer_add_event_fragment"
+                android:maxLength="100"
+                android:inputType="text"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_name_add_event_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/til_organizer_add_event_fragment">
+
+        <EditText
                 android:id="@+id/et_name_add_event_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/tv_name_add_event_fragment"
                 android:maxLength="100"
-                android:inputType="textEmailAddress"/>
+                android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,23 +63,23 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/tv_description_add_event_fragment"
                 android:maxLength="100"
-                android:inputType="textPassword"/>
+                android:inputType="textMultiLine"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.chip.Chip
-        android:id="@+id/chip_date_start_add_event_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/chip_date_start_add_event_fragment"
-        android:textColor="@color/white"
-        app:chipBackgroundColor="@color/colorAccent"
-        app:chipIcon="@drawable/ic_calendar"
-        app:chipStartPadding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/til_description_add_event_fragment" />
+            android:id="@+id/chip_date_start_add_event_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/chip_date_start_add_event_fragment"
+            android:textColor="@color/white"
+            app:chipBackgroundColor="@color/colorAccent"
+            app:chipIcon="@drawable/ic_calendar"
+            app:chipStartPadding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/til_description_add_event_fragment"/>
 
     <com.google.android.material.chip.Chip
             android:id="@+id/chip_date_end_add_event_fragment"
@@ -72,6 +93,16 @@
             app:chipStartPadding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/chip_date_start_add_event_fragment" />
+            app:layout_constraintTop_toBottomOf="@id/chip_date_start_add_event_fragment"/>
+
+    <Button
+            android:id="@+id/b_validate_add_event_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/b_validate_add_event_fragment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

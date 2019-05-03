@@ -67,7 +67,7 @@ class AddEventFragment : BaseFragment() {
             val endDateString = getDateToString(dateEnd)
 
             if(dateEnd != null && dateStart != null && organizer.isNotEmpty() && name.isNotEmpty()){
-                viewModel.addEventFragment(Event(id, organizer, name, description, startDateString, endDateString))
+                viewModel.addEventFragment(id, organizer, name, description, startDateString, endDateString)
                 fragmentManager?.popBackStack()
             } else {
                 Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT).show()

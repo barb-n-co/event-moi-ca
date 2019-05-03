@@ -70,6 +70,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        super.onBackPressed()
+        return true
+    }
+
     fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }

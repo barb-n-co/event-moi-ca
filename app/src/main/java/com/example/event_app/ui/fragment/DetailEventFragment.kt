@@ -94,11 +94,12 @@ class DetailEventFragment : BaseFragment() {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
             }
         }
-        imageIdList.add(Photo("https://picsum.photos/id/176/200/300",1))
+        imageIdList.add(Photo("https://picsum.photos/id/176/200/300",42))
         imageIdList.add(Photo("https://picsum.photos/id/223/200/300",2))
         imageIdList.add(Photo("https://picsum.photos/id/27/300/300",3))
         imageIdList.add(Photo("https://picsum.photos/id/340/200/200",4))
         imageIdList.add(Photo("https://picsum.photos/id/267/300/200",5))
+        imageIdList.add(Photo("https://picsum.photos/id/267/300/300",5))
 
         viewModel.event.subscribe(
             {
@@ -117,16 +118,7 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.getEventInfo(eventId)
 
-//        val layoutManager = StaggeredGridLayoutManager(
-//            2, StaggeredGridLayoutManager.VERTICAL
-//        )
-//        layoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
-//        layoutManager.isItemPrefetchEnabled = true
-//
-//        rv_listImage.itemAnimator = null
-//        rv_listImage.layoutManager = layoutManager
-
-        val mGrid = GridLayoutManager(context, 2)
+        val mGrid = GridLayoutManager(context, 3)
         rv_listImage.layoutManager = mGrid
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)

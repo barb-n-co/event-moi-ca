@@ -45,14 +45,13 @@ class CustomAdapter :
 
         fun bindPhoto(photo: Photo) {
             v.setOnClickListener {
-                Log.d("CutomAd", photo.toString())
-/*                photo.id?.let {
+                photo.id?.let {
                     photosClickPublisher.onNext(photo.id!!)
-                }*/
+                }
             }
 
             this.photo = photo
-            Picasso.get().load(photo.url).into(iv)
+            Picasso.get().load(photo.url).resize(350,350).centerCrop().into(iv)
         }
     }
 

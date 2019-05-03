@@ -9,7 +9,7 @@ class Event {
         var dateStart: String = ""
         var dateEnd: String = ""
 
-    constructor() {}
+    constructor() { }
 
         constructor(idEvent: String, idOrganizer: String?, organizer: String, name: String, description: String?, dateStart: String, dateEnd: String) {
                 this.idEvent = idEvent

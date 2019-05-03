@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
@@ -68,6 +69,16 @@ class MyEventsFragment : BaseFragment() {
                 Toast.makeText(context, "Quitter événement", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        adapter.eventsClickPublisher.subscribe(
+            {
+                val action = HomeFragmentDirections.actionMyEventFragmentToDetailEventFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
         ).addTo(viewDisposable)
     }
 }

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.item_myevent.view.*
 
 class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(ListEventAdapter.DiffCardCallback()) {
 
-    private val eventsClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    val eventsClickPublisher: PublishSubject<Int> = PublishSubject.create()
     val refuseClickPublisher: PublishSubject<Int> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {

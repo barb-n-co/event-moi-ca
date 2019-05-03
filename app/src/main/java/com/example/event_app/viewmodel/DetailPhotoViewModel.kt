@@ -9,20 +9,22 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
-class DetailPhotoViewModel (private val eventsRepository: EventRepository) : BaseViewModel()  {
+class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
 
-    fun getPhotoDetail(eventId: String, photoId: Int) {
-        eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
-            {
-                Log.d("DetailEvent","vm"+it.url)
-                photo.onNext(it)
-            },
-            {
-                Timber.e(it)
-            }).addTo(disposeBag)
-
+    fun getPhotoDetail(eventId: String?, photoId: Int) {
+        eventId?.let {
+            eventsRepository.getPhotoDetail(it, photoId).subscribe(
+                { it ->
+                    Log.d("DetailEvent", "vm" + it.url)
+                    photo.onNext(it)
+                },
+                { it ->
+                    Timber.e(it)
+                }).addTo(disposeBag)
+        }
     }
+
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")

@@ -13,20 +13,19 @@ import kotlinx.android.synthetic.main.item_invitation.view.*
 
 class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventViewHolder>(DiffCardCallback()) {
 
-    private val eventsClickPublisher: PublishSubject<String> = PublishSubject.create()
     val acceptClickPublisher: PublishSubject<String> = PublishSubject.create()
     val refuseClickPublisher: PublishSubject<String> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_invitation, parent, false)
-        return EventViewHolder(view, eventsClickPublisher)
+        return EventViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class EventViewHolder(itemView: View, private val eventsClickPublisher: PublishSubject<String>) :
+    inner class EventViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(event: Event) {
@@ -41,14 +40,6 @@ class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventView
 
             itemView.b_refuse_invitation_item.setOnClickListener {
                 refuseClickPublisher.onNext(event.idEvent)
-            }
-
-            bindPositionClick(event.idEvent)
-        }
-
-        private fun bindPositionClick(idEvent: String) {
-            itemView.setOnClickListener {
-                eventsClickPublisher.onNext(idEvent)
             }
         }
     }

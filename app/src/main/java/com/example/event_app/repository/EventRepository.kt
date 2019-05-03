@@ -22,6 +22,10 @@ object EventRepository {
         ).toFlowable()
     }
 
+    fun addEvent(event: Event) {
+        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+    }
+
     fun getEventDetail(eventId: String): Maybe<Event> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsRef.child(eventId), Event::class.java

@@ -21,7 +21,9 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-class DetailEventFragment : BaseFragment() {
+
+
+class DetailEventFragment: BaseFragment() {
     private var eventId: String = ""
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val viewModel: DetailEventViewModel by instance(arg = this)
@@ -89,6 +91,8 @@ class DetailEventFragment : BaseFragment() {
         ).addTo(viewDisposable)
         adapter.submitList(imageIdList)
     }
+
+
 
 
 }

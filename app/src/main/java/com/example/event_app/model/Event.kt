@@ -6,20 +6,20 @@ class Event {
     var description: String? = null
     var dateStart: String = ""
     var dateEnd: String = ""
-    var organiser: String = ""
+    var organizer: String = ""
 
     constructor() {}
 
     constructor(
         idEvent: Int,
-        organiser: String,
+        organizer: String,
         name: String,
         description: String?,
         dateStart: String,
         dateEnd: String
     ) {
         this.idEvent = idEvent
-        this.organiser = organiser
+        this.organizer = organizer
         this.name = name
         this.description = description
         this.dateStart = dateStart

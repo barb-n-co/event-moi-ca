@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.viewmodel.DetailPhotoViewModel
+import com.squareup.picasso.Picasso
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
@@ -60,6 +61,10 @@ class DetailPhotoFragment : BaseFragment() {
         viewModel.photo.subscribe(
             {
                 Log.d("PhotoDetail", it.toString())
+                tv_auteur.text = it.auteur
+                tv_like.text = "${it.numberOfLike} Likes !!"
+                Picasso.get().load(it.url).into(iv_photo)
+
             },
             {
                 Timber.e(it)

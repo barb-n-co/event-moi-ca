@@ -53,14 +53,15 @@ class DetailEventFragment: BaseFragment() {
         json.put("url","https://rickandmortyapi.com/api/character/avatar/1.jpeg")
         json.put("id",42)
         json.put("auteur", "pouet")
-        imageIdList.add(Photo(json))
+        var photo = Photo("https://rickandmortyapi.com/api/character/avatar/1.jpeg", 42)
+        imageIdList.add(photo)
 
         Log.d("DetailEvent", "event id :"+ eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
                 tv_eventDescription.text = it.description
-                tv_eventOrga.text = it.organiser
+                tv_eventOrga.text = it.organizer
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
 

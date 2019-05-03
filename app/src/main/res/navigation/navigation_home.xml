@@ -21,7 +21,7 @@
             tools:layout="@layout/fragment_detail_event">
         <argument
                 android:name="eventId"
-                app:argType="integer" />
+                app:argType="integer"/>
         <action android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
                 app:destination="@id/detailPhotoFragment"/>
     </fragment>
@@ -31,9 +31,12 @@
             android:name="com.example.event_app.ui.fragment.DetailPhotoFragment"
             android:label="fragment_detail_photo"
             tools:layout="@layout/fragment_detail_photo">
+        <argument android:name="eventId"
+                  app:argType="integer"/>
         <argument
                 android:name="photoId"
-                app:argType="integer" />
+                app:argType="integer"
+        />
     </fragment>
 
 

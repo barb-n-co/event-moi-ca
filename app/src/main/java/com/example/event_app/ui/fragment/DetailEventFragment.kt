@@ -119,7 +119,6 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.getEventInfo(eventId)
 
-        val adapter = CustomAdapter()
         //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         val mGrid = GridLayoutManager(context, 2)
         rv_listImage.layoutManager = mGrid

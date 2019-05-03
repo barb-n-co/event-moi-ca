@@ -64,6 +64,10 @@ class DetailEventFragment : BaseFragment() {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
+        eventId?.let {
+            viewModel.initPhotoEventListener(it)
+        }
+
         requestPermissions()
 
         val json = JSONObject()
@@ -214,5 +218,12 @@ class DetailEventFragment : BaseFragment() {
 
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        eventId?.let {
+            viewModel.removeListener(it)
+        }
+    }
 
 }

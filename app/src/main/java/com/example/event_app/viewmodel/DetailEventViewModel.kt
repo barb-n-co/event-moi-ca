@@ -11,6 +11,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.addTo
@@ -28,6 +31,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val url = "https://firebasestorage.googleapis.com/v0/b/event-moi-ca.appspot.com/o/"
+    private var listener : ChildEventListener? = null
+    private var imageList : MutableList<String> = mutableListOf()
 
     fun getEventInfo(eventId: String) {
         eventsRepository.getEventDetail(eventId).subscribe(
@@ -39,6 +44,45 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
                 Timber.e(it)
             }).addTo(disposeBag)
 
+    }
+
+    fun removeListener(id: String) {
+        eventsRepository.allEvents.child(id).child("images").removeEventListener(listener!!)
+    }
+
+    fun initPhotoEventListener(id: String) {
+
+        listener = object : ChildEventListener {
+
+            override fun onCancelled(p0: DatabaseError) {
+                Timber.d("onCancelled" + p0.message)
+            }
+
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                val result = p0.value as String
+                Timber.d("onChildMoved" + result )
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                val result = p0.value as String
+                Timber.d("onChildChanged" + result )
+
+            }
+
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                val result = p0.value as String
+                Timber.d("onChildAdded" + result )
+                imageList.add(result)
+
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                val result = p0.value as String
+                Timber.d("onChildRemoved" + result )
+            }
+
+        }
+        eventsRepository.allEvents.child(id).child("images").addChildEventListener(listener!!)
     }
 
     fun fetchImagesFromFolder(url: String): Observable<Uri> {

@@ -9,9 +9,7 @@ import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.LoginViewModel
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_signup.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 

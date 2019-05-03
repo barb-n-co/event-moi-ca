@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+>
     <androidx.core.widget.NestedScrollView
             android:orientation="vertical"
             tools:context=".ui.fragment.DetailEventFragment"
@@ -118,6 +119,88 @@
                     android:layout_marginBottom="80dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView
+    >
+
+    <androidx.core.widget.NestedScrollView
+            android:id="@+id/bottomSheetScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:clipToPadding="true"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="0dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp">
+
+            <ImageButton
+                    android:id="@+id/btn_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_camera"
+                    android:backgroundTint="@color/colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/camera_text"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/btn_gallery"
+            />
+
+            <TextView
+                    android:id="@+id/camera_text"
+                    android:text="Prendre une photo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/btn_camera"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btn_camera"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_camera"
+            />
+
+            <ImageButton
+                    android:id="@+id/btn_gallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_galery"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/gallery_text"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_camera"
+                    app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+            <TextView
+                    android:id="@+id/gallery_text"
+                    android:text="Choisir une photo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/btn_gallery"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btn_gallery"
+                    app:layout_constraintBottom_toBottomOf="@id/btn_gallery"
+            />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            app:maxImageSize="42dp"
+            android:layout_margin="24dp"
+            app:srcCompat="@drawable/ic_add_white"
+            android:hapticFeedbackEnabled="true"
+            android:layout_gravity="bottom|end"/>
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

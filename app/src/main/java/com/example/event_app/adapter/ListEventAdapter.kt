@@ -32,7 +32,7 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Li
             //disposition
             itemView.tv_name_myevent_item.text = event.name
             itemView.tv_description_myevent_item.text = event.description
-            itemView.tv_startDate_myevent_item.text = "Du " + event.dateStart + " au " + event.dateEnd
+            itemView.tv_startDate_myevent_item.text = "Du ${event.dateStart} au  ${event.dateEnd}"
 
             itemView.b_refuse_myevent_item.setOnClickListener {
                 refuseClickPublisher.onNext(event.idEvent)

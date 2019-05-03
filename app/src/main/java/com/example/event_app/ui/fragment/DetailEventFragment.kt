@@ -21,10 +21,8 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-
-
-class DetailEventFragment: BaseFragment() {
-    private var eventId: Int = -1
+class DetailEventFragment : BaseFragment() {
+    private var eventId: String = ""
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val viewModel: DetailEventViewModel by instance(arg = this)
 
@@ -40,7 +38,7 @@ class DetailEventFragment: BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        eventId = arguments?.let{
+        eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }!!
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
@@ -48,22 +46,24 @@ class DetailEventFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setDisplayHomeAsUpEnabled(true)
 
         var json = JSONObject()
-        json.put("url","https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-        json.put("id",42)
+        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+        json.put("id", 42)
         json.put("auteur", "pouet")
         imageIdList.add(Photo(json))
 
-        Log.d("DetailEvent", "event id :"+ eventId)
+        Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
                 tv_eventDescription.text = it.description
-                tv_eventOrga.text = it.organisation
+                tv_eventOrga.text = it.organizer
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
 
+                setTitleToolbar(it.name)
             },
             {
                 Timber.e(it)
@@ -89,8 +89,6 @@ class DetailEventFragment: BaseFragment() {
         ).addTo(viewDisposable)
         adapter.submitList(imageIdList)
     }
-
-
 
 
 }

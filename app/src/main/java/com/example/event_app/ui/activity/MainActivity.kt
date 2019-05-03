@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.viewmodel.MainActivityViewModel
 import org.kodein.di.generic.instance
@@ -57,6 +58,11 @@ class MainActivity : BaseActivity() {
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onBackPressed() {
+        supportFragmentManager.popBackStack()
+        finish()
     }
 }
 

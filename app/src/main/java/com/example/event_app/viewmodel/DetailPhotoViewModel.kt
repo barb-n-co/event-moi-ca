@@ -12,7 +12,7 @@ import timber.log.Timber
 class DetailPhotoViewModel (private val eventsRepository: EventRepository) : BaseViewModel()  {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
 
-    fun getPhotoDetail(eventId: Int, photoId: Int) {
+    fun getPhotoDetail(eventId: String, photoId: Int) {
         eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
             {
                 Log.d("DetailEvent","vm"+it.url)

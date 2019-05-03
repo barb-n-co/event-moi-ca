@@ -22,16 +22,15 @@ object EventRepository {
         ).toFlowable()
     }
 
-    fun getEventDetail(eventId: Int): Maybe<Event> {
+    fun getEventDetail(eventId: String): Maybe<Event> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            eventsRef.child(eventId.toString()), Event::class.java
+            eventsRef.child(eventId), Event::class.java
         )
     }
 
-    fun getPhotoDetail(eventId: Int, photoId: Int): Maybe<Photo> {
+    fun getPhotoDetail(eventId: String, photoId: Int): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            photoRef.child(eventId.toString()).child(photoId.toString()), Photo::class.java
+            photoRef.child(eventId).child(photoId.toString()), Photo::class.java
         )
-
     }
 }

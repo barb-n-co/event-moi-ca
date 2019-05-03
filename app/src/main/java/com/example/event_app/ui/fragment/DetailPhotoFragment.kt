@@ -29,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class DetailPhotoFragment : BaseFragment() {
 
-    private var eventId: Int = -1
+    private var eventId: String = ""
     private var photoId: Int = -1
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)

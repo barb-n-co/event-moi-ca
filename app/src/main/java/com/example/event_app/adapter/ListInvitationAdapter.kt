@@ -13,9 +13,9 @@ import kotlinx.android.synthetic.main.item_invitation.view.*
 
 class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventViewHolder>(DiffCardCallback()) {
 
-    private val eventsClickPublisher: PublishSubject<Int> = PublishSubject.create()
-    val acceptClickPublisher: PublishSubject<Int> = PublishSubject.create()
-    val refuseClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    private val eventsClickPublisher: PublishSubject<String> = PublishSubject.create()
+    val acceptClickPublisher: PublishSubject<String> = PublishSubject.create()
+    val refuseClickPublisher: PublishSubject<String> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_invitation, parent, false)
@@ -26,7 +26,7 @@ class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventView
         holder.bind(getItem(position))
     }
 
-    inner class EventViewHolder(itemView: View, private val eventsClickPublisher: PublishSubject<Int>) :
+    inner class EventViewHolder(itemView: View, private val eventsClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(event: Event) {
@@ -46,7 +46,7 @@ class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventView
             bindPositionClick(event.idEvent)
         }
 
-        private fun bindPositionClick(idEvent: Int) {
+        private fun bindPositionClick(idEvent: String) {
             itemView.setOnClickListener {
                 eventsClickPublisher.onNext(idEvent)
             }

@@ -2,6 +2,7 @@ package com.example.event_app
 
 import android.app.Application
 import android.content.Context
+import com.example.event_app.injection.managerModule
 import com.example.event_app.injection.repoModule
 import com.example.event_app.injection.viewModelModule
 import org.kodein.di.Kodein
@@ -20,6 +21,7 @@ class App : Application(), KodeinAware {
 
         import(repoModule)
         import(viewModelModule)
+        import(managerModule)
     }
 
     override fun onCreate() {

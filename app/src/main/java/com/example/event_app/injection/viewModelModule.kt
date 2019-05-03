@@ -47,4 +47,10 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
         ViewModelProvider(fragment, instance<LoginViewModel.Factory>())
             .get(LoginViewModel::class.java)
     }
+
+    bind<AddEventFragmentViewModel.Factory>() with provider { AddEventFragmentViewModel.Factory(instance()) }
+    bind<AddEventFragmentViewModel>() with factory { fragment: Fragment ->
+        ViewModelProvider(fragment, instance<AddEventFragmentViewModel.Factory>())
+            .get(AddEventFragmentViewModel::class.java)
+    }
 }

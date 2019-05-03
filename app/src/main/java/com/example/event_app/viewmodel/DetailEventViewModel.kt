@@ -12,7 +12,7 @@ import timber.log.Timber
 class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
 
-    fun getEventInfo(eventId: Int) {
+    fun getEventInfo(eventId: String) {
         eventsRepository.getEventDetail(eventId).subscribe(
             {
                 Log.d("DetailEvent","vm"+it.name)

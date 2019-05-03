@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:id="@+id/navigation_home"
-            app:startDestination="@id/my_home_fragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_home"
+    app:startDestination="@id/my_home_fragment">
 
     <fragment
-            android:id="@+id/my_home_fragment"
-            android:name="com.example.event_app.ui.fragment.HomeFragment"
-            android:label="MyHomeFragment"
-            tools:layout="@layout/fragment_home">
+        android:id="@+id/my_home_fragment"
+        android:name="com.example.event_app.ui.fragment.HomeFragment"
+        android:label="MyHomeFragment"
+        tools:layout="@layout/fragment_home" >
+        <action android:id="@+id/action_my_home_fragment_to_add_event_fragment"
+                app:destination="@id/add_event_fragment" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_my_event_fragment_to_detail_event_fragment"
                 app:destination="@id/detail_event_fragment"/>
     </fragment>
+
+    <fragment
+            android:id="@+id/add_event_fragment"
+            android:name="com.example.event_app.ui.fragment.AddEventFragment"
+            android:label="AddEventFragment"
+            tools:layout="@layout/fragment_add_event" />
 
     <fragment
             android:id="@+id/detail_event_fragment"
@@ -21,7 +31,7 @@
             tools:layout="@layout/fragment_detail_event">
         <argument
                 android:name="eventId"
-                app:argType="integer"/>
+                app:argType="string" />
         <action android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
                 app:destination="@id/detailPhotoFragment"/>
     </fragment>
@@ -32,7 +42,7 @@
             android:label="fragment_detail_photo"
             tools:layout="@layout/fragment_detail_photo">
         <argument android:name="eventId"
-                  app:argType="integer"/>
+                  app:argType="string"/>
         <argument
                 android:name="photoId"
                 app:argType="integer"

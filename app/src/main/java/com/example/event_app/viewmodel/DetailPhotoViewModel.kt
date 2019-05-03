@@ -12,16 +12,17 @@ import timber.log.Timber
 class DetailPhotoViewModel (private val eventsRepository: EventRepository) : BaseViewModel()  {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
 
-    fun getPhotoDetail(eventId: Int, photoId: Int) {
-        eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
-            {
-                Log.d("DetailEvent","vm"+it.url)
-                photo.onNext(it)
-            },
-            {
-                Timber.e(it)
-            }).addTo(disposeBag)
-
+    fun getPhotoDetail(eventId: String?, photoId: Int) {
+        eventId?.let {
+            eventsRepository.getPhotoDetail(it, photoId).subscribe(
+                {
+                    Log.d("DetailEvent","vm"+it.url)
+                    photo.onNext(it)
+                },
+                {
+                    Timber.e(it)
+                }).addTo(disposeBag)
+        }
     }
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -21,10 +21,10 @@ import java.util.*
 class PhotoFragment : BaseFragment() {
     companion object {
         const val TAG = "PHOTOFRAGMENT"
-        private val PERMISSION_ALL = 1
-        private val PERMISSION_IMPORT = 2
-        private val IMAGE_PICK_CODE = 1000
-        private val CAPTURE_PHOTO = 104
+        private const val PERMISSION_ALL = 1
+        private const val PERMISSION_IMPORT = 2
+        private const val IMAGE_PICK_CODE = 1000
+        private const val CAPTURE_PHOTO = 104
         private var imagePath: String? = ""
         fun newInstance(): PhotoFragment = PhotoFragment()
     }

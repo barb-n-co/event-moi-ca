@@ -24,7 +24,7 @@ import timber.log.Timber
 
 
 class DetailEventFragment: BaseFragment() {
-    private var eventId: Int = -1
+    private var eventId: String = ""
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private val viewModel: DetailEventViewModel by instance(arg = this)
 

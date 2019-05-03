@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.tabs.TabLayout
             android:id="@+id/tl_invites_events_home_fragment"
@@ -37,13 +37,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tl_invites_events_home_fragment"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_fragment_home"
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fabmenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            app:fabBackgroundTint="@color/colorAccent"
+            app:fabDrawable="@drawable/ic_menu_fab"
+            app:fabGravity="bottom_end"
+            app:fabMenu="@menu/menu_fab"
+            tools:ignore="MissingPrefix"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="16dp"
-            app:fabSize="normal"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

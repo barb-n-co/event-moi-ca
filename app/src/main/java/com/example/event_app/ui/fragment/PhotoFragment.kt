@@ -102,6 +102,8 @@ class PhotoFragment : BaseFragment() {
                 }
 
                 IMAGE_PICK_CODE ->{
+                    //TODO: to test
+                    //returnIntent?.extras!!.get("data") as Bitmap
 
                     imgv_capture_image_preview.setImageURI(returnIntent?.data)
                 }

@@ -6,7 +6,7 @@ class Event {
     var description: String? = null
     var dateStart: String = ""
     var dateEnd: String = ""
-    var organiser: String = ""
+    var organisation: String = ""
 
     constructor() {}
 
@@ -19,7 +19,7 @@ class Event {
         dateEnd: String
     ) {
         this.idEvent = idEvent
-        this.organiser = organiser
+        this.organisation = organiser
         this.name = name
         this.description = description
         this.dateStart = dateStart

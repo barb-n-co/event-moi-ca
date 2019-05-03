@@ -60,7 +60,7 @@ class DetailEventFragment: BaseFragment() {
             {
                 tv_eventName.text = it.name
                 tv_eventDescription.text = it.description
-                tv_eventOrga.text = it.organiser
+                tv_eventOrga.text = it.organisation
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
 

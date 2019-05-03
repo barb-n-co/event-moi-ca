@@ -43,11 +43,17 @@
     <string name="b_validate_add_event_fragment">Créer l\'évènement</string>
     <string name="error_empty_field_add_event_fragment">Vous n\'avez pas complété tous les champs</string>
 
+    <!-- Detail Event Fragment -->
+    <string name="fab_generate_qrcode_detail_event_fragment">Générer un QR Code</string>
+    <string name="fab_camera_detail_event_fragment">Prendre une photo</string>
+    <string name="fab_gallery_detail_event_fragment">Choisir une photo</string>
+    <string name="detail_event_organisateur">Organisateur :</string>
+    <string name="detail_event_startDate">Date de debut :</string>
+    <string name="detail_event_endDate">Date de fin :</string>
+
   <string name="disconnection">Déconnexion</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="detail_event_organisateur">Organisateur :</string>
-    <string name="detail_event_startDate">Date de debut :</string>
-    <string name="detail_event_endDate">Date de fin :</string>
+
 </resources>

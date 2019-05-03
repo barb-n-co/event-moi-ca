@@ -21,10 +21,10 @@ import java.util.*
 class PhotoFragment : BaseFragment() {
     companion object {
         const val TAG = "PHOTOFRAGMENT"
-        private val PERMISSION_CAMERA = 1
-        private val PERMISSION_IMPORT = 2
-        private val IMAGE_PICK_CODE = 1000
-        private val CAPTURE_PHOTO = 104
+        private const val PERMISSION_ALL = 1
+        private const val PERMISSION_IMPORT = 2
+        private const val IMAGE_PICK_CODE = 1000
+        private const val CAPTURE_PHOTO = 104
         private var imagePath: String? = ""
         fun newInstance(): PhotoFragment = PhotoFragment()
     }
@@ -47,7 +47,7 @@ class PhotoFragment : BaseFragment() {
             if (checkSelfPermission(context!!,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             {
-                requestPermissions( permissions, PERMISSION_CAMERA)
+                requestPermissions( permissions, PERMISSION_ALL)
             } else {
                 takePhotoByCamera()
             }
@@ -75,7 +75,7 @@ class PhotoFragment : BaseFragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_CAMERA && grantResults.size == 2) {
+        if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
             takePhotoByCamera()
         }
 

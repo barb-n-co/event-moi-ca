@@ -47,4 +47,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="detail_event_organisateur">Organisateur</string>
+    <string name="detail_event_startDate">Date de debut :</string>
+    <string name="detail_event_endDate">Date de fin :</string>
 </resources>

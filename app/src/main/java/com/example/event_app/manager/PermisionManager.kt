@@ -5,12 +5,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 
 class PermissionManager(val context: Context) {
 
     companion object {
         const val REQUEST_PERMISSION_CAMERA = 1001
+        const val PERMISSION_ALL = 1
+        const val PERMISSION_IMPORT = 2
+        const val IMAGE_PICK_CODE = 1000
+        const val CAPTURE_PHOTO = 104
     }
 
     fun requestCameraPermission(activity: Activity): Boolean {
@@ -21,7 +24,7 @@ class PermissionManager(val context: Context) {
         return requestPermissions(arrayOf(permission), code, activity)
     }
 
-    private fun requestPermissions(permissions: Array<String>, code: Int, activity: Activity): Boolean {
+    fun requestPermissions(permissions: Array<String>, code: Int, activity: Activity): Boolean {
         return if (!checkPermissions(permissions)) {
             ActivityCompat.requestPermissions(activity, permissions, code)
             false
@@ -31,7 +34,7 @@ class PermissionManager(val context: Context) {
     }
 
 
-    private fun checkPermissions(permissions: Array<out String>): Boolean {
+    fun checkPermissions(permissions: Array<out String>): Boolean {
         var permissionGranted = false
         for (permission in permissions) {
             if (ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {

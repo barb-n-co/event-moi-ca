@@ -32,7 +32,7 @@ class ListInvitationAdapter : ListAdapter<Event, ListInvitationAdapter.EventView
             //disposition
             itemView.tv_name_invitation_item.text = event.name
             itemView.tv_description_invitation_item.text = event.description
-            itemView.tv_startDate_invitation_item.text = "Du " + event.dateStart + " au " + event.dateEnd
+            itemView.tv_startDate_invitation_item.text = "Du ${event.dateStart} au  ${event.dateEnd}"
 
             itemView.b_accept_item_invitation_item.setOnClickListener {
                 acceptClickPublisher.onNext(event.idEvent)

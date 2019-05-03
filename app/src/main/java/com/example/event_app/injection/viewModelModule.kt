@@ -3,7 +3,6 @@ package com.example.event_app.injection
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.ui.activity.SplashScreenActivity
 import com.example.event_app.viewmodel.*
 import org.kodein.di.Kodein
 import org.kodein.di.generic.bind
@@ -48,7 +47,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
             .get(LoginViewModel::class.java)
     }
 
-    bind<AddEventFragmentViewModel.Factory>() with provider { AddEventFragmentViewModel.Factory(instance()) }
+    bind<AddEventFragmentViewModel.Factory>() with provider { AddEventFragmentViewModel.Factory(instance(), instance()) }
     bind<AddEventFragmentViewModel>() with factory { fragment: Fragment ->
         ViewModelProvider(fragment, instance<AddEventFragmentViewModel.Factory>())
             .get(AddEventFragmentViewModel::class.java)

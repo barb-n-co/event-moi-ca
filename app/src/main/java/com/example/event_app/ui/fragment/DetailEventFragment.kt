@@ -40,7 +40,7 @@ class DetailEventFragment: BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        eventId = arguments?.let{
+        eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }!!
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
@@ -48,15 +48,16 @@ class DetailEventFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setDisplayHomeAsUpEnabled(true)
 
         var json = JSONObject()
-        json.put("url","https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-        json.put("id",42)
+        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+        json.put("id", 42)
         json.put("auteur", "pouet")
         var photo = Photo("https://rickandmortyapi.com/api/character/avatar/1.jpeg", 42)
         imageIdList.add(photo)
 
-        Log.d("DetailEvent", "event id :"+ eventId)
+        Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
@@ -65,6 +66,7 @@ class DetailEventFragment: BaseFragment() {
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
 
+                setTitleToolbar(it.name)
             },
             {
                 Timber.e(it)

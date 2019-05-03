@@ -1,6 +1,5 @@
 package com.example.event_app.repository
 
-import android.util.Log
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.google.firebase.database.DatabaseReference
@@ -23,7 +22,7 @@ object EventRepository {
         ).toFlowable()
     }
 
-    fun addEvent(event: Event){
+    fun addEvent(event: Event) {
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 
@@ -37,6 +36,5 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             photoRef.child(eventId).child(photoId.toString()), Photo::class.java
         )
-
     }
 }

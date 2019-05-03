@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
@@ -17,7 +16,8 @@ import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
-    private val viewModel : MainActivityViewModel by instance(arg = this)
+    private val viewModel: MainActivityViewModel by instance(arg = this)
+
     companion object {
 
         fun start(fromActivity: FragmentActivity) {
@@ -36,7 +36,8 @@ class MainActivity : BaseActivity() {
 
         viewModel.user.subscribe(
             {
-                Toast.makeText(this, getString(R.string.toast_welcome_user_main_activity, it.name), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.toast_welcome_user_main_activity, it.name), Toast.LENGTH_LONG)
+                    .show()
             },
             {
                 Timber.e(it)
@@ -69,7 +70,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun openQrCode(){
+    fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
 }

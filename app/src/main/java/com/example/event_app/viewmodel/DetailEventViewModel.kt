@@ -22,6 +22,8 @@ import java.io.FileOutputStream
 import java.util.*
 
 
+
+
 class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
@@ -43,7 +45,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         return RxFirebaseStorage.getDownloadUrl(eventsRepository.db.getReferenceFromUrl(fullURL(url))).toObservable()
     }
 
-    fun putImageWithBitmap(bitmap: Bitmap) {
+    fun putImageWithBitmap(bitmap: Bitmap, id: String) {
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos)
@@ -53,9 +55,14 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         var n = 10000
         n = generator.nextInt(n)
 
-        RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/image$n.png"),data).toFlowable().subscribe(
+        RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/${id}_${n}_${Date().time}.png"),data).toFlowable().subscribe(
             {
                 Log.d("youpee", it.uploadSessionUri.toString())
+                val value = it.uploadSessionUri.toString()
+                eventsRepository.allEvents.child(id).child("images").push().setValue(value).addOnCompleteListener {
+                    Timber.d("success ${it.isSuccessful}")
+                    Timber.d("cancelled ${it.isCanceled}")
+                }
             },
             {
                 Timber.e(it)

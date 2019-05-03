@@ -15,6 +15,7 @@ object EventRepository {
     val ref = db.reference
     val allImgRef = ref.child("allImages")
     private val database = FirebaseDatabase.getInstance()
+    val allEvents = database.reference.child("events")
     private var currentEventId = ""
 
     private val eventsRef = database.reference.child("events")

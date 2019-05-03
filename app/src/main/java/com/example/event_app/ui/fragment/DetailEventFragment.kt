@@ -36,8 +36,8 @@ class DetailEventFragment : BaseFragment() {
 
     private val viewModel : DetailEventViewModel by instance(arg = this)
     private val adapter = CustomAdapter()
-    private var eventId: String = ""
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    private var eventId: String? = null
 
 
     var imageIdList = ArrayList<Photo>()
@@ -52,9 +52,7 @@ class DetailEventFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        eventId = arguments?.let {
-            DetailEventFragmentArgs.fromBundle(it).eventId
-        }!!
+
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
     }
 
@@ -62,9 +60,13 @@ class DetailEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
 
+        eventId = arguments?.let {
+            DetailEventFragmentArgs.fromBundle(it).eventId
+        }
+
         requestPermissions()
 
-        var json = JSONObject()
+        val json = JSONObject()
         json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
         json.put("id", 42)
         json.put("auteur", "pouet")
@@ -101,7 +103,7 @@ class DetailEventFragment : BaseFragment() {
         }
 
 
-        Log.d("DetailEvent", "event id :"+ eventId)
+        Log.d("DetailEvent", "event id :$eventId")
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
@@ -117,7 +119,10 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        viewModel.getEventInfo(eventId)
+        eventId?.let {
+            viewModel.getEventInfo(it)
+        }
+
 
         //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
         val mGrid = GridLayoutManager(context, 2)
@@ -125,9 +130,12 @@ class DetailEventFragment : BaseFragment() {
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
         adapter.photosClickPublisher.subscribe(
-            {
-                val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, it)
-                NavHostFragment.findNavController(this).navigate(action)
+            {photoId ->
+                eventId?.let {eventId ->
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, photoId)
+                    NavHostFragment.findNavController(this).navigate(action)
+                }
+
             },
             {
                 Timber.e(it)
@@ -182,14 +190,20 @@ class DetailEventFragment : BaseFragment() {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
                     //viewModel.saveImage(capturedBitmap)
-                    viewModel.putImageWithBitmap(capturedBitmap)
+                    eventId?.let {eventId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, eventId)
+                    }
+
                 }
 
                 IMAGE_PICK_CODE ->{
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
                     val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    viewModel.putImageWithBitmap(galeryBitmap)
+                    eventId?.let {eventId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, eventId)
+                    }
+
                 }
 
                 else -> {

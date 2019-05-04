@@ -10,10 +10,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
+import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import durdinapps.rxfirebase2.DataSnapshotMapper
+import durdinapps.rxfirebase2.RxFirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.addTo
@@ -23,8 +24,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
-
-
 
 
 class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
@@ -47,42 +46,14 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
     }
 
     fun removeListener(id: String) {
-        eventsRepository.allEvents.child(id).child("images").removeEventListener(listener!!)
+        eventsRepository.allPictures.child(id).child("images").removeEventListener(listener!!)
     }
 
-    fun initPhotoEventListener(id: String) {
+    fun initPhotoEventListener(id: String): Observable<List<Photo>> {
 
-        listener = object : ChildEventListener {
+        return RxFirebaseDatabase.observeSingleValueEvent(eventsRepository.allPictures.child(id), DataSnapshotMapper.listOf(Photo::class.java))
+            .toObservable()
 
-            override fun onCancelled(p0: DatabaseError) {
-                Timber.d("onCancelled" + p0.message)
-            }
-
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                val result = p0.value as String
-                Timber.d("onChildMoved" + result )
-            }
-
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                val result = p0.value as String
-                Timber.d("onChildChanged" + result )
-
-            }
-
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val result = p0.value as String
-                Timber.d("onChildAdded" + result )
-                imageList.add(result)
-
-            }
-
-            override fun onChildRemoved(p0: DataSnapshot) {
-                val result = p0.value as String
-                Timber.d("onChildRemoved" + result )
-            }
-
-        }
-        eventsRepository.allEvents.child(id).child("images").addChildEventListener(listener!!)
     }
 
     fun fetchImagesFromFolder(url: String): Observable<Uri> {
@@ -102,8 +73,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/${id}_${n}_${Date().time}.png"),data).toFlowable().subscribe(
             {
                 Log.d("youpee", it.uploadSessionUri.toString())
-                val value = it.uploadSessionUri.toString()
-                eventsRepository.allEvents.child(id).child("images").push().setValue(value).addOnCompleteListener {
+
+                val value = Photo("moi", 0, it.metadata!!.path.toString())
+                eventsRepository.allPictures.child(id).push().setValue(value).addOnCompleteListener {
                     Timber.d("success ${it.isSuccessful}")
                     Timber.d("cancelled ${it.isCanceled}")
                 }

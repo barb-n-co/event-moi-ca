@@ -15,7 +15,7 @@ object EventRepository {
     val ref = db.reference
     val allImgRef = ref.child("allImages")
     private val database = FirebaseDatabase.getInstance()
-    val allEvents = database.reference.child("events")
+    val allPictures = database.reference.child("photos")
     private var currentEventId = ""
 
     private val eventsRef = database.reference.child("events")
@@ -40,9 +40,9 @@ object EventRepository {
         )
     }
 
-    fun getPhotoDetail(eventId: String, photoId: Int): Maybe<Photo> {
+    fun getPhotoDetail(eventId: String, photoURL: String): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            photoRef.child(eventId).child(photoId.toString()), Photo::class.java
+            photoRef.child(eventId).child(photoURL), Photo::class.java
         )
 
     }

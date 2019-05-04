@@ -27,7 +27,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import org.json.JSONObject
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
@@ -35,7 +34,7 @@ import timber.log.Timber
 class DetailEventFragment : BaseFragment() {
 
     private val viewModel : DetailEventViewModel by instance(arg = this)
-    private val adapter = CustomAdapter()
+    private lateinit var adapter : CustomAdapter
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var eventId: String? = null
 
@@ -60,21 +59,21 @@ class DetailEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
 
+        adapter = CustomAdapter(context!!)
+
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-        eventId?.let {
-            viewModel.initPhotoEventListener(it)
-        }
+
 
         requestPermissions()
 
-        val json = JSONObject()
-        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-        json.put("id", 42)
-        json.put("auteur", "pouet")
-        imageIdList.add(Photo(json))
+//        val json = JSONObject()
+//        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+//        json.put("id", 42)
+//        json.put("auteur", "pouet")
+        //imageIdList.add(Photo(json))
 
         val nestedScrollView = view.findViewById(R.id.bottomSheetScrollView) as View
         val sheetBehavior = BottomSheetBehavior.from(nestedScrollView)
@@ -134,9 +133,9 @@ class DetailEventFragment : BaseFragment() {
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
         adapter.photosClickPublisher.subscribe(
-            {photoId ->
+            {photoURL ->
                 eventId?.let {eventId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, photoId)
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, photoURL)
                     NavHostFragment.findNavController(this).navigate(action)
                 }
 
@@ -146,28 +145,42 @@ class DetailEventFragment : BaseFragment() {
             }
         ).addTo(viewDisposable)
         adapter.submitList(imageIdList)
+
+        eventId?.let {
+            viewModel.initPhotoEventListener(it).subscribe(
+                {photoList ->
+                    Timber.d("YOOOLLLLOOO  $photoList")
+                    adapter.submitList(photoList)
+                    //adapter.notifyDataSetChanged()
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+
+        }
     }
 
     private fun requestPermissions() {
         val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.fetchImagesFromFolder("images/image2.png").subscribe(
-            {
-                    uri ->
-                imageIdList.add(Photo(JSONObject().put("url", uri.toString())))
-                adapter.submitList(imageIdList)
-                adapter.notifyDataSetChanged()
-            },
-            {
-                    throwable -> Log.e("RxFirebaseSample", throwable.toString())
-            })
-            .addTo(viewDisposable)
-    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//
+//        viewModel.fetchImagesFromFolder("images/image2.png").subscribe(
+//            {
+//                    uri ->
+//                //imageIdList.add(Photo(JSONObject().put("url", uri.toString())))
+//                adapter.submitList(imageIdList)
+//                adapter.notifyDataSetChanged()
+//            },
+//            {
+//                    throwable -> Log.e("RxFirebaseSample", throwable.toString())
+//            })
+//            .addTo(viewDisposable)
+//    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

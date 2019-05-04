@@ -1,6 +1,6 @@
 package com.example.event_app.adapter
 
-import android.util.Log
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.model.Photo
-import com.squareup.picasso.Picasso
+import com.example.event_app.repository.EventRepository
+import com.example.event_app.utils.GlideApp
 import io.reactivex.subjects.PublishSubject
 
 
-class CustomAdapter :
+class CustomAdapter(private val context: Context) :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
-    val photosClickPublisher: PublishSubject<Int> = PublishSubject.create()
+    val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
 
     override fun onBindViewHolder(holder: CustomAdapter.ViewHolder, position: Int) {
         //holder.iv?.setImageResource(imageIdList[position])
@@ -39,21 +40,25 @@ class CustomAdapter :
         }
     }
 
-    inner class ViewHolder(private var v: View, private val photosClickPublisher: PublishSubject<Int>) :
+    inner class ViewHolder(private var v: View, private val photosClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(v) {
         internal var iv: ImageView? = v.findViewById(R.id.image_item)
         private var photo: Photo? = null
 
         fun bindPhoto(photo: Photo) {
             v.setOnClickListener {
-                Log.d("CutomAd", photo.toString())
-                photo.id?.let {
-                    photosClickPublisher.onNext(photo.id!!)
+                photo.url?.let {
+                    photosClickPublisher.onNext(photo.url!!)
                 }
             }
+            photo.url?.let {
+                val storageReference = EventRepository.ref.child(it)
+                this.photo = photo
+                GlideApp.with(context).load(storageReference).placeholder(R.drawable.pic1).into(iv!!)
+                //Picasso.get().load(storageReference).placeholder(R.drawable.pic1).into(iv)
+            }
 
-            this.photo = photo
-            Picasso.get().load(photo.url).into(iv)
+
         }
     }
 

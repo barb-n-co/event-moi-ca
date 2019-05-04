@@ -26,7 +26,7 @@ private const val ARG_PARAM2 = "param2"
 class DetailPhotoFragment : BaseFragment() {
 
     private var eventId: String? = null
-    private var photoId: Int = -1
+    private var photoURL: String? = null
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
@@ -43,8 +43,8 @@ class DetailPhotoFragment : BaseFragment() {
         eventId = arguments?.let{
             DetailPhotoFragmentArgs.fromBundle(it).eventId
         }
-        photoId = arguments?.let{
-            DetailPhotoFragmentArgs.fromBundle(it).photoId
+        photoURL = arguments?.let{
+            DetailPhotoFragmentArgs.fromBundle(it).photoURL
         }!!
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_detail_photo, container, false)
@@ -62,7 +62,7 @@ class DetailPhotoFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        viewModel.getPhotoDetail(eventId, photoId)
+        viewModel.getPhotoDetail(eventId, photoURL)
 
     }
 

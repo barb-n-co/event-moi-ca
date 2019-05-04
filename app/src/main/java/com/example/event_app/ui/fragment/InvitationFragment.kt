@@ -19,9 +19,10 @@ import org.kodein.di.direct
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-private lateinit var viewModel: HomeFragmentViewModel
-
 class InvitationFragment : BaseFragment() {
+
+    private val viewModel: HomeFragmentViewModel by instance(arg = this)
+
     companion object {
         const val TAG = "INVITATIONFRAGMENT"
         fun newInstance(): InvitationFragment = InvitationFragment()
@@ -34,13 +35,11 @@ class InvitationFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = kodein.direct.instance(arg = this)
-
         swiperefresh_fragment_invitation.setOnRefreshListener { viewModel.getEvents() }
 
         Log.d(MyEventsFragment.TAG, "fragment")
 
-        viewModel.eventList.subscribe(
+        viewModel.invitationList.subscribe(
             {
                 initAdapter(it)
                 swiperefresh_fragment_invitation.isRefreshing = false
@@ -51,7 +50,7 @@ class InvitationFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        viewModel.getEvents()
+        viewModel.getEventsInvitations()
     }
 
     private fun initAdapter(eventList: List<Event>) {

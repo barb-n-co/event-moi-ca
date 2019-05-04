@@ -64,8 +64,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
                 val pushPath = eventsRepository.allPictures.child(id).push()
                 val key = pushPath.key
                 val path = it.metadata!!.path
+                val author = id
                 key?.let {
-                    val value = Photo(key,"moi", 0, path)
+                    val value = Photo(key,author, 0, path, mutableListOf())
 
                     RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
                         .subscribe(

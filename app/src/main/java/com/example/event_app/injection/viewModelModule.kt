@@ -21,7 +21,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
         ViewModelProvider(fragment, instance<DetailPhotoViewModel.Factory>()).get(DetailPhotoViewModel::class.java)
     }
 
-    bind<HomeFragmentViewModel.Factory>() with provider { HomeFragmentViewModel.Factory(instance()) }
+    bind<HomeFragmentViewModel.Factory>() with provider { HomeFragmentViewModel.Factory(instance(), instance()) }
     bind<HomeFragmentViewModel>() with factory { fragment: Fragment ->
         ViewModelProvider(fragment, instance<HomeFragmentViewModel.Factory>())
             .get(HomeFragmentViewModel::class.java)

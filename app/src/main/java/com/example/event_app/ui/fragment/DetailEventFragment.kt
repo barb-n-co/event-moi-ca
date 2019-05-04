@@ -6,7 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -20,9 +22,10 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
@@ -66,36 +69,9 @@ class DetailEventFragment : BaseFragment() {
 
         requestPermissions()
 
-        val nestedScrollView = view.findViewById(R.id.bottomSheetScrollView) as View
-        val sheetBehavior = BottomSheetBehavior.from(nestedScrollView)
+        setFab()
 
-        btn_camera.setOnClickListener {
-
-            if (permissionManager.checkPermissions(arrayOf(Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                takePhotoByCamera()
-            } else {
-                requestPermissions()
-            }
-        }
-
-        btn_gallery.setOnClickListener {
-            if (permissionManager.checkPermissions(arrayOf(Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
-            } else {
-                requestPermissions()
-            }
-        }
-
-        fab_add_photo.setOnClickListener {
-            if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
-            } else {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
-            }
-        }
-
+        Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
@@ -142,6 +118,50 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
+    private fun setFab() {
+        fabmenu_detail_event.setMenuListener(object : SimpleMenuListenerAdapter() {
+            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
+                this@DetailEventFragment.onOptionsItemSelected(menuItem)
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_generate_qrcode -> {
+                eventId?.let {
+                    GenerationQrCodeActivity.start(activity as MainActivity, it)
+                }
+            }
+            R.id.action_camera -> {
+                if (permissionManager.checkPermissions(
+                        arrayOf(
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                    )
+                ) {
+                    takePhotoByCamera()
+                } else {
+                    requestPermissions()
+                }
+            }
+            R.id.action_gallery -> {
+                if (permissionManager.checkPermissions(
+                        arrayOf(
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                    )
+                ) {
+                    startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
+                } else {
+                    requestPermissions()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun requestPermissions() {
         val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
@@ -168,7 +188,6 @@ class DetailEventFragment : BaseFragment() {
 
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
                     //viewModel.saveImage(capturedBitmap)
@@ -178,7 +197,7 @@ class DetailEventFragment : BaseFragment() {
 
                 }
 
-                IMAGE_PICK_CODE ->{
+                IMAGE_PICK_CODE -> {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
                     val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)

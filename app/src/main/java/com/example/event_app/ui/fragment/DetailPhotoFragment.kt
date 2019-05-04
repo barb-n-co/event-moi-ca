@@ -54,13 +54,14 @@ class DetailPhotoFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("PhotoDetail", "event : ${eventId}")
 
         viewModel.photo.subscribe(
             {photo ->
                 Log.d("PhotoDetail", photo.toString())
                 photo.url?.let {url ->
                     val storageReference = EventRepository.ref.child(url)
-                    GlideApp.with(context!!).load(storageReference).placeholder(R.drawable.pic1).into(iv_photo)
+                    GlideApp.with(context!!).load(storageReference).override(1000,1000).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
                 }
             },
             {

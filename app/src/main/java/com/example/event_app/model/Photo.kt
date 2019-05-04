@@ -1,37 +1,31 @@
 package com.example.event_app.model
 
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.Serializable
 
-class Photo {
+class Photo  {
 
-    var url: String = ""
-    var id: Int = -1
+    var id : String? = null
+    var url : String? = null
+    var auteur : String? = null
     var commentaires: MutableList<Commentaire> = ArrayList()
-    var likes: Int = 0
-    var auteur: String =""
+    var like : Int? = null
 
-
-
-    constructor(url: String, id: Int, commentaires: MutableList<Commentaire>, likes: Int, auteur: String) {
-        this.url = url
+    constructor(id: String, auteur: String, like: Int, url: String, commentaires: MutableList<Commentaire>) {
         this.id = id
-        this.commentaires = commentaires
-        this.likes = likes
         this.auteur = auteur
+        this.commentaires = commentaires
+        this.like = like
+        this.url = url
     }
 
-    constructor(url: String, id: Int) {
+    constructor(url: String, id: String) {
         this.url = url
         this.id = id
     }
 
-    constructor() { }
-
+    constructor() {}
 
     override fun toString(): String {
-        return "Photo(url='$url', id=$id, numberOfLike=$likes, auteur='$auteur')"
+        return "Photo(id= $id, url= $url, auteur= $auteur, like= $like, commentaires=$commentaires)"
     }
 
 

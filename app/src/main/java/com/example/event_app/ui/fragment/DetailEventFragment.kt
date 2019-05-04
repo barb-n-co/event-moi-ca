@@ -35,10 +35,10 @@ import timber.log.Timber
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel: DetailEventViewModel by instance(arg = this)
-    private val adapter = CustomAdapter()
-    private var eventId: String = ""
+    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter : CustomAdapter
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    private var eventId: String? = null
 
 
     var imageIdList = ArrayList<Photo>()
@@ -53,15 +53,19 @@ class DetailEventFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        eventId = arguments?.let {
-            DetailEventFragmentArgs.fromBundle(it).eventId
-        }!!
+
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
+
+        adapter = CustomAdapter(context!!)
+
+        eventId = arguments?.let {
+            DetailEventFragmentArgs.fromBundle(it).eventId
+        }
 
         requestPermissions()
 
@@ -75,7 +79,6 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventOrga.text = it.organizer
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
-
                 setTitleToolbar(it.name)
             },
             {
@@ -83,22 +86,36 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        viewModel.getEventInfo(eventId)
+        eventId?.let {notNullId ->
+            viewModel.getEventInfo(notNullId)
 
-        val mGrid = GridLayoutManager(context, 3)
-        rv_listImage.layoutManager = mGrid
-        rv_listImage.adapter = adapter
-        ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
-        adapter.photosClickPublisher.subscribe(
-            {
-                val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, it)
-                NavHostFragment.findNavController(this).navigate(action)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-        adapter.submitList(imageIdList)
+            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
+            val mGrid = GridLayoutManager(context, 2)
+            rv_listImage.layoutManager = mGrid
+            rv_listImage.adapter = adapter
+            ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
+            adapter.photosClickPublisher.subscribe(
+                {photoId ->
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(notNullId, photoId)
+                    NavHostFragment.findNavController(this).navigate(action)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(viewDisposable)
+
+            adapter.submitList(imageIdList)
+
+            viewModel.initPhotoEventListener(notNullId).subscribe(
+                {photoList ->
+                    adapter.submitList(photoList)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(viewDisposable)
+
+        }
     }
 
     private fun setFab() {
@@ -150,26 +167,7 @@ class DetailEventFragment : BaseFragment() {
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.fetchImagesFromFolder("images/image2.png").subscribe(
-            { uri ->
-                imageIdList.add(Photo(uri.toString(), 0))
-                adapter.submitList(imageIdList)
-                adapter.notifyDataSetChanged()
-            },
-            { throwable ->
-                Log.e("RxFirebaseSample", throwable.toString())
-            })
-            .addTo(viewDisposable)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
             takePhotoByCamera()
@@ -193,18 +191,26 @@ class DetailEventFragment : BaseFragment() {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
                     //viewModel.saveImage(capturedBitmap)
-                    viewModel.putImageWithBitmap(capturedBitmap)
+                    eventId?.let {eventId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, eventId)
+                    }
+
                 }
 
                 IMAGE_PICK_CODE -> {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
                     val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    viewModel.putImageWithBitmap(galeryBitmap)
+                    eventId?.let {eventId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, eventId)
+                    }
+
                 }
-                else -> {
-                }
+
             }
+
         }
+
     }
+
 }

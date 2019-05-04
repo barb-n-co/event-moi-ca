@@ -15,26 +15,29 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
 
 
-    fun getPhotoDetail(eventId: String?, photoId: Int) {
-        eventId?.let {
-            eventsRepository.getPhotoDetail(it, photoId).subscribe(
-                { it ->
-                    Log.d("DetailEvent", "vm" + it.url)
-                    photo.onNext(it)
-                },
-                { it ->
-                    Timber.e(it)
-                }).addTo(disposeBag)
-        }
-        eventsRepository.fetchCommentaires(photoId).subscribe(
-            {
-                Log.d("DetailEvent", "getCommentaires ${it.get(0)}")
-                commentaires.onNext(it)
-            },
-            {
+    fun getPhotoDetail(eventId: String?, photoId: String?) {
+        eventId?.let {eventId ->
+            photoId?.let {photoId ->
+                eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
+                    { it ->
+                        Log.d("DetailEvent", "vm" + it.url)
+                        photo.onNext(it)
+                    },
+                    { it ->
+                        Timber.e(it)
+                    }).addTo(disposeBag)
 
-                Timber.e(it)
-            }).addTo(disposeBag)
+                eventsRepository.fetchCommentaires(photoId).subscribe(
+                    {
+                        Log.d("DetailEvent", "getCommentaires ${it.get(0)}")
+                        commentaires.onNext(it)
+                    },
+                    {
+
+                        Timber.e(it)
+                    }).addTo(disposeBag)
+            }
+        }
 
     }
 

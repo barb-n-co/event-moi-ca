@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 apply plugin: 'kotlin-android-extensions'
 
@@ -25,12 +26,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
 }
+
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -78,6 +81,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
     implementation 'com.github.FrangSierra:RxFirebase:1.5.6'
+    implementation 'com.google.firebase:firebase-storage:16.1.0'
+    implementation 'com.firebaseui:firebase-ui-storage:3.2.1'
 
     //FAB Speed Dial
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
@@ -85,7 +90,8 @@ dependencies {
     //Navigation component
     implementation "android.arch.navigation:navigation-fragment:$versions.navigationVersion"
     implementation "android.arch.navigation:navigation-ui:$versions.navigationVersion"
-    implementation 'com.google.firebase:firebase-storage:16.1.0'
 
-
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
 }

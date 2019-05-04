@@ -1,41 +1,31 @@
 package com.example.event_app.repository
 
-import android.util.Log
 import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventInvitation
 import com.example.event_app.model.Photo
-import com.gojuno.koptional.toOptional
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import durdinapps.rxfirebase2.DataSnapshotMapper
-import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 
 object EventRepository {
 
     val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
     val ref = db.reference
-    val allImgRef = ref.child("allImages")
     private val database = FirebaseDatabase.getInstance()
-    private var currentEventId = ""
-
-    private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
-
+    val allPictures = database.reference.child("photos")
     private val eventsRef = database.reference.child("events")
     private val eventsInvitationsRef = database.reference.child("events-invitations")
     private val myEventsRef = database.reference.child("my-events")
-    private val photoRef = database.reference.child("photos")
+    private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
     private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
+
 
     init {
         fetchEventsInvitations()
@@ -68,23 +58,16 @@ object EventRepository {
         )
     }
 
-    fun getPhotoDetail(eventId: String, photoId: Int): Maybe<Photo> {
+    fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            photoRef.child(eventId).child(photoId.toString()), Photo::class.java
+            allPictures.child(eventId).child(photoId), Photo::class.java
         )
+
     }
 
-    fun setCurrentEvent(id: String) {
-        currentEventId = id
-    }
-
-    fun getCurrentEventId(): String? {
-        return currentEventId
-    }
-
-    fun fetchCommentaires(photoId: Int): Flowable<List<Commentaire>> {
+    fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            commentsRef.child(photoId.toString()), DataSnapshotMapper.listOf(Commentaire::class.java)
+            commentsRef.child(photoId), DataSnapshotMapper.listOf(Commentaire::class.java)
         ).toFlowable()
     }
 }

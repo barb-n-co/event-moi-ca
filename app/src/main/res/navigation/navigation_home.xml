@@ -44,8 +44,8 @@
         <argument android:name="eventId"
                   app:argType="string"/>
         <argument
-                android:name="photoId"
-                app:argType="integer"
+                android:name="photoURL"
+                app:argType="string"
         />
     </fragment>
 

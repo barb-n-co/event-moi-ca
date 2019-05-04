@@ -12,11 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
-import com.google.firebase.database.ChildEventListener
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -29,9 +29,6 @@ import java.util.*
 class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
-    private val url = "https://firebasestorage.googleapis.com/v0/b/event-moi-ca.appspot.com/o/"
-    private var listener : ChildEventListener? = null
-    private var imageList : MutableList<String> = mutableListOf()
 
     fun getEventInfo(eventId: String) {
         eventsRepository.getEventDetail(eventId).subscribe(
@@ -45,20 +42,11 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
 
     }
 
-    fun removeListener(id: String) {
-        eventsRepository.allPictures.child(id).child("images").removeEventListener(listener!!)
-    }
-
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
-
-        return RxFirebaseDatabase.observeSingleValueEvent(eventsRepository.allPictures.child(id), DataSnapshotMapper.listOf(Photo::class.java))
+        return RxFirebaseDatabase.observeValueEvent(eventsRepository.allPictures.child(id), DataSnapshotMapper.listOf(Photo::class.java))
             .toObservable()
-
     }
 
-    fun fetchImagesFromFolder(url: String): Observable<Uri> {
-        return RxFirebaseStorage.getDownloadUrl(eventsRepository.db.getReferenceFromUrl(fullURL(url))).toObservable()
-    }
 
     fun putImageWithBitmap(bitmap: Bitmap, id: String) {
 
@@ -72,28 +60,33 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
 
         RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/${id}_${n}_${Date().time}.png"),data).toFlowable().subscribe(
             {
-                Log.d("youpee", it.uploadSessionUri.toString())
 
-                val value = Photo("moi", 0, it.metadata!!.path.toString())
-                eventsRepository.allPictures.child(id).push().setValue(value).addOnCompleteListener {
-                    Timber.d("success ${it.isSuccessful}")
-                    Timber.d("cancelled ${it.isCanceled}")
+                val pushPath = eventsRepository.allPictures.child(id).push()
+                val key = pushPath.key
+                val path = it.metadata!!.path
+                key?.let {
+                    val value = Photo(key,"moi", 0, path)
+
+                    RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
+                        .subscribe(
+                            {
+                                Timber.d("success by always catch error")
+                            },
+                            {
+                                Timber.e("setValue error :  ${it}")
+                            }
+                        ).addTo(CompositeDisposable())
                 }
             },
             {
                 Timber.e(it)
             }
-        )
+        ).addTo(CompositeDisposable())
 
     }
 
     fun getBitmapWithResolver(resolver: ContentResolver, uri: Uri): Bitmap {
         return MediaStore.Images.Media.getBitmap(resolver, uri)
-    }
-
-
-    private fun fullURL(foldrUrl: String): String {
-        return url + foldrUrl
     }
 
     fun saveImage(finalBitmap: Bitmap): String {

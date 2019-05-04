@@ -9,9 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
+import com.example.event_app.repository.EventRepository
+import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.fragment_detail_photo.*
 
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -56,6 +59,7 @@ class DetailPhotoFragment : BaseFragment() {
         viewModel.photo.subscribe(
             {
                 Log.d("PhotoDetail", it.toString())
+                GlideApp.with(context!!).load(EventRepository.allPictures.child(it.id!!)).placeholder(R.drawable.pic1).into(iv_photo)
             },
             {
                 Timber.e(it)

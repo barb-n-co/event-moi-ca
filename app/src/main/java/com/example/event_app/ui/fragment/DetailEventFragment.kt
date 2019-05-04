@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,15 +64,7 @@ class DetailEventFragment : BaseFragment() {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-
-
         requestPermissions()
-
-//        val json = JSONObject()
-//        json.put("url", "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
-//        json.put("id", 42)
-//        json.put("auteur", "pouet")
-        //imageIdList.add(Photo(json))
 
         val nestedScrollView = view.findViewById(R.id.bottomSheetScrollView) as View
         val sheetBehavior = BottomSheetBehavior.from(nestedScrollView)
@@ -105,8 +96,6 @@ class DetailEventFragment : BaseFragment() {
             }
         }
 
-
-        Log.d("DetailEvent", "event id :$eventId")
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.name
@@ -114,7 +103,6 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventOrga.text = it.organizer
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
-
                 setTitleToolbar(it.name)
             },
             {
@@ -122,41 +110,34 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        eventId?.let {
-            viewModel.getEventInfo(it)
-        }
+        eventId?.let {notNullId ->
+            viewModel.getEventInfo(notNullId)
 
-
-        //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
-        val mGrid = GridLayoutManager(context, 2)
-        rv_listImage.layoutManager = mGrid
-        rv_listImage.adapter = adapter
-        ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
-        adapter.photosClickPublisher.subscribe(
-            {photoURL ->
-                eventId?.let {eventId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(eventId, photoURL)
+            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
+            val mGrid = GridLayoutManager(context, 2)
+            rv_listImage.layoutManager = mGrid
+            rv_listImage.adapter = adapter
+            ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
+            adapter.photosClickPublisher.subscribe(
+                {photoId ->
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(notNullId, photoId)
                     NavHostFragment.findNavController(this).navigate(action)
-                }
-
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-        adapter.submitList(imageIdList)
-
-        eventId?.let {
-            viewModel.initPhotoEventListener(it).subscribe(
-                {photoList ->
-                    Timber.d("YOOOLLLLOOO  $photoList")
-                    adapter.submitList(photoList)
-                    //adapter.notifyDataSetChanged()
                 },
                 {
                     Timber.e(it)
                 }
-            )
+            ).addTo(viewDisposable)
+
+            adapter.submitList(imageIdList)
+
+            viewModel.initPhotoEventListener(notNullId).subscribe(
+                {photoList ->
+                    adapter.submitList(photoList)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(viewDisposable)
 
         }
     }
@@ -165,22 +146,6 @@ class DetailEventFragment : BaseFragment() {
         val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
-//
-//    override fun onResume() {
-//        super.onResume()
-//
-//        viewModel.fetchImagesFromFolder("images/image2.png").subscribe(
-//            {
-//                    uri ->
-//                //imageIdList.add(Photo(JSONObject().put("url", uri.toString())))
-//                adapter.submitList(imageIdList)
-//                adapter.notifyDataSetChanged()
-//            },
-//            {
-//                    throwable -> Log.e("RxFirebaseSample", throwable.toString())
-//            })
-//            .addTo(viewDisposable)
-//    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -223,20 +188,10 @@ class DetailEventFragment : BaseFragment() {
 
                 }
 
-                else -> {
-                }
             }
 
         }
 
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        eventId?.let {
-            viewModel.removeListener(it)
-        }
     }
 
 }

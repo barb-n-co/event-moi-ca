@@ -13,14 +13,10 @@ object EventRepository {
 
     val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
     val ref = db.reference
-    val allImgRef = ref.child("allImages")
     private val database = FirebaseDatabase.getInstance()
     val allPictures = database.reference.child("photos")
-    private var currentEventId = ""
-
     private val eventsRef = database.reference.child("events")
     private val myEventsRef = database.reference.child("my-events")
-    private val photoRef = database.reference.child("photos")
 
 
     fun fetchEvents(): Flowable<List<Event>> {
@@ -40,18 +36,10 @@ object EventRepository {
         )
     }
 
-    fun getPhotoDetail(eventId: String, photoURL: String): Maybe<Photo> {
+    fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            photoRef.child(eventId).child(photoURL), Photo::class.java
+            allPictures.child(eventId).child(photoId), Photo::class.java
         )
 
-    }
-
-    fun setCurrentEvent(id: String) {
-        currentEventId = id
-    }
-
-    fun getCurrentEventId(): String? {
-        return currentEventId
     }
 }

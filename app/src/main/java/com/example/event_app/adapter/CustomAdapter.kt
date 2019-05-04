@@ -47,15 +47,14 @@ class CustomAdapter(private val context: Context) :
 
         fun bindPhoto(photo: Photo) {
             v.setOnClickListener {
-                photo.url?.let {
-                    photosClickPublisher.onNext(photo.url!!)
+                photo.id?.let {
+                    photosClickPublisher.onNext(photo.id!!)
                 }
             }
-            photo.url?.let {
-                val storageReference = EventRepository.ref.child(it)
+            photo.url?.let {path ->
+                val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
                 GlideApp.with(context).load(storageReference).placeholder(R.drawable.pic1).into(iv!!)
-                //Picasso.get().load(storageReference).placeholder(R.drawable.pic1).into(iv)
             }
 
 

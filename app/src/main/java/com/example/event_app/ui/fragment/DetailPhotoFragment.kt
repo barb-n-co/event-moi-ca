@@ -15,7 +15,6 @@ import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
-
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
@@ -57,9 +56,12 @@ class DetailPhotoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.photo.subscribe(
-            {
-                Log.d("PhotoDetail", it.toString())
-                GlideApp.with(context!!).load(EventRepository.allPictures.child(it.id!!)).placeholder(R.drawable.pic1).into(iv_photo)
+            {photo ->
+                Log.d("PhotoDetail", photo.toString())
+                photo.url?.let {url ->
+                    val storageReference = EventRepository.ref.child(url)
+                    GlideApp.with(context!!).load(storageReference).placeholder(R.drawable.pic1).into(iv_photo)
+                }
             },
             {
                 Timber.e(it)

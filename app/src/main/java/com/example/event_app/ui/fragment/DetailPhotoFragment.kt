@@ -61,7 +61,7 @@ class DetailPhotoFragment : BaseFragment() {
                 Log.d("PhotoDetail", photo.toString())
                 photo.url?.let {url ->
                     val storageReference = EventRepository.ref.child(url)
-                    GlideApp.with(context!!).load(storageReference).override(1000,1000).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
+                    GlideApp.with(context!!).load(storageReference).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
                 }
             },
             {

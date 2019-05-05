@@ -7,15 +7,16 @@
         tools:context=".ui.fragment.DetailPhotoFragment">
     <ImageView
             android:src="@color/colorPrimaryDark"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
             android:id="@+id/iv_photo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="32dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+    />
 
         <TextView
                 android:text="TextView"
@@ -40,7 +41,7 @@
     <ListView
             app:layout_constraintHorizontal_weight="0.5"
             android:layout_width="395dp"
-            android:layout_height="500dp"
+            android:layout_height="300dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"

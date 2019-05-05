@@ -1,9 +1,6 @@
 package com.example.event_app.repository
 
-import com.example.event_app.model.Commentaire
-import com.example.event_app.model.Event
-import com.example.event_app.model.EventInvitation
-import com.example.event_app.model.Photo
+import com.example.event_app.model.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -13,6 +10,7 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
 object EventRepository {
 
@@ -43,13 +41,30 @@ object EventRepository {
         ).toObservable()
     }
 
+    fun fetchMyEvents(): Observable<List<MyEvents>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            myEventsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
+        ).toObservable()
+    }
+
    fun addEvent(idOrganizer: String, event: Event) {
-        myEventsRef.child(event.idEvent).push().setValue(idOrganizer)
+        myEventsRef.child(event.idEvent).push().setValue(MyEvents(event.idEvent, idOrganizer))
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 
     fun addInvitation(idEvent: String, idUser: String) {
         eventsInvitationsRef.push().setValue(EventInvitation(idEvent, idUser))
+    }
+
+    fun acceptInvitation(idEvent: String, idUser: String){
+        myEventsRef.push().setValue(MyEvents(idEvent, idUser))
+        RxFirebaseDatabase.observeSingleValueEvent(
+            eventsInvitationsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
+        ).subscribe(
+            {
+
+            }
+        )
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

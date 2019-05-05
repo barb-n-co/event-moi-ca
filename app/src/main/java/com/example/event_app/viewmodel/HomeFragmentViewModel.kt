@@ -41,12 +41,15 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     )
                 })
                 .map { response ->
-                    response.second.map {
+                    response.second.filter {
+                        it.idUser == idUser
+                    }.map {
                         response.first.find {first ->
                             first.idEvent == it.idEvent
                         }
                     }.filterNotNull()
-                }.subscribe({
+                }
+                .subscribe({
                     invitationList.onNext(it)
                 },
                     {

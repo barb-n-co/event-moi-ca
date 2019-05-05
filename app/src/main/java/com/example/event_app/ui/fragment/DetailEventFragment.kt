@@ -90,7 +90,7 @@ class DetailEventFragment : BaseFragment() {
             viewModel.getEventInfo(notNullId)
 
             //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
-            val mGrid = GridLayoutManager(context, 2)
+            val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter
             ViewCompat.setNestedScrollingEnabled(rv_listImage, false)

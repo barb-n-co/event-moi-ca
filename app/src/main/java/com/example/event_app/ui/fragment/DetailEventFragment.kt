@@ -2,6 +2,7 @@ package com.example.event_app.ui.fragment
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -31,6 +32,7 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.lang.ref.WeakReference
 
 
 class DetailEventFragment : BaseFragment() {
@@ -61,7 +63,7 @@ class DetailEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
 
-        adapter = CustomAdapter(context!!)
+        adapter = CustomAdapter(WeakReference<Context>(context).get()!!)
 
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
@@ -89,7 +91,7 @@ class DetailEventFragment : BaseFragment() {
         eventId?.let {notNullId ->
             viewModel.getEventInfo(notNullId)
 
-            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
+            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter
@@ -116,6 +118,7 @@ class DetailEventFragment : BaseFragment() {
             ).addTo(viewDisposable)
 
         }
+
     }
 
     private fun setFab() {
@@ -158,6 +161,11 @@ class DetailEventFragment : BaseFragment() {
                     requestPermissions()
                 }
             }
+            R.id.action_download_every_photos -> {
+                eventId?.let {id ->
+                    viewModel.getAllPictures(id, WeakReference(context).get()!!)
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -190,11 +198,9 @@ class DetailEventFragment : BaseFragment() {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
-                    //viewModel.saveImage(capturedBitmap)
                     eventId?.let {eventId ->
                         viewModel.putImageWithBitmap(capturedBitmap, eventId)
                     }
-
                 }
 
                 IMAGE_PICK_CODE -> {

@@ -198,11 +198,9 @@ class DetailEventFragment : BaseFragment() {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
-                    //viewModel.saveImage(capturedBitmap)
                     eventId?.let {eventId ->
                         viewModel.putImageWithBitmap(capturedBitmap, eventId)
                     }
-
                 }
 
                 IMAGE_PICK_CODE -> {

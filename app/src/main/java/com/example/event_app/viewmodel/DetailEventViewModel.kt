@@ -120,9 +120,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
 
         RxFirebaseDatabase.observeSingleValueEvent(eventsRepository.allPictures.child(eventId), DataSnapshotMapper.listOf(Photo::class.java))
             .subscribe(
-                {photoList ->
-                    var number = 0
-                    for ((i, photo) in photoList.withIndex()) {
+                { photoList ->
+                    val number = mutableListOf<String>()
+                    photoList.forEach { photo ->
                         GlideApp.with(context)
                             .asBitmap()
                             .load(EventRepository.ref.child(photo.url!!))
@@ -131,17 +131,13 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
                                     super.onLoadFailed(errorDrawable)
                                     Timber.e( "an error append $errorDrawable")
-                                    number++
-                                    if (number == photoList.size) {
-                                        Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
-                                    }
+                                    Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT).show()
                                 }
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     Timber.d( "image downloading in progress")
-                                    saveImage(resource, eventId, photo.id!!)
-                                    number++
-                                    if (number == photoList.size) {
+                                    number.add(saveImage(resource, eventId, photo.id!!))
+                                    if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
                                     }
                                 }
@@ -150,9 +146,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
                                 }
 
                             })
-
-                    }
-
+                        }
                 },
                 {
 

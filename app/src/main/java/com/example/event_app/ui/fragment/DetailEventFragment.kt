@@ -116,6 +116,7 @@ class DetailEventFragment : BaseFragment() {
             ).addTo(viewDisposable)
 
         }
+
     }
 
     private fun setFab() {

@@ -1,17 +1,24 @@
 package com.example.event_app.viewmodel
 
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
+import com.example.event_app.repository.UserRepository
+import com.example.event_app.utils.GlideApp
 import com.google.firebase.database.DatabaseReference
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -56,23 +63,27 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         return intent
     }
 
-    fun putImageWithBitmap(bitmap: Bitmap, id: String) {
+    fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
         val data = baos.toByteArray()
 
-        RxFirebaseStorage.putBytes(eventsRepository.ref.child("images/${randomPhotoNameGenerator(id)}.png"),data).toFlowable().subscribe(
+        RxFirebaseStorage.putBytes(eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data).toFlowable().subscribe(
             {
 
-                val pushPath = eventsRepository.allPictures.child(id).push()
+                val pushPath = eventsRepository.allPictures.child(eventId).push()
                 val key = pushPath.key
                 val path = it.metadata!!.path
-                val author = id
-                key?.let {
-                    val value = Photo(key,author, 0, path, mutableListOf())
-                    pushImageRefToDatabase(id, pushPath, value)
+                UserRepository.currentUser.value?.id.let {author ->
+                    author?.let {certifiedNotNullAuthor ->
+                        key?.let {
+                            val value = Photo(key,certifiedNotNullAuthor, 0, path, mutableListOf())
+                            pushImageRefToDatabase(eventId, pushPath, value)
+                        }
+                    }
                 }
+
             },
             {
                 Timber.e(it)
@@ -105,28 +116,58 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         return MediaStore.Images.Media.getBitmap(resolver, uri)
     }
 
-    fun getAllPictures(eventId: String) {
+    fun getAllPictures(eventId: String, context: Context) {
 
-        RxFirebaseStorage.getStream(eventsRepository.ref.child(eventId)) {task, input ->
-
-        }
+        RxFirebaseDatabase.observeSingleValueEvent(eventsRepository.allPictures.child(eventId), DataSnapshotMapper.listOf(Photo::class.java))
             .subscribe(
-                {
+                {photoList ->
+                    var number = 0
+                    for ((i, photo) in photoList.withIndex()) {
+                        GlideApp.with(context)
+                            .asBitmap()
+                            .load(EventRepository.ref.child(photo.url!!))
+                            .into(object : CustomTarget<Bitmap>(){
+
+                                override fun onLoadFailed(errorDrawable: Drawable?) {
+                                    super.onLoadFailed(errorDrawable)
+                                    Timber.e( "an error append $errorDrawable")
+                                    number++
+                                    if (number == photoList.size) {
+                                        Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                                    Timber.d( "image downloading in progress")
+                                    saveImage(resource, eventId, photo.id!!)
+                                    number++
+                                    if (number == photoList.size) {
+                                        Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                override fun onLoadCleared(placeholder: Drawable?) {
+                                    Timber.d( "onLoadCleared $placeholder")
+                                }
+
+                            })
+
+                    }
 
                 },
                 {
 
                 }
-        ).addTo(CompositeDisposable())
+            ).addTo(CompositeDisposable())
+
     }
 
-    fun saveImage(finalBitmap: Bitmap, eventName: String): String {
+    fun saveImage(finalBitmap: Bitmap, eventName: String, photoId: String): String {
 
         var imagePath = ""
         val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/$eventName/")
+        val photoFolder = File("$root/Event-Moi-Ca/$eventName/")
         photoFolder.mkdirs()
-        val outletFrame = "${randomPhotoNameGenerator("pic")}.jpg"
+        val outletFrame = "$photoId.jpg"
         val file = File(photoFolder, outletFrame)
         if (file.exists()) file.delete()
         try {

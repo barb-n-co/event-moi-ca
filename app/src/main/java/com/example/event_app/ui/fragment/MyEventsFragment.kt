@@ -50,8 +50,6 @@ class MyEventsFragment : BaseFragment() {
                 swiperefresh_fragment_myevents.isRefreshing = false
             })
             .addTo(viewDisposable)
-
-        viewModel.getEvents()
     }
 
     private fun initAdapter(eventList: List<Event>) {
@@ -80,5 +78,11 @@ class MyEventsFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+    }
+
+    //auto refresh
+    override fun onStart() {
+        super.onStart()
+        viewModel.getEvents()
     }
 }

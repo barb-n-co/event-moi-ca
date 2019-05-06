@@ -1,10 +1,12 @@
 package com.example.event_app.model
 
 class EventInvitation {
-    var idEvent: String? = null
-    var idUser: String? = null
+    lateinit var key: String
+    lateinit var idEvent: String
+    lateinit var idUser: String
 
-    constructor(idEvent: String?, idUser: String?){
+    constructor(key: String, idEvent: String, idUser: String){
+        this.key = key
         this.idEvent = idEvent
         this.idUser = idUser
     }

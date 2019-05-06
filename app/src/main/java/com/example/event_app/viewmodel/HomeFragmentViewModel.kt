@@ -64,6 +64,41 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
         }
     }
 
+    fun acceptInvitation(idEvent: String){
+        userRepository.currentUser.value?.id?.let {userId ->
+            eventsRepository.fetchEventsInvitations().subscribe(
+                {
+                    it.find {
+                        it.idUser == userId && it.idEvent == idEvent
+                    }?.let {
+                        eventsRepository.acceptInvitation(it.key, it.idEvent, it.idUser)
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+        }
+    }
+
+    fun refuseInvitation(idEvent: String){
+        userRepository.currentUser.value?.id?.let {userId ->
+            eventsRepository.fetchEventsInvitations().subscribe(
+                {
+                    it.find {
+                        it.idUser == userId && it.idEvent == idEvent
+                    }?.let {
+                        eventsRepository.refuseInvitation(it.key, it.idEvent)
+                        getEventsInvitations()
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+        }
+    }
+
     class Factory(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

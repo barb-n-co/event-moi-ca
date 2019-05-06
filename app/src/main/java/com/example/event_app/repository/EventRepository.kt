@@ -48,23 +48,27 @@ object EventRepository {
     }
 
    fun addEvent(idOrganizer: String, event: Event) {
-        myEventsRef.child(event.idEvent).push().setValue(MyEvents(event.idEvent, idOrganizer))
-        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+       val key = myEventsRef.push().key
+       key?.let {
+           myEventsRef.child(event.idEvent).child(it).setValue(MyEvents(it, event.idEvent, idOrganizer))
+           RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+       }
     }
 
     fun addInvitation(idEvent: String, idUser: String) {
-        eventsInvitationsRef.push().setValue(EventInvitation(idEvent, idUser))
+        val key = eventsInvitationsRef.push().key
+        key?.let {
+            eventsInvitationsRef.child(it).setValue(EventInvitation(it, idEvent, idUser))
+        }
     }
 
-    fun acceptInvitation(idEvent: String, idUser: String){
-        myEventsRef.push().setValue(MyEvents(idEvent, idUser))
-        RxFirebaseDatabase.observeSingleValueEvent(
-            eventsInvitationsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
-        ).subscribe(
-            {
+    fun acceptInvitation(key: String, idEvent: String, idUser: String){
+        myEventsRef.child(key).setValue(MyEvents(key, idEvent, idUser))
+        eventsInvitationsRef.child(idEvent).child(key).removeValue()
+    }
 
-            }
-        )
+    fun refuseInvitation(key: String, idEvent: String){
+        eventsInvitationsRef.child(idEvent).child(key).removeValue()
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

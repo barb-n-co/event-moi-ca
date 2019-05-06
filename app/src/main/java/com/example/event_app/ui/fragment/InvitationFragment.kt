@@ -64,7 +64,7 @@ class InvitationFragment : BaseFragment() {
 
         adapter.acceptClickPublisher.subscribe(
             {
-                //viewModel.acceptInvitation(it)
+                viewModel.acceptInvitation(it)
                 Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
@@ -72,7 +72,7 @@ class InvitationFragment : BaseFragment() {
 
         adapter.refuseClickPublisher.subscribe(
             {
-                //viewModel.refuseInvitation(it)
+                viewModel.refuseInvitation(it)
                 Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }

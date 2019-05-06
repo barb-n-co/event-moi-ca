@@ -41,6 +41,7 @@ class DetailEventFragment : BaseFragment() {
     private lateinit var adapter : CustomAdapter
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var eventId: String? = null
+    private lateinit var weakContext: WeakReference<Context>
 
 
     var imageIdList = ArrayList<Photo>()
@@ -63,7 +64,8 @@ class DetailEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
 
-        adapter = CustomAdapter(WeakReference<Context>(context).get()!!)
+        weakContext = WeakReference<Context>(context)
+        adapter = CustomAdapter(weakContext.get()!!)
 
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
@@ -163,7 +165,7 @@ class DetailEventFragment : BaseFragment() {
             }
             R.id.action_download_every_photos -> {
                 eventId?.let {id ->
-                    viewModel.getAllPictures(id, WeakReference(context).get()!!)
+                    viewModel.getAllPictures(id, weakContext.get()!!)
                 }
             }
         }
@@ -216,6 +218,12 @@ class DetailEventFragment : BaseFragment() {
             }
 
         }
+
+    }
+
+    override fun onDestroyView() {
+        weakContext.clear()
+        super.onDestroyView()
 
     }
 

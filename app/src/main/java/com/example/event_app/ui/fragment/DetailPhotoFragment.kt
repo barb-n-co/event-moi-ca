@@ -4,14 +4,17 @@ package com.example.event_app.ui.fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailPhotoViewModel
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
@@ -56,6 +59,8 @@ class DetailPhotoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("PhotoDetail", "event : ${eventId}")
 
+        setFab()
+
         viewModel.photo.subscribe(
             {photo ->
                 Log.d("PhotoDetail", photo.toString())
@@ -71,6 +76,40 @@ class DetailPhotoFragment : BaseFragment() {
 
         viewModel.getPhotoDetail(eventId, photoURL)
 
+    }
+
+    private fun setFab() {
+        fab_detail_photo.setMenuListener(object : SimpleMenuListenerAdapter() {
+            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
+                this@DetailPhotoFragment.onOptionsItemSelected(menuItem)
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_delete_picture -> {
+                eventId?.let {id ->
+                    viewModel.photo.value?.id.let {
+                        it?.let {photoId ->
+                            viewModel.deleteImageOrga(id, photoId).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    activity?.onBackPressed()
+                                } else {
+                                    Toast.makeText(context!!, "Impossible de supprimer l'image", Toast.LENGTH_SHORT).show()
+                                    Timber.e("an error occurred : ${it.exception}")
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            R.id.action_save_picture -> {
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

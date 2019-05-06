@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
+import com.google.android.gms.tasks.Task
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -38,6 +39,21 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
                     }).addTo(disposeBag)
             }
         }
+
+    }
+
+    fun deleteImageOrga(eventId: String,photoId: String): Task<Void> {
+        return eventsRepository.allPictures.child(eventId).child(photoId).removeValue()
+//        RxFirebaseDatabase.updateChildren(eventsRepository.allPictures.child(eventId).child(photoId), mapOf())
+//            .subscribe(
+//                {
+//                    Timber.d("Photo deleted")
+//                },
+//                {
+//                 Timber.e(it)
+//                }
+//            ).addTo(CompositeDisposable())
+
 
     }
 

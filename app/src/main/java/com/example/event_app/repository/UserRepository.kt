@@ -1,14 +1,14 @@
 package com.example.event_app.repository
 
-import android.util.Log
 import com.example.event_app.model.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseAuth
+import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import durdinapps.rxfirebase2.RxFirebaseDatabase
 import timber.log.Timber
 
 

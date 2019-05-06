@@ -10,7 +10,6 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class HomeFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
@@ -44,7 +43,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     response.second.filter {
                         it.idUser == idUser
                     }.map {
-                        response.first.find {first ->
+                        response.first.find { first ->
                             first.idEvent == it.idEvent
                         }
                     }.filterNotNull()

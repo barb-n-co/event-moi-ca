@@ -53,7 +53,7 @@ class CustomAdapter(private val context: Context) :
             photo.url?.let {path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
-                GlideApp.with(context).load(storageReference).override(300, 300).centerCrop().placeholder(R.drawable.logo_emc).into(iv!!)
+                GlideApp.with(context).load(storageReference).override(300, 300).centerCrop().into(iv!!)
             }
 
 

@@ -43,7 +43,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     response.second.filter {
                         it.idUser == idUser
                     }.map {
-                        response.first.find {first ->
+                        response.first.find { first ->
                             first.idEvent == it.idEvent
                         }
                     }.filterNotNull()

@@ -33,6 +33,7 @@ class ShareGalleryActivity : BaseActivity() {
                         val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                         if (imageUri != null) {
                             GlideApp.with(this).load(imageUri).into(iv_imageToShare)
+                            viewModel.getEvents()
                         } else {
                             Toast.makeText(
                                 this,

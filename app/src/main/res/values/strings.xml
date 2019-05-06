@@ -64,5 +64,7 @@
     <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucune invitation.</string>
     <string name="tv_no_event_myevents_fragment">Vous n\'avez aucun événement en prévision ou en cours.</string>
+    <string name="save_picture">Sauvegarder</string>
+    <string name="delete_picture_orga">Supprimer</string>
 
 </resources>

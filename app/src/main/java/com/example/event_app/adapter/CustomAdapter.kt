@@ -50,14 +50,11 @@ class CustomAdapter(private val context: Context) :
                     photosClickPublisher.onNext(photo.id!!)
                 }
             }
-            photo.url?.let {path ->
+            photo.url?.let { path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
-                GlideApp.with(context).load(storageReference).override(300, 300).centerCrop().placeholder(R.drawable.pic1).into(iv!!)
+                GlideApp.with(context).load(storageReference).override(300, 300).centerCrop().into(iv!!)
             }
-
-
         }
     }
-
 }

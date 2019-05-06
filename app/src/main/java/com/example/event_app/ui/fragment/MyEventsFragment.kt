@@ -1,7 +1,6 @@
 package com.example.event_app.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +10,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListEventAdapter
-import com.example.event_app.adapter.ListInvitationAdapter
 import com.example.event_app.model.Event
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.fragment_invitation.*
 import kotlinx.android.synthetic.main.fragment_myevents.*
 import org.kodein.di.direct
 import org.kodein.di.generic.instance
@@ -38,33 +35,16 @@ class MyEventsFragment : BaseFragment() {
 
         viewModel = kodein.direct.instance(arg = this)
 
-        swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getEvents() }
-
-        viewModel.eventList.subscribe(
-            {
-                initAdapter(it)
-                swiperefresh_fragment_myevents.isRefreshing = false
-            },
-            {
-                Timber.e(it)
-                swiperefresh_fragment_myevents.isRefreshing = false
-            })
-            .addTo(viewDisposable)
-    }
-
-    private fun initAdapter(eventList: List<Event>) {
         val adapter = ListEventAdapter()
         val mLayoutManager = LinearLayoutManager(this.context)
         rv_myevents_fragment.layoutManager = mLayoutManager
         rv_myevents_fragment.itemAnimator = DefaultItemAnimator()
         rv_myevents_fragment.adapter = adapter
-        adapter.submitList(eventList)
         swiperefresh_fragment_myevents.isRefreshing = false
 
-        adapter.refuseClickPublisher.subscribe(
+        adapter.organizerClickPublisher.subscribe(
             {
-                //viewModel.acceptInvitation(it)
-                Toast.makeText(context, "Quitter événement", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.b_MyEventsFragment_orga), Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -78,11 +58,31 @@ class MyEventsFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+
+        swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getMyEvents() }
+
+        viewModel.myEventList.subscribe(
+            {
+                if(it.isEmpty()) {
+                    rv_myevents_fragment.visibility = View.INVISIBLE
+                    g_no_item_myevents_fragment.visibility = View.VISIBLE
+                } else {
+                    rv_myevents_fragment.visibility = View.VISIBLE
+                    g_no_item_myevents_fragment.visibility = View.INVISIBLE
+                    adapter.submitList(it)
+                }
+                swiperefresh_fragment_myevents.isRefreshing = false
+            },
+            {
+                Timber.e(it)
+                swiperefresh_fragment_myevents.isRefreshing = false
+            })
+            .addTo(viewDisposable)
     }
 
     //auto refresh
     override fun onStart() {
         super.onStart()
-        viewModel.getEvents()
+        viewModel.getMyEvents()
     }
 }

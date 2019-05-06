@@ -1,6 +1,7 @@
 package com.example.event_app.repository
 
 import com.example.event_app.model.*
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -24,11 +25,6 @@ object EventRepository {
     private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
     private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
 
-
-    init {
-        fetchEventsInvitations()
-    }
-
     fun fetchEvents(): Observable<List<Event>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsRef, DataSnapshotMapper.listOf(Event::class.java)
@@ -38,33 +34,41 @@ object EventRepository {
     fun fetchEventsInvitations(): Observable<List<EventInvitation>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsInvitationsRef, DataSnapshotMapper.listOf(EventInvitation::class.java)
-        ).toObservable()
+        ).map {
+            it.filter { it.key?.isNotEmpty() ?: true }
+        }.toObservable()
     }
 
     fun fetchMyEvents(): Observable<List<MyEvents>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             myEventsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
-        ).toObservable()
+        ).map {
+            it.filter { it.key?.isNotEmpty() ?: true }
+        }.toObservable()
     }
 
    fun addEvent(idOrganizer: String, event: Event) {
-        myEventsRef.child(event.idEvent).push().setValue(MyEvents(event.idEvent, idOrganizer))
-        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+       val key = myEventsRef.push().key
+       key?.let {
+           myEventsRef.child(it).setValue(MyEvents(it, event.idEvent, idOrganizer))
+           RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
+       }
     }
 
     fun addInvitation(idEvent: String, idUser: String) {
-        eventsInvitationsRef.push().setValue(EventInvitation(idEvent, idUser))
+        val key = eventsInvitationsRef.push().key
+        key?.let {
+            eventsInvitationsRef.child(it).setValue(EventInvitation(it, idEvent, idUser))
+        }
     }
 
-    fun acceptInvitation(idEvent: String, idUser: String){
-        myEventsRef.push().setValue(MyEvents(idEvent, idUser))
-        RxFirebaseDatabase.observeSingleValueEvent(
-            eventsInvitationsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
-        ).subscribe(
-            {
+    fun acceptInvitation(key: String, idEvent: String, idUser: String): Task<Void>{
+        eventsInvitationsRef.child(key).removeValue()
+        return myEventsRef.child(key).setValue(MyEvents(key, idEvent, idUser))
+    }
 
-            }
-        )
+    fun refuseInvitation(key: String): Task<Void> {
+        return eventsInvitationsRef.child(key).removeValue()
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
@@ -21,21 +22,17 @@ class MainActivity : BaseActivity() {
     private val viewModel: MainActivityViewModel by instance(arg = this)
 
     companion object {
-
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
                 Intent(fromActivity, MainActivity::class.java)
             )
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         setSupportActionBar(findViewById(R.id.toolbar))
-
         viewModel.user.subscribe(
             {
                 Toast.makeText(this, getString(R.string.toast_welcome_user_main_activity, it.name), Toast.LENGTH_LONG)
@@ -54,10 +51,16 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_logout -> {
-            viewModel.logout()
-            Toast.makeText(this, "sign out", Toast.LENGTH_SHORT).show()
-            LoginActivity.start(this)
-            finish()
+            val dialog = AlertDialog.Builder(this)
+            dialog.setTitle(R.string.tv_title_dialog_logout)
+                .setMessage(R.string.tv_message_dialog_logout)
+                .setNegativeButton(R.string.b_cancel_dialog_logout) { dialoginterface, i -> }
+                .setPositiveButton(R.string.b_validate_dialog_logout) { dialoginterface, i ->
+                    viewModel.logout()
+                    Toast.makeText(this, getString(R.string.t_sign_out), Toast.LENGTH_SHORT).show()
+                    LoginActivity.start(this)
+                    finish()
+                }.show()
             true
         }
         else -> {
@@ -94,7 +97,7 @@ class MainActivity : BaseActivity() {
         return true
     }
 
-    fun openQrCode() {
+    private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
 }

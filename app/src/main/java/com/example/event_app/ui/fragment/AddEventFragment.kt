@@ -19,8 +19,8 @@ class AddEventFragment : BaseFragment() {
 
     var dateStart: Date? = null
     var dateEnd: Date? = null
-    var startDateTimePicker = Calendar.getInstance()
-    var endDateTimePicker = Calendar.getInstance()
+    var startDateTimePicker: Calendar = Calendar.getInstance()
+    var endDateTimePicker: Calendar = Calendar.getInstance()
     private val viewModel: AddEventFragmentViewModel by instance(arg = this)
 
     companion object {
@@ -72,8 +72,6 @@ class AddEventFragment : BaseFragment() {
         }
     }
 
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -111,5 +109,4 @@ class AddEventFragment : BaseFragment() {
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
         return if (date != null) df.format(date) else "Erreur test"
     }
-
 }

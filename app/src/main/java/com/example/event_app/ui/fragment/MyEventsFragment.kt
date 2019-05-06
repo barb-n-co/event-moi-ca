@@ -42,10 +42,9 @@ class MyEventsFragment : BaseFragment() {
         rv_myevents_fragment.adapter = adapter
         swiperefresh_fragment_myevents.isRefreshing = false
 
-        adapter.refuseClickPublisher.subscribe(
+        adapter.organizerClickPublisher.subscribe(
             {
-                //viewModel.acceptInvitation(it)
-                Toast.makeText(context, "Quitter événement", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.b_MyEventsFragment_orga), Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -64,7 +63,14 @@ class MyEventsFragment : BaseFragment() {
 
         viewModel.myEventList.subscribe(
             {
-                adapter.submitList(it)
+                if(it.isEmpty()) {
+                    rv_myevents_fragment.visibility = View.INVISIBLE
+                    g_no_item_myevents_fragment.visibility = View.VISIBLE
+                } else {
+                    rv_myevents_fragment.visibility = View.VISIBLE
+                    g_no_item_myevents_fragment.visibility = View.INVISIBLE
+                    adapter.submitList(it)
+                }
                 swiperefresh_fragment_myevents.isRefreshing = false
             },
             {

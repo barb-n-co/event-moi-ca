@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="8dp">
 
         <TextView
                 android:id="@+id/tv_name_myevent_item"
@@ -36,22 +37,11 @@
                 app:layout_constraintEnd_toStartOf="@+id/b_refuse_myevent_item"
                 tools:text="Du 14/04/2018 au 15/04/2018"/>
 
-        <TextView
-                android:id="@+id/tv_description_myevent_item"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
-                android:justificationMode="inter_word"
-                app:layout_constraintTop_toBottomOf="@+id/tv_startDate_myevent_item"
-                app:layout_constraintStart_toStartOf="@+id/tv_name_myevent_item"
-                app:layout_constraintEnd_toStartOf="@+id/b_refuse_myevent_item"
-                tools:text="Ceci est une description..."/>
-
         <ImageView
                 android:id="@+id/b_refuse_myevent_item"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_cancel"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_avatar"
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

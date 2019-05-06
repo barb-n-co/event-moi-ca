@@ -35,7 +35,7 @@ class InvitationFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        com.example.event_app.ui.fragment.viewModel = kodein.direct.instance(arg = this)
+        viewModel = kodein.direct.instance(arg = this)
 
         val adapter = ListInvitationAdapter()
         val mLayoutManager = LinearLayoutManager(this.context)
@@ -64,7 +64,14 @@ class InvitationFragment : BaseFragment() {
 
         viewModel.invitationList.subscribe(
             {
-                adapter.submitList(it)
+                if (it.isEmpty()) {
+                    rv_invitation_fragment.visibility = View.INVISIBLE
+                    g_no_item_invitation_fragment.visibility = View.VISIBLE
+                } else {
+                    rv_invitation_fragment.visibility = View.VISIBLE
+                    g_no_item_invitation_fragment.visibility = View.INVISIBLE
+                    adapter.submitList(it)
+                }
                 swiperefresh_fragment_invitation.isRefreshing = false
             },
             {

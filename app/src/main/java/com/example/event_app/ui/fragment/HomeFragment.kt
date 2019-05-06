@@ -48,10 +48,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 }
             }
         }
-//        fabmenu_home.setMenuListener(object : SimpleMenuListenerAdapter() {
-//            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
-//                this@HomeFragment.onOptionsItemSelected(menuItem)
-//        })
     }
 
     private fun setupViewPager() {
@@ -61,19 +57,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         vp_saved_searches_history.adapter = adapter
         tl_invites_events_home_fragment.setupWithViewPager(vp_saved_searches_history)
     }
-
-//    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-//        when (item?.itemId) {
-//            R.id.action_scan_qrcode -> {
-//                requestCameraPermission()
-//            }
-//            R.id.action_add_event -> {
-//                val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
-//                NavHostFragment.findNavController(this).navigate(action)
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     fun openQrCode(){
         ScannerQrCodeActivity.start(activity!!)

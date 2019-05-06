@@ -25,6 +25,7 @@ class DetailPhotoFragment : BaseFragment() {
     private var photoId: String? = null
     private var idOrganizer: String? = null
     private var photoAuthor: String? = null
+    private var photoURL: String? = null
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
@@ -61,6 +62,9 @@ class DetailPhotoFragment : BaseFragment() {
                 }
                 photo.auteur?.let {
                     photoAuthor = it
+                }
+                photo.url?.let {
+                    photoURL = it
                 }
                 setFab()
             },
@@ -99,7 +103,24 @@ class DetailPhotoFragment : BaseFragment() {
                     }
                 }
                 1 -> {
-                    Toast.makeText(context, "Sauvegarde", Toast.LENGTH_SHORT).show()
+                    photoURL?.let {
+                        viewModel.downloadImageOnPhone(it)
+                            .subscribe(
+                                {byteArray ->
+                                    if (viewModel.saveImage(byteArray, eventId!!, photoId!!).isNotEmpty()) {
+                                        Toast.makeText(context, "Image téléchargée", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "Une erreur est survenue lors du téléchargement", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                {error ->
+                                    Timber.e(error)
+                                    Toast.makeText(context, "Une erreur est survenue lors du téléchargement", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
+                    }
+
                 }
             }
         }

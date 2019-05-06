@@ -57,8 +57,6 @@ class DetailEventFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
         return inflater.inflate(R.layout.fragment_detail_event, container, false)
     }
 
@@ -121,9 +119,7 @@ class DetailEventFragment : BaseFragment() {
                     Timber.e(it)
                 }
             ).addTo(viewDisposable)
-
         }
-
     }
 
     private fun setFab() {
@@ -212,13 +208,9 @@ class DetailEventFragment : BaseFragment() {
                     eventId?.let {eventId ->
                         viewModel.putImageWithBitmap(galeryBitmap, eventId)
                     }
-
                 }
-
             }
-
         }
-
     }
 
     override fun onDestroyView() {

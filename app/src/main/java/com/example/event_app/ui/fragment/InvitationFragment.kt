@@ -35,7 +35,7 @@ class InvitationFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        com.example.event_app.ui.fragment.viewModel = kodein.direct.instance(arg = this)
+        viewModel = kodein.direct.instance(arg = this)
 
         swiperefresh_fragment_invitation.setOnRefreshListener { viewModel.getEventsInvitations() }
 
@@ -43,7 +43,14 @@ class InvitationFragment : BaseFragment() {
 
         viewModel.invitationList.subscribe(
             {
-                initAdapter(it)
+                if (it.isEmpty()) {
+                    rv_invitation_fragment.visibility = View.INVISIBLE
+                    g_no_item_invitation_fragment.visibility = View.VISIBLE
+                } else {
+                    rv_invitation_fragment.visibility = View.VISIBLE
+                    g_no_item_invitation_fragment.visibility = View.INVISIBLE
+                    initAdapter(it)
+                }
                 swiperefresh_fragment_invitation.isRefreshing = false
             },
             {

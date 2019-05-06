@@ -26,7 +26,7 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
         val date = Calendar.getInstance()
         date.set(Calendar.YEAR, year)
         date.set(Calendar.MONTH, month)
-        date.set(Calendar.DAY_OF_MONTH, day)
+        date.set(Calendar.DAY_OF_MONTH, day - 1)
 
         val intent = Intent()
         intent.putExtra("args", date)

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent"
-                                                   xmlns:tools="http://schemas.android.com/tools">
-
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.core.widget.NestedScrollView
             android:orientation="vertical"
@@ -16,15 +16,17 @@
                 android:orientation="vertical"
                 android:layout_height="match_parent">
 
-            <ImageView android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:adjustViewBounds="true"
-                       android:id="@+id/iv_banner"
-                       android:layout_margin="8dp"
-                       app:layout_constraintTop_toTopOf="parent"
-                       app:layout_constraintStart_toStartOf="parent"
-                       app:layout_constraintEnd_toEndOf="parent"
-                       app:srcCompat="@drawable/bannerevent"/>
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/iv_banner"
+                    android:layout_margin="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:srcCompat="@drawable/bannerevent"/>
+
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -148,18 +150,22 @@
                     android:layout_marginEnd="16dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
-    <io.github.yavski.fabspeeddial.FabSpeedDial
+    <io.github.kobakei.materialfabspeeddial.FabSpeedDial
             android:id="@+id/fabmenu_detail_event"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
-            app:fabBackgroundTint="@color/colorAccent"
-            app:fabDrawable="@drawable/ic_menu_fab"
-            app:fabGravity="bottom_end"
-            app:fabMenu="@menu/menu_fab_detail_event"
+            app:fab_fabBackgroundColor="@color/colorAccent"
+            app:fab_miniFabBackgroundColor="@color/colorAccent"
+            app:fab_miniFabTextBackground="@drawable/fab_label_back"
+            app:fab_miniFabTextColor="@android:color/white"
+            app:fab_extraMargin="-12dp"
+            app:fab_fabDrawable="@drawable/ic_menu_fab"
+            app:fab_menu="@menu/menu_fab_detail_event"
             tools:ignore="MissingPrefix"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
+import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
@@ -32,6 +33,7 @@ class DetailPhotoFragment : BaseFragment() {
 
     private var eventId: String? = null
     private var photoId: String? = null
+    private var idOrganizer: String? = null
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
@@ -51,6 +53,9 @@ class DetailPhotoFragment : BaseFragment() {
         photoId = arguments?.let{
             DetailPhotoFragmentArgs.fromBundle(it).photoURL
         }!!
+        idOrganizer = arguments?.let {
+            DetailPhotoFragmentArgs.fromBundle(it).idOrganizer
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_detail_photo, container, false)
     }
@@ -79,25 +84,43 @@ class DetailPhotoFragment : BaseFragment() {
     }
 
     private fun setFab() {
+
         fab_detail_photo.setMenuListener(object : SimpleMenuListenerAdapter() {
-            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
-                this@DetailPhotoFragment.onOptionsItemSelected(menuItem)
+
+            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean {
+                val userId = UserRepository.currentUser.value?.id
+                val author = viewModel.photo.value?.auteur
+
+                if (userId != null && author != null && (userId != author || userId != idOrganizer)) {
+                    menuItem?.subMenu?.getItem(1)?.isVisible = false
+                }
+
+                return this@DetailPhotoFragment.onOptionsItemSelected(menuItem)
+            }
+
         })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        val userId = UserRepository.currentUser.value?.id
+        val author = viewModel.photo.value?.auteur
+
         when (item?.itemId) {
             R.id.action_delete_picture -> {
-                eventId?.let { eventId ->
-                    viewModel.photo.value?.let { photo ->
-                        photo.id?.let { id ->
-                            photo.url?.let { url ->
-                                deletePicture(eventId, id, url)
+                if (userId != null && author != null && (userId == author || userId == idOrganizer)) {
+                    eventId?.let { eventId ->
+                        viewModel.photo.value?.let { photo ->
+                            photo.id?.let { id ->
+                                photo.url?.let { url ->
+                                    deletePicture(eventId, id, url)
+                                }
                             }
                         }
                     }
+                } else {
+                    Toast.makeText(context,"Vous n'avez pas les droits pour cette action", Toast.LENGTH_SHORT).show()
                 }
-
             }
             R.id.action_save_picture -> {
 
@@ -119,9 +142,7 @@ class DetailPhotoFragment : BaseFragment() {
                         {error ->
                             Timber.e(error)
                             Toast.makeText(
-                                context!!,
-                                "Impossible de supprimer l'image $error",
-                                Toast.LENGTH_SHORT
+                                context!!, "Impossible de supprimer l'image $error", Toast.LENGTH_SHORT
                             ).show()
                         }
                     ).addTo(viewDisposable)

@@ -42,6 +42,7 @@ class DetailEventFragment : BaseFragment() {
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var eventId: String? = null
     private lateinit var weakContext: WeakReference<Context>
+    private var idOrganizer = ""
 
 
     var imageIdList = ArrayList<Photo>()
@@ -84,6 +85,7 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.name)
+                idOrganizer = it.idOrganizer!!
             },
             {
                 Timber.e(it)
@@ -100,7 +102,7 @@ class DetailEventFragment : BaseFragment() {
             ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
             adapter.photosClickPublisher.subscribe(
                 {photoId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(notNullId, photoId)
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(notNullId, photoId, idOrganizer)
                     NavHostFragment.findNavController(this).navigate(action)
                 },
                 {

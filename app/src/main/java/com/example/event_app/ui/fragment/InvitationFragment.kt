@@ -37,9 +37,30 @@ class InvitationFragment : BaseFragment() {
 
         viewModel = kodein.direct.instance(arg = this)
 
-        swiperefresh_fragment_invitation.setOnRefreshListener { viewModel.getEventsInvitations() }
+        val adapter = ListInvitationAdapter()
+        val mLayoutManager = LinearLayoutManager(this.context)
+        rv_invitation_fragment.layoutManager = mLayoutManager
+        rv_invitation_fragment.itemAnimator = DefaultItemAnimator()
+        rv_invitation_fragment.adapter = adapter
+        swiperefresh_fragment_invitation.isRefreshing = false
 
-        Log.d(MyEventsFragment.TAG, "fragment")
+        adapter.acceptClickPublisher.subscribe(
+            {
+                viewModel.acceptInvitation(it)
+                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
+            },
+            { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        adapter.refuseClickPublisher.subscribe(
+            {
+                viewModel.refuseInvitation(it)
+                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
+            },
+            { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        swiperefresh_fragment_invitation.setOnRefreshListener { viewModel.getEventsInvitations() }
 
         viewModel.invitationList.subscribe(
             {
@@ -49,7 +70,7 @@ class InvitationFragment : BaseFragment() {
                 } else {
                     rv_invitation_fragment.visibility = View.VISIBLE
                     g_no_item_invitation_fragment.visibility = View.INVISIBLE
-                    initAdapter(it)
+                    adapter.submitList(it)
                 }
                 swiperefresh_fragment_invitation.isRefreshing = false
             },
@@ -58,32 +79,6 @@ class InvitationFragment : BaseFragment() {
                 swiperefresh_fragment_invitation.isRefreshing = false
             })
             .addTo(viewDisposable)
-    }
-
-    private fun initAdapter(eventList: List<Event>) {
-        val adapter = ListInvitationAdapter()
-        val mLayoutManager = LinearLayoutManager(this.context)
-        rv_invitation_fragment.layoutManager = mLayoutManager
-        rv_invitation_fragment.itemAnimator = DefaultItemAnimator()
-        rv_invitation_fragment.adapter = adapter
-        adapter.submitList(eventList)
-        swiperefresh_fragment_invitation.isRefreshing = false
-
-        adapter.acceptClickPublisher.subscribe(
-            {
-                //viewModel.acceptInvitation(it)
-                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
-            },
-            { Timber.e(it) }
-        ).addTo(viewDisposable)
-
-        adapter.refuseClickPublisher.subscribe(
-            {
-                //viewModel.refuseInvitation(it)
-                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
-            },
-            { Timber.e(it) }
-        ).addTo(viewDisposable)
     }
 
     //auto refresh

@@ -35,34 +35,11 @@ class MyEventsFragment : BaseFragment() {
 
         viewModel = kodein.direct.instance(arg = this)
 
-        swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getEvents() }
-
-        viewModel.eventList.subscribe(
-            {
-                if(it.isEmpty()) {
-                    rv_myevents_fragment.visibility = View.INVISIBLE
-                    g_no_item_myevents_fragment.visibility = View.VISIBLE
-                } else {
-                    rv_myevents_fragment.visibility = View.VISIBLE
-                    g_no_item_myevents_fragment.visibility = View.INVISIBLE
-                    initAdapter(it)
-                }
-                swiperefresh_fragment_myevents.isRefreshing = false
-            },
-            {
-                Timber.e(it)
-                swiperefresh_fragment_myevents.isRefreshing = false
-            })
-            .addTo(viewDisposable)
-    }
-
-    private fun initAdapter(eventList: List<Event>) {
         val adapter = ListEventAdapter()
         val mLayoutManager = LinearLayoutManager(this.context)
         rv_myevents_fragment.layoutManager = mLayoutManager
         rv_myevents_fragment.itemAnimator = DefaultItemAnimator()
         rv_myevents_fragment.adapter = adapter
-        adapter.submitList(eventList)
         swiperefresh_fragment_myevents.isRefreshing = false
 
         adapter.organizerClickPublisher.subscribe(
@@ -81,11 +58,31 @@ class MyEventsFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+
+        swiperefresh_fragment_myevents.setOnRefreshListener { viewModel.getMyEvents() }
+
+        viewModel.myEventList.subscribe(
+            {
+                if(it.isEmpty()) {
+                    rv_myevents_fragment.visibility = View.INVISIBLE
+                    g_no_item_myevents_fragment.visibility = View.VISIBLE
+                } else {
+                    rv_myevents_fragment.visibility = View.VISIBLE
+                    g_no_item_myevents_fragment.visibility = View.INVISIBLE
+                    adapter.submitList(it)
+                }
+                swiperefresh_fragment_myevents.isRefreshing = false
+            },
+            {
+                Timber.e(it)
+                swiperefresh_fragment_myevents.isRefreshing = false
+            })
+            .addTo(viewDisposable)
     }
 
     //auto refresh
     override fun onStart() {
         super.onStart()
-        viewModel.getEvents()
+        viewModel.getMyEvents()
     }
 }

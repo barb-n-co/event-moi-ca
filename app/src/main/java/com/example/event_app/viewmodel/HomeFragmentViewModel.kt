@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventInvitation
+import com.example.event_app.model.MyEvents
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Observable
@@ -15,17 +16,36 @@ import timber.log.Timber
 class HomeFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
     BaseViewModel() {
 
-    val eventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
+    val myEventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
     val invitationList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
 
-    fun getEvents() {
-        eventsRepository.fetchEvents().subscribe(
-            {
-                eventList.onNext(it)
-            },
-            {
-                Timber.e(it)
-            }).addTo(disposeBag)
+    fun getMyEvents() {
+        userRepository.currentUser.value?.id?.let { idUser ->
+            Observable.combineLatest(
+                eventsRepository.fetchEvents(),
+                eventsRepository.fetchMyEvents(),
+                BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
+                    Pair(
+                        t1,
+                        t2
+                    )
+                })
+                .map { response ->
+                    response.second.filter {
+                        it.idUser == idUser
+                    }.map {
+                        response.first.find { first ->
+                            first.idEvent == it.idEvent
+                        }
+                    }.filterNotNull()
+                }
+                .subscribe({
+                    myEventList.onNext(it)
+                },
+                    {
+                        Timber.e(it)
+                    })
+        }
     }
 
     fun getEventsInvitations() {
@@ -60,6 +80,53 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     fun addInvitation(idEvent: String) {
         userRepository.currentUser.value?.id?.let {
             eventsRepository.addInvitation(idEvent, it)
+        }
+    }
+
+    fun acceptInvitation(idEvent: String) {
+        userRepository.currentUser.value?.id?.let { userId ->
+            eventsRepository.fetchEventsInvitations().subscribe(
+                {
+                    it.find {
+                        it.idUser == userId && it.idEvent == idEvent
+                    }?.let {
+                        it.key?.let { key ->
+                            it.idEvent?.let { idEvent ->
+                                it.idUser?.let { idUser ->
+                                    eventsRepository.acceptInvitation(key, idEvent, idUser).addOnCompleteListener{
+                                        getEventsInvitations()
+                                        getMyEvents()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+        }
+    }
+
+    fun refuseInvitation(idEvent: String) {
+        userRepository.currentUser.value?.id?.let { userId ->
+            eventsRepository.fetchEventsInvitations().subscribe(
+                {
+                    it.find {
+                        it.idUser == userId && it.idEvent == idEvent
+                    }?.let {
+                        it.key?.let { key ->
+                            eventsRepository.refuseInvitation(key).addOnCompleteListener {
+                                getEventsInvitations()
+                            }
+                        }
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
         }
     }
 

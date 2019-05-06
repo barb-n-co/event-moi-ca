@@ -58,7 +58,7 @@ object EventRepository {
     fun addInvitation(idEvent: String, idUser: String) {
         val key = eventsInvitationsRef.push().key
         key?.let {
-            eventsInvitationsRef.child(it).setValue(EventInvitation(it, idEvent, idUser))
+            eventsInvitationsRef.child(idEvent).child(it).setValue(EventInvitation(it, idEvent, idUser))
         }
     }
 

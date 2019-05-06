@@ -1,9 +1,9 @@
 package com.example.event_app.model
 
 class EventInvitation {
-    lateinit var key: String
-    lateinit var idEvent: String
-    lateinit var idUser: String
+    var key: String? = null
+    var idEvent: String? = null
+    var idUser: String? = null
 
     constructor(key: String, idEvent: String, idUser: String){
         this.key = key

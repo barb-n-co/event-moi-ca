@@ -70,7 +70,13 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     it.find {
                         it.idUser == userId && it.idEvent == idEvent
                     }?.let {
-                        eventsRepository.acceptInvitation(it.key, it.idEvent, it.idUser)
+                        it.key?.let { key ->
+                            it.idEvent?.let { idEvent ->
+                                it.idUser?.let {idUser ->
+                                    eventsRepository.acceptInvitation(key, idEvent, idUser)
+                                }
+                            }
+                        }
                     }
                 },
                 {
@@ -87,8 +93,12 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     it.find {
                         it.idUser == userId && it.idEvent == idEvent
                     }?.let {
-                        eventsRepository.refuseInvitation(it.key, it.idEvent)
-                        getEventsInvitations()
+                        it.key?.let { key ->
+                            it.idEvent?.let {idEvent ->
+                                eventsRepository.refuseInvitation(key, idEvent)
+                                getEventsInvitations()
+                            }
+                        }
                     }
                 },
                 {

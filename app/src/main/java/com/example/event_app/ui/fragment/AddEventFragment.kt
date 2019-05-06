@@ -1,21 +1,18 @@
 package com.example.event_app.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.event_app.R
-import android.content.Intent
 import android.widget.Toast
-import com.example.event_app.model.Event
+import com.example.event_app.R
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
-import com.example.event_app.viewmodel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
 import org.kodein.di.generic.instance
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 
 
 class AddEventFragment : BaseFragment() {
@@ -49,13 +46,13 @@ class AddEventFragment : BaseFragment() {
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, startDateCode)
-            date.show(fragmentManager, tag)
+            date.show(fragmentManager!!, tag)
         }
 
         chip_date_end_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, endDateCode)
-            date.show(fragmentManager, tag)
+            date.show(fragmentManager!!, tag)
         }
 
         b_validate_add_event_fragment.setOnClickListener {
@@ -85,7 +82,7 @@ class AddEventFragment : BaseFragment() {
                 startDateTimePicker = data?.extras?.get("args") as Calendar
                 val date = TimePickerFragment()
                 date.setTargetFragment(this, startTimeCode)
-                date.show(fragmentManager, tag)
+                date.show(fragmentManager!!, tag)
             }
             startTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar
@@ -98,7 +95,7 @@ class AddEventFragment : BaseFragment() {
                 endDateTimePicker = data?.extras?.get("args") as Calendar
                 val date = TimePickerFragment()
                 date.setTargetFragment(this, endTimeCode)
-                date.show(fragmentManager, tag)
+                date.show(fragmentManager!!, tag)
             }
             endTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar

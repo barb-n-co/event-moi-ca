@@ -78,7 +78,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
                 UserRepository.currentUser.value?.id.let {author ->
                     author?.let {certifiedNotNullAuthor ->
                         key?.let {
-                            val value = Photo(key,certifiedNotNullAuthor, 0, path, mutableListOf())
+                            val value = Photo(key, certifiedNotNullAuthor, 0, path, mutableListOf())
                             pushImageRefToDatabase(eventId, pushPath, value)
                         }
                     }

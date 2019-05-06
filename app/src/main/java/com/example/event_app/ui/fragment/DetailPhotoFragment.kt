@@ -2,43 +2,33 @@ package com.example.event_app.ui.fragment
 
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailPhotoViewModel
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
+import io.github.kobakei.materialfabspeeddial.FabSpeedDialMenu
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- *
- */
 class DetailPhotoFragment : BaseFragment() {
 
     private var eventId: String? = null
     private var photoId: String? = null
     private var idOrganizer: String? = null
+    private var photoAuthor: String? = null
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
     companion object {
-        const val TAG = "DETAIL_PHOTO_FRAGMENT"
         fun newInstance(): DetailPhotoFragment = DetailPhotoFragment()
     }
 
@@ -62,20 +52,21 @@ class DetailPhotoFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("PhotoDetail", "event : ${eventId}")
-
-        setFab()
 
         viewModel.photo.subscribe(
             {photo ->
-                Log.d("PhotoDetail", photo.toString())
                 photo.url?.let {url ->
                     val storageReference = EventRepository.ref.child(url)
                     GlideApp.with(context!!).load(storageReference).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
                 }
+                photo.auteur?.let {
+                    photoAuthor = it
+                }
+                setFab()
             },
             {
                 Timber.e(it)
+                setFab()
             })
             .addTo(viewDisposable)
 
@@ -84,31 +75,19 @@ class DetailPhotoFragment : BaseFragment() {
     }
 
     private fun setFab() {
-
-        fab_detail_photo.setMenuListener(object : SimpleMenuListenerAdapter() {
-
-            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean {
-                val userId = UserRepository.currentUser.value?.id
-                val author = viewModel.photo.value?.auteur
-
-                if (userId != null && author != null && (userId != author || userId != idOrganizer)) {
-                    menuItem?.subMenu?.getItem(1)?.isVisible = false
-                }
-
-                return this@DetailPhotoFragment.onOptionsItemSelected(menuItem)
-            }
-
-        })
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
         val userId = UserRepository.currentUser.value?.id
-        val author = viewModel.photo.value?.auteur
+        val author = photoAuthor
+        val menu = FabSpeedDialMenu(context!!)
 
-        when (item?.itemId) {
-            R.id.action_delete_picture -> {
-                if (userId != null && author != null && (userId == author || userId == idOrganizer)) {
+        if (userId != null && author != null && (userId == author || userId == idOrganizer)) {
+            menu.add(0,0,0,"Supprimer l'image").setIcon(R.drawable.ic_delete)
+        }
+        menu.add(0,1,1,"Sauvegarder l'image").setIcon(R.drawable.ic_file_download)
+        fab_detail_photo.setMenu(menu)
+
+        fab_detail_photo.addOnMenuItemClickListener { miniFab, label, itemId ->
+            when (itemId) {
+                0 -> {
                     eventId?.let { eventId ->
                         viewModel.photo.value?.let { photo ->
                             photo.id?.let { id ->
@@ -118,16 +97,14 @@ class DetailPhotoFragment : BaseFragment() {
                             }
                         }
                     }
-                } else {
-                    Toast.makeText(context,"Vous n'avez pas les droits pour cette action", Toast.LENGTH_SHORT).show()
+                }
+                1 -> {
+                    Toast.makeText(context, "Sauvegarde", Toast.LENGTH_SHORT).show()
                 }
             }
-            R.id.action_save_picture -> {
-
-            }
         }
-        return super.onOptionsItemSelected(item)
     }
+
 
     private fun deletePicture(eventId: String, id: String, url: String) {
         viewModel.deleteImageOrga(eventId, id).addOnCompleteListener {

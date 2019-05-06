@@ -9,9 +9,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -26,7 +26,8 @@ import com.example.event_app.model.Photo
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
-import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
@@ -126,52 +127,49 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun setFab() {
-        fabmenu_detail_event.setMenuListener(object : SimpleMenuListenerAdapter() {
-            override fun onMenuItemSelected(menuItem: MenuItem?): Boolean =
-                this@DetailEventFragment.onOptionsItemSelected(menuItem)
-        })
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.action_generate_qrcode -> {
-                eventId?.let {
-                    GenerationQrCodeActivity.start(activity as MainActivity, it)
+        fabmenu_detail_event.addOnMenuItemClickListener(object: OnMenuItemClick {
+            override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {
+                when(itemId) {
+                    R.id.action_generate_qrcode -> {
+                        eventId?.let {
+                            GenerationQrCodeActivity.start(activity as MainActivity, it)
+                        }
+                    }
+                    R.id.action_camera -> {
+                        if (permissionManager.checkPermissions(
+                                arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                )
+                            )
+                        ) {
+                            takePhotoByCamera()
+                        } else {
+                            requestPermissions()
+                        }
+                    }
+                    R.id.action_gallery -> {
+                        if (permissionManager.checkPermissions(
+                                arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                )
+                            )
+                        ) {
+                            startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
+                        } else {
+                            requestPermissions()
+                        }
+                    }
+                    R.id.action_download_every_photos -> {
+                        eventId?.let {id ->
+                            viewModel.getAllPictures(id, weakContext.get()!!)
+                        }
+                    }
                 }
             }
-            R.id.action_camera -> {
-                if (permissionManager.checkPermissions(
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-                    )
-                ) {
-                    takePhotoByCamera()
-                } else {
-                    requestPermissions()
-                }
-            }
-            R.id.action_gallery -> {
-                if (permissionManager.checkPermissions(
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-                    )
-                ) {
-                    startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
-                } else {
-                    requestPermissions()
-                }
-            }
-            R.id.action_download_every_photos -> {
-                eventId?.let {id ->
-                    viewModel.getAllPictures(id, weakContext.get()!!)
-                }
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        })
     }
 
     private fun requestPermissions() {

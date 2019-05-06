@@ -54,7 +54,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     }
 
     bind<ShareGalleryViewModel>() with factory { activity: FragmentActivity ->
-        val factory = ShareGalleryViewModel.Factory(instance())
+        val factory = ShareGalleryViewModel.Factory(instance(), instance())
         ViewModelProvider(activity, factory).get(ShareGalleryViewModel::class.java)
     }
 

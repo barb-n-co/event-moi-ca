@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/action_generate_qrcode"
-            android:icon="@drawable/ic_load_qrcode"
-            android:orderInCategory="0"
-            android:title="@string/fab_generate_qrcode_detail_event_fragment"/>
-    <item
             android:id="@+id/action_camera"
             android:icon="@drawable/ic_camera"
             android:orderInCategory="2"

@@ -13,8 +13,9 @@ import com.example.event_app.model.EventItem
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_event.view.*
 
-class ListInvitationAdapter(val context : Context) : ListAdapter<EventItem, ListInvitationAdapter.EventViewHolder>(DiffCardCallback()) {
+class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMyEventsAdapter.EventViewHolder>(DiffCardCallback()) {
 
+    val eventClickPublisher: PublishSubject<String> = PublishSubject.create()
     val acceptClickPublisher: PublishSubject<String> = PublishSubject.create()
     val refuseClickPublisher: PublishSubject<String> = PublishSubject.create()
 
@@ -50,6 +51,10 @@ class ListInvitationAdapter(val context : Context) : ListAdapter<EventItem, List
                 itemView.b_refuse_myevents_item.visibility = View.VISIBLE
                 itemView.chip_user_state_myevents_item.chipBackgroundColor = ColorStateList.valueOf(context.resources.getColor(R.color.colorPrimary))
                 itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_invited)
+            }
+
+            itemView.setOnClickListener {
+                eventClickPublisher.onNext(event.idEvent)
             }
 
             itemView.b_accept_myevents_item.setOnClickListener {

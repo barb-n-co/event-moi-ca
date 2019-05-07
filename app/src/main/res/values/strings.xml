@@ -34,6 +34,12 @@
     <string name="fab_qrcode_title">Scanner un QR Code</string>
     <string name="fab_add_event_title">Ajouter un évènement</string>
 
+    <!-- Item My Events -->
+    <string name="tv_state_invited">Invited</string>
+    <string name="tv_state_participate">Participate</string>
+    <string name="tv_state_organizer">Organizer</string>
+
+
     <!-- Add Event Fragment -->
     <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>
     <string name="tv_name_add_event_fragment">Nom de l\'évènement</string>
@@ -51,7 +57,7 @@
     <string name="detail_event_startDate">Date de debut :</string>
     <string name="detail_event_endDate">Date de fin :</string>
 
-  <string name="disconnection">Déconnexion</string>
+    <string name="disconnection">Déconnexion</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -66,5 +72,6 @@
     <string name="tv_no_event_myevents_fragment">Vous n\'avez aucun événement en prévision ou en cours.</string>
     <string name="save_picture">Sauvegarder</string>
     <string name="delete_picture_orga">Supprimer</string>
+    <string name="selectEventToShare">Choisissez l\'évenement où envoyer la photo :</string>
 
 </resources>

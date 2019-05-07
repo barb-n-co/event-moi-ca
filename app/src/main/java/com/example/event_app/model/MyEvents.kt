@@ -1,14 +1,14 @@
 package com.example.event_app.model
 
 class MyEvents {
-    var key: String? = null
     var idEvent: String? = null
-    var idUser: String? = null
+    var accepted: Int = 0
+    var organizer: Int = 0
 
-    constructor(key: String?, idEvent: String?, idUser: String?){
-        this.key = key
+    constructor(idEvent: String?, accepted: Int, organizer: Int){
         this.idEvent = idEvent
-        this.idUser = idUser
+        this.accepted = accepted
+        this.organizer = organizer
     }
 
     constructor(){}

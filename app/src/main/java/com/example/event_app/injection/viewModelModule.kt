@@ -52,4 +52,10 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
         ViewModelProvider(fragment, instance<AddEventFragmentViewModel.Factory>())
             .get(AddEventFragmentViewModel::class.java)
     }
+
+    bind<ShareGalleryViewModel>() with factory { activity: FragmentActivity ->
+        val factory = ShareGalleryViewModel.Factory(instance(), instance())
+        ViewModelProvider(activity, factory).get(ShareGalleryViewModel::class.java)
+    }
+
 }

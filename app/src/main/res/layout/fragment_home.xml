@@ -37,16 +37,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tl_invites_events_home_fragment"/>
 
-    <io.github.yavski.fabspeeddial.FabSpeedDial
+    <io.github.kobakei.materialfabspeeddial.FabSpeedDial
             android:id="@+id/fabmenu_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
-            app:fabBackgroundTint="@color/colorAccent"
-            app:fabDrawable="@drawable/ic_menu_fab"
-            app:fabGravity="bottom_end"
-            app:fabMenu="@menu/menu_fab_home"
+            app:fab_fabBackgroundColor="@color/colorAccent"
+            app:fab_miniFabBackgroundColor="@color/colorAccent"
+            app:fab_miniFabTextBackground="@drawable/fab_label_back"
+            app:fab_miniFabTextColor="@android:color/white"
+            app:fab_extraMargin="-12dp"
+            app:fab_fabDrawable="@drawable/ic_menu_fab"
+            app:fab_menu="@menu/menu_fab_home"
             tools:ignore="MissingPrefix"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

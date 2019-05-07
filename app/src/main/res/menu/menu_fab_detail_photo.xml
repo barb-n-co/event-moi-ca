@@ -10,4 +10,5 @@
             android:icon="@drawable/ic_delete"
             android:orderInCategory="1"
             android:title="@string/delete_picture_orga"/>
+
 </menu>

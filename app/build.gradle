@@ -84,7 +84,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:3.2.1'
 
     //FAB Speed Dial
-    implementation 'io.github.yavski:fab-speed-dial:1.0.6'
+    implementation 'com.github.kobakei:MaterialFabSpeedDial:master-SNAPSHOT'
 
     //Navigation component
     implementation "android.arch.navigation:navigation-fragment:$versions.navigationVersion"

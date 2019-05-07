@@ -41,12 +41,15 @@
             android:name="com.example.event_app.ui.fragment.DetailPhotoFragment"
             android:label="fragment_detail_photo"
             tools:layout="@layout/fragment_detail_photo">
-        <argument android:name="eventId"
-                  app:argType="string"/>
+        <argument
+                android:name="eventId"
+                app:argType="string"/>
         <argument
                 android:name="photoURL"
-                app:argType="string"
-        />
+                app:argType="string"/>
+        <argument
+                android:name="idOrganizer"
+                app:argType="string"/>
     </fragment>
 
 

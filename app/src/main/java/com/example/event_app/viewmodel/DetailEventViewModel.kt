@@ -69,12 +69,15 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
         val data = baos.toByteArray()
 
-        RxFirebaseStorage.putBytes(eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data).toFlowable().subscribe(
-            {
-
+        RxFirebaseStorage.putBytes(
+            eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data
+        )
+            .toFlowable()
+            .subscribe(
+            {snapshot ->
                 val pushPath = eventsRepository.allPictures.child(eventId).push()
                 val key = pushPath.key
-                val path = it.metadata!!.path
+                val path = snapshot.metadata!!.path
                 UserRepository.currentUser.value?.id.let {author ->
                     author?.let {certifiedNotNullAuthor ->
                         key?.let {

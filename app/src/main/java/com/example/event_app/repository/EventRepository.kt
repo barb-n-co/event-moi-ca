@@ -2,7 +2,6 @@ package com.example.event_app.repository
 
 import com.example.event_app.model.*
 import com.google.android.gms.tasks.Task
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import durdinapps.rxfirebase2.DataSnapshotMapper
@@ -12,20 +11,19 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
 
 object EventRepository {
 
     val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
     val ref = db.reference
     private val database = FirebaseDatabase.getInstance()
+
     val allPictures = database.reference.child("photos")
-    private val eventsRef = database.reference.child("events")
-    private val eventsInvitationsRef = database.reference.child("events-invitations")
-    private val myEventsRef = database.reference.child("my-events")
-    private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
     private val pictureReportRef = database.reference.child("reported-pictures")
-    private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
+    private val eventsRef = database.reference.child("events")
+    private val myEventsRef = database.reference.child("user-events")
+    private val eventParticipantsRef = database.reference.child("event-participants")
+    private val commentsRef = database.getReference("commentaires")
 
     fun fetchEvents(): Observable<List<Event>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -33,44 +31,35 @@ object EventRepository {
         ).toObservable()
     }
 
-    fun fetchEventsInvitations(): Observable<List<EventInvitation>> {
+    fun fetchMyEvents(idUser: String): Observable<List<MyEvents>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            eventsInvitationsRef, DataSnapshotMapper.listOf(EventInvitation::class.java)
+            myEventsRef.child(idUser), DataSnapshotMapper.listOf(MyEvents::class.java)
         ).map {
-            it.filter { it.key?.isNotEmpty() ?: true }
+            it.filter {
+                it.idEvent?.isNotEmpty() ?: false
+            }
         }.toObservable()
     }
 
-    fun fetchMyEvents(): Observable<List<MyEvents>> {
-        return RxFirebaseDatabase.observeSingleValueEvent(
-            myEventsRef, DataSnapshotMapper.listOf(MyEvents::class.java)
-        ).map {
-            it.filter { it.key?.isNotEmpty() ?: true }
-        }.toObservable()
+    fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
+        myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
+        eventParticipantsRef.child(event.idEvent).child(idOrganizer).setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
+        RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 
-   fun addEvent(idOrganizer: String, event: Event) {
-       val key = myEventsRef.push().key
-       key?.let {
-           myEventsRef.child(it).setValue(MyEvents(it, event.idEvent, idOrganizer))
-           RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
-       }
+    fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
+        myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
+        eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 0, 0))
     }
 
-    fun addInvitation(idEvent: String, idUser: String) {
-        val key = eventsInvitationsRef.push().key
-        key?.let {
-            eventsInvitationsRef.child(it).setValue(EventInvitation(it, idEvent, idUser))
-        }
+    fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {
+        myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 1, 0))
+        return eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 1, 0))
     }
 
-    fun acceptInvitation(key: String, idEvent: String, idUser: String): Task<Void>{
-        eventsInvitationsRef.child(key).removeValue()
-        return myEventsRef.child(key).setValue(MyEvents(key, idEvent, idUser))
-    }
-
-    fun refuseInvitation(key: String): Task<Void> {
-        return eventsInvitationsRef.child(key).removeValue()
+    fun refuseInvitation(idEvent: String, idUser: String): Task<Void> {
+        myEventsRef.child(idUser).child(idEvent).removeValue()
+        return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

@@ -11,6 +11,7 @@ import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.google.android.gms.tasks.Task
+import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.rxkotlin.addTo
@@ -89,6 +90,10 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
     fun reportPhoto(eventId: String, photo: Photo): Completable {
         return eventsRepository.pushPictureReport(eventId, photo)
+    }
+
+    fun getStorageRef(url: String): StorageReference {
+        return eventsRepository.ref.child(url)
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

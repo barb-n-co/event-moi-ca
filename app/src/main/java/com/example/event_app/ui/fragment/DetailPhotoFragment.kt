@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.example.event_app.R
 import com.example.event_app.model.Photo
-import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailPhotoViewModel
@@ -58,8 +57,7 @@ class DetailPhotoFragment : BaseFragment() {
             {photo ->
                 this.photo.onNext(photo)
                 photo.url?.let {url ->
-                    val storageReference = EventRepository.ref.child(url)
-                    GlideApp.with(context!!).load(storageReference).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
+                    GlideApp.with(context!!).load(viewModel.getStorageRef(url)).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
                 }
                 photo.auteur?.let {
                     photoAuthor = it

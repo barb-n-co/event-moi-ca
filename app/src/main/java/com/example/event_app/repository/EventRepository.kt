@@ -92,7 +92,12 @@ object EventRepository {
     }
 
     fun pushPictureReport(eventId: String, photo: Photo): Completable {
-        return RxFirebaseDatabase.setValue(pictureReportRef.child(eventId).push(), photo)
+        return if (photo.id != null) {
+            RxFirebaseDatabase.setValue(pictureReportRef.child(eventId).child(photo.id!!), photo)
+        } else {
+            Completable.error(Throwable("error: photo id is null"))
+        }
+
     }
 
     fun deletePhotoFromFireStore(photoUrl: String): Completable {

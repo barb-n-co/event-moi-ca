@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_generation_qrcode.*
 
 class GenerationQrCodeActivity: BaseActivity() {
 
-    val QRcodeWidth = 500
+    private val QRcodeWidth = 500
     private val IMAGE_DIRECTORY = "/QRcodeDemonuts"
     var bitmap: Bitmap? = null
 
@@ -40,10 +40,9 @@ class GenerationQrCodeActivity: BaseActivity() {
         } catch (e: WriterException) {
             e.printStackTrace()
         }
-
     }
 
-    fun encodeAsBitmap(str: String): Bitmap? {
+    private fun encodeAsBitmap(str: String): Bitmap? {
         val result: BitMatrix
         try {
             result = MultiFormatWriter().encode(str,
@@ -71,5 +70,4 @@ class GenerationQrCodeActivity: BaseActivity() {
         onBackPressed()
         return true
     }
-
 }

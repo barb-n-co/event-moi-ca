@@ -9,7 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
-import com.example.event_app.adapter.ListInvitationAdapter
+import com.example.event_app.adapter.ListMyEventsAdapter
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
@@ -39,7 +39,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
         setDisplayHomeAsUpEnabled(false)
         setFab()
 
-        val adapter = ListInvitationAdapter(activity!!)
+        val adapter = ListMyEventsAdapter(activity!!)
         val mLayoutManager = LinearLayoutManager(this.context)
         rv_event_home_fragment.layoutManager = mLayoutManager
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
@@ -60,6 +60,16 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        adapter.eventClickPublisher.subscribe(
+            {
+                val action = HomeFragmentDirections.actionMyHomeFragmentToDetailEventFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
         ).addTo(viewDisposable)
 
         swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }

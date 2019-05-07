@@ -66,5 +66,7 @@
     <string name="tv_no_event_myevents_fragment">Vous n\'avez aucun événement en prévision ou en cours.</string>
     <string name="save_picture">Sauvegarder</string>
     <string name="delete_picture_orga">Supprimer</string>
+    <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
+    <string name="tv_place_detail_event_fragment">Adresse :</string>
 
 </resources>

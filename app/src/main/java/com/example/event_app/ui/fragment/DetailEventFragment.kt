@@ -5,8 +5,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,8 +25,7 @@ import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
-import com.example.event_app.model.Event
-import com.example.event_app.model.Photo
+import com.example.event_app.model.*
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -81,6 +84,7 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventName.text = it.name
                 tv_eventDescription.text = it.description
                 tv_eventOrga.text = it.organizer
+                tv_eventPlace.text = spannable { url("",it.place) }
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.name)
@@ -90,6 +94,14 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+
+        tv_eventPlace.setOnClickListener {
+          val location = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text.toString()
+            val Adresse =  Intent(Intent.ACTION_VIEW, Uri.parse(location))
+            startActivity(Adresse)
+        }
+
+
 
         eventId?.let {notNullId ->
             viewModel.getEventInfo(notNullId)
@@ -108,6 +120,8 @@ class DetailEventFragment : BaseFragment() {
                     Timber.e(it)
                 }
             ).addTo(viewDisposable)
+
+
 
             adapter.submitList(imageIdList)
 
@@ -212,6 +226,7 @@ class DetailEventFragment : BaseFragment() {
             }
         }
     }
+
 
     override fun onDestroyView() {
         weakContext.clear()

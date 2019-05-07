@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
@@ -42,7 +43,15 @@ class AddEventFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        et_place_add_event_fragment.setOnClickListener {
 
+            val transaction = fragmentManager?.beginTransaction()
+            val fragment = MapsFragment()
+
+            transaction?.replace(R.id.content_home, fragment)
+            transaction?.addToBackStack(null)
+            transaction?.commit()
+        }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, startDateCode)
@@ -59,18 +68,20 @@ class AddEventFragment : BaseFragment() {
             val id = java.util.UUID.randomUUID().toString()
             val organizer = et_organizer_add_event_fragment.text.toString()
             val name = et_name_add_event_fragment.text.toString()
+            val place = et_place_add_event_fragment.text.toString()
             val description = et_description_add_event_fragment.text.toString()
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
 
             if(dateEnd != null && dateStart != null && organizer.isNotEmpty() && name.isNotEmpty()){
-                viewModel.addEventFragment(id, organizer, name, description, startDateString, endDateString)
+                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString)
                 fragmentManager?.popBackStack()
             } else {
                 Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

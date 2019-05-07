@@ -9,9 +9,9 @@ import com.example.event_app.repository.UserRepository
 
 class AddEventFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) : BaseViewModel() {
 
-    fun addEventFragment(idEvent: String, organizer: String, name: String, description: String, startDateString: String, endDateString: String){
+    fun addEventFragment(idEvent: String, organizer: String, name: String, place: String, description: String, startDateString: String, endDateString: String){
         userRepository.currentUser.value?.id?.let {
-            eventsRepository.addEvent(it, Event(idEvent, it, organizer, name, description, startDateString, endDateString))
+            eventsRepository.addEvent(it, Event(idEvent, it, organizer, name, place, description, startDateString, endDateString))
         }
     }
 

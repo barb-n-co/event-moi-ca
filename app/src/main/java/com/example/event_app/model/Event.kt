@@ -5,17 +5,19 @@ class Event {
         var idOrganizer: String? = null
         var organizer: String = ""
         var name: String = ""
+        var place: String = ""
         var description: String? = null
         var dateStart: String = ""
         var dateEnd: String = ""
 
     constructor() { }
 
-        constructor(idEvent: String, idOrganizer: String?, organizer: String, name: String, description: String?, dateStart: String, dateEnd: String) {
+        constructor(idEvent: String, idOrganizer: String?, organizer: String, name: String, place : String, description: String?, dateStart: String, dateEnd: String) {
                 this.idEvent = idEvent
                 this.idOrganizer = idOrganizer
                 this.organizer = organizer
                 this.name = name
+                this.place = place
                 this.description = description
                 this.dateStart = dateStart
                 this.dateEnd = dateEnd

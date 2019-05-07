@@ -23,6 +23,7 @@ import java.io.FileOutputStream
 class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+    private val folderName = "Event-Moi-Ca"
 
 
     fun getPhotoDetail(eventId: String?, photoId: String?) {
@@ -62,7 +63,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
         var imagePath = ""
         val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/Event-Moi-Ca/$eventName/")
+        val photoFolder = File("$root/$folderName/$eventName/")
         photoFolder.mkdirs()
         val outletFrame = "$photoId.jpg"
         val file = File(photoFolder, outletFrame)
@@ -85,7 +86,10 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
     fun deleteRefFromFirestore(photoUrl: String): Completable {
         return RxFirebaseStorage.delete(eventsRepository.ref.child(photoUrl))
+    }
 
+    fun reportPhoto(eventId: String, photo: Photo): Completable {
+        return eventsRepository.pushPictureReport(eventId, photo)
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

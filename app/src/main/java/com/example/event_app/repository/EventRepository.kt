@@ -7,11 +7,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 
 object EventRepository {
 
@@ -23,6 +23,7 @@ object EventRepository {
     private val eventsInvitationsRef = database.reference.child("events-invitations")
     private val myEventsRef = database.reference.child("my-events")
     private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
+    private val pictureReportRef = database.reference.child("reported-pictures")
     private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
 
     fun fetchEvents(): Observable<List<Event>> {
@@ -81,12 +82,15 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             allPictures.child(eventId).child(photoId), Photo::class.java
         )
-
     }
 
     fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             commentsRef.child(photoId), DataSnapshotMapper.listOf(Commentaire::class.java)
         ).toFlowable()
+    }
+
+    fun pushPictureReport(eventId: String, photo: Photo): Completable {
+        return RxFirebaseDatabase.setValue(pictureReportRef.child(eventId).push(), photo)
     }
 }

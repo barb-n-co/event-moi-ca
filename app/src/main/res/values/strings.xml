@@ -65,6 +65,12 @@
     <string name="tv_no_invitation_fragment">Vous n\'avez aucune invitation.</string>
     <string name="tv_no_event_myevents_fragment">Vous n\'avez aucun événement en prévision ou en cours.</string>
     <string name="save_picture">Sauvegarder</string>
-    <string name="delete_picture_orga">Supprimer</string>
+    <string name="delete_picture_fab_title">Supprimer l\'image</string>
+    <string name="save_image_fab_title">Sauvegarder l\'image</string>
+    <string name="picture_downloaded_toast">Image téléchargée</string>
+    <string name="error_on_download_toast">Une erreur est survenue lors du téléchargement</string>
+    <string name="picture_deleted">Image supprimée</string>
+    <string name="unable_to_delete_picture">Impossible de supprimer l\'image %s</string>
+    <string name="picture_reported_to_owner">image signalée à l\'organisateur</string>
 
 </resources>

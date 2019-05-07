@@ -56,6 +56,7 @@ class DetailPhotoFragment : BaseFragment() {
 
         viewModel.photo.subscribe(
             {photo ->
+                this.photo.onNext(photo)
                 photo.url?.let {url ->
                     val storageReference = EventRepository.ref.child(url)
                     GlideApp.with(context!!).load(storageReference).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
@@ -84,9 +85,10 @@ class DetailPhotoFragment : BaseFragment() {
         val menu = FabSpeedDialMenu(context!!)
 
         if (userId != null && author != null && (userId == author || userId == idOrganizer)) {
-            menu.add(0,0,0,"Supprimer l'image").setIcon(R.drawable.ic_delete)
+            menu.add(0,0,0,getString(R.string.delete_picture_fab_title)).setIcon(R.drawable.ic_delete)
         }
-        menu.add(0,1,1,"Sauvegarder l'image").setIcon(R.drawable.ic_file_download)
+        menu.add(0,1,1,getString(R.string.save_image_fab_title)).setIcon(R.drawable.ic_file_download)
+        menu.add(0,2,2,"signaler la photo").setIcon(R.drawable.ic_report_problem)
         fab_detail_photo.setMenu(menu)
 
         fab_detail_photo.addOnMenuItemClickListener { miniFab, label, itemId ->
@@ -108,17 +110,33 @@ class DetailPhotoFragment : BaseFragment() {
                             .subscribe(
                                 {byteArray ->
                                     if (viewModel.saveImage(byteArray, eventId!!, photoId!!).isNotEmpty()) {
-                                        Toast.makeText(context, "Image téléchargée", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, getString(R.string.picture_downloaded_toast), Toast.LENGTH_SHORT).show()
                                     } else {
-                                        Toast.makeText(context, "Une erreur est survenue lors du téléchargement", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, getString(R.string.error_on_download_toast), Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 {error ->
                                     Timber.e(error)
-                                    Toast.makeText(context, "Une erreur est survenue lors du téléchargement", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, getString(R.string.error_on_download_toast), Toast.LENGTH_SHORT).show()
                                 }
                             )
 
+                    }
+
+                }
+                2 -> {
+                    photo.value?.let {
+                        viewModel.reportPhoto(eventId!!,it)
+                            .subscribe(
+                                {
+                                    Timber.d("photo reported ")
+                                    Toast.makeText(context, getString(R.string.picture_reported_to_owner), Toast.LENGTH_SHORT).show()
+                                },
+                                {
+                                    Timber.e(it)
+                                    Toast.makeText(context, "Un problème a eut lieu lors du signalement. Merci de réessayer.", Toast.LENGTH_SHORT).show()
+                                }
+                            )
                     }
 
                 }
@@ -133,19 +151,19 @@ class DetailPhotoFragment : BaseFragment() {
                 viewModel.deleteRefFromFirestore(url)
                     .subscribe(
                         {
-                            Toast.makeText(context!!, "Image supprimée", Toast.LENGTH_SHORT)
+                            Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT)
                                 .show()
                             activity?.onBackPressed()
                         },
                         {error ->
                             Timber.e(error)
                             Toast.makeText(
-                                context!!, "Impossible de supprimer l'image $error", Toast.LENGTH_SHORT
+                                context!!, String.format(getString(R.string.unable_to_delete_picture, error)), Toast.LENGTH_SHORT
                             ).show()
                         }
                     ).addTo(viewDisposable)
             } else {
-                Toast.makeText(context!!, "Impossible de supprimer l'image", Toast.LENGTH_SHORT)
+                Toast.makeText(context!!, String.format(getString(R.string.unable_to_delete_picture, "")), Toast.LENGTH_SHORT)
                     .show()
                 Timber.e("an error occurred : ${it.exception}")
             }

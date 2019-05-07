@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -92,5 +93,17 @@ object EventRepository {
 
     fun pushPictureReport(eventId: String, photo: Photo): Completable {
         return RxFirebaseDatabase.setValue(pictureReportRef.child(eventId).push(), photo)
+    }
+
+    fun deletePhotoFromFireStore(photoUrl: String): Completable {
+        return RxFirebaseStorage.delete(ref.child(photoUrl))
+    }
+
+    fun downloadImageFile(url: String): Maybe<ByteArray> {
+        return RxFirebaseStorage.getBytes(ref.child(url), 2000*1000*4)
+    }
+
+    fun deletePhotoOrga(eventId: String, photoId: String): Task<Void> {
+        return allPictures.child(eventId).child(photoId).removeValue()
     }
 }

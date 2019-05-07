@@ -71,6 +71,18 @@ class DetailEventFragment : BaseFragment() {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
+        iv_generate_qrCode.setOnClickListener {
+            eventId?.let {
+                GenerationQrCodeActivity.start(activity as MainActivity, it)
+            }
+        }
+
+        iv_share_deepLink.setOnClickListener {
+            eventId?.let {
+
+            }
+        }
+
         requestPermissions()
 
         setFab()
@@ -127,11 +139,6 @@ class DetailEventFragment : BaseFragment() {
         fabmenu_detail_event.addOnMenuItemClickListener(object: OnMenuItemClick {
             override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {
                 when(itemId) {
-                    R.id.action_generate_qrcode -> {
-                        eventId?.let {
-                            GenerationQrCodeActivity.start(activity as MainActivity, it)
-                        }
-                    }
                     R.id.action_camera -> {
                         if (permissionManager.checkPermissions(
                                 arrayOf(

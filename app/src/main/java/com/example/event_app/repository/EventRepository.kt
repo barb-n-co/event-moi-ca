@@ -24,6 +24,8 @@ object EventRepository {
     private val myEventsRef = database.reference.child("my-events")
     private var invitations: BehaviorSubject<List<String>> = BehaviorSubject.create()
     private val commentsRef: DatabaseReference = EventRepository.database.getReference("commentaires")
+    private val participantsRef: DatabaseReference = EventRepository.database.getReference("def")
+
 
     fun fetchEvents(): Observable<List<Event>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -87,6 +89,12 @@ object EventRepository {
     fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             commentsRef.child(photoId), DataSnapshotMapper.listOf(Commentaire::class.java)
+        ).toFlowable()
+    }
+
+    fun getParticipant(eventId: String): Flowable<List<User>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            participantsRef.child(eventId), DataSnapshotMapper.listOf(User::class.java)
         ).toFlowable()
     }
 }

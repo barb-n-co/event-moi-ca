@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/root_layout"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
@@ -111,14 +112,23 @@
                     android:layout_marginTop="8dp"
                     tools:text="15/05/2019" android:textSize="16sp"/>
 
+            <TextView
+                    android:text="TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_eventDateEnd"
+                    android:id="@+id/tv_listParticipant"
+                    android:layout_marginStart="32dp" android:textSize="16sp" android:layout_marginTop="16dp"/>
+
             <View
                     android:id="@+id/hr2"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_eventDateEnd"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_listParticipant"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:background="#c0c0c0" android:layout_marginTop="8dp"/>
+                    android:background="#c0c0c0" android:layout_marginTop="16dp"/>
 
             <TextView
                     android:layout_width="match_parent"
@@ -148,6 +158,7 @@
                     android:layout_marginBottom="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

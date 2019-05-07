@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -38,18 +39,28 @@ const val COMPRESSION_QUALITY = 20
 class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
 
 
     fun getEventInfo(eventId: String) {
         eventsRepository.getEventDetail(eventId).subscribe(
             {
-                Log.d("DetailEvent","vm"+it.name)
                 event.onNext(it)
             },
             {
                 Timber.e(it)
             }).addTo(disposeBag)
+        getParticipant(eventId)
 
+    }
+
+    fun getParticipant(eventId: String)
+    {
+        eventsRepository.getParticipant(eventId).subscribe({
+            participants.onNext(it)
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {

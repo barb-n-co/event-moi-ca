@@ -8,13 +8,19 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.inflate
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.transition.TransitionManager
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
@@ -23,6 +29,7 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -31,6 +38,7 @@ import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
+import kotlinx.android.synthetic.main.list_participants_popup.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -38,8 +46,8 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel : DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter : CustomAdapter
+    private val viewModel: DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter: CustomAdapter
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var eventId: String? = null
     private lateinit var weakContext: WeakReference<Context>
@@ -47,6 +55,7 @@ class DetailEventFragment : BaseFragment() {
 
 
     var imageIdList = ArrayList<Photo>()
+    lateinit var mockParticipants : List<User>
 
     companion object {
         const val TAG = "DETAIL_EVENT_FRAGMENT"
@@ -63,6 +72,10 @@ class DetailEventFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
+        val u1 = User("id1","Bibi","bibi@gmail")
+        val u2 = User("id2","bubu","bubi@gmail")
+        val u3 = User("id3","baba","babi@gmail")
+        mockParticipants = listOf(u1,u2,u3)
 
         weakContext = WeakReference<Context>(context)
         adapter = CustomAdapter(weakContext.get()!!)
@@ -90,8 +103,17 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+            tv_listParticipant.text = "${mockParticipants.size} participants"
+        tv_listParticipant.setOnClickListener { openPopUp() }
 
-        eventId?.let {notNullId ->
+//        viewModel.participants.subscribe({
+//            tv_listParticipant.text = "${it.size} participants"
+//        }, {
+//            Timber.e(it)
+//        })
+
+
+        eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
 
             //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -100,8 +122,12 @@ class DetailEventFragment : BaseFragment() {
             rv_listImage.adapter = adapter
             ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
             adapter.photosClickPublisher.subscribe(
-                {photoId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(notNullId, photoId, idOrganizer)
+                { photoId ->
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
+                        notNullId,
+                        photoId,
+                        idOrganizer
+                    )
                     NavHostFragment.findNavController(this).navigate(action)
                 },
                 {
@@ -112,7 +138,7 @@ class DetailEventFragment : BaseFragment() {
             adapter.submitList(imageIdList)
 
             viewModel.initPhotoEventListener(notNullId).subscribe(
-                {photoList ->
+                { photoList ->
                     adapter.submitList(photoList)
                 },
                 {
@@ -122,11 +148,32 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
+    private fun openPopUp() {
+
+        //val inflater:LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        // Inflate a custom view using layout inflater
+        val popup = inflate(this.context,R.layout.list_participants_popup,null)
+
+
+        val popupWindow = PopupWindow(popup, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        popupWindow.elevation = 10.0F
+        TransitionManager.beginDelayedTransition(root_layout)
+        popupWindow.showAtLocation(
+            root_layout, // Location to display popup window
+            Gravity.CENTER, // Exact position of layout to display popup
+            0, // X offset
+            0 // Y offset
+        )
+        val buttonPopup = popup.findViewById<Button>(R.id.btn_popup)
+        buttonPopup.setOnClickListener {popupWindow.dismiss()}
+    }
+
     private fun setFab() {
 
-        fabmenu_detail_event.addOnMenuItemClickListener(object: OnMenuItemClick {
+        fabmenu_detail_event.addOnMenuItemClickListener(object : OnMenuItemClick {
             override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {
-                when(itemId) {
+                when (itemId) {
                     R.id.action_generate_qrcode -> {
                         eventId?.let {
                             GenerationQrCodeActivity.start(activity as MainActivity, it)
@@ -159,7 +206,7 @@ class DetailEventFragment : BaseFragment() {
                         }
                     }
                     R.id.action_download_every_photos -> {
-                        eventId?.let {id ->
+                        eventId?.let { id ->
                             viewModel.getAllPictures(id, weakContext.get()!!)
                         }
                     }
@@ -196,7 +243,7 @@ class DetailEventFragment : BaseFragment() {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
-                    eventId?.let {eventId ->
+                    eventId?.let { eventId ->
                         viewModel.putImageWithBitmap(capturedBitmap, eventId)
                     }
                 }
@@ -205,7 +252,7 @@ class DetailEventFragment : BaseFragment() {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
                     val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    eventId?.let {eventId ->
+                    eventId?.let { eventId ->
                         viewModel.putImageWithBitmap(galeryBitmap, eventId)
                     }
                 }

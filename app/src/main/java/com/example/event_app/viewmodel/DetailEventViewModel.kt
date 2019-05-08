@@ -16,6 +16,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -35,7 +36,69 @@ import java.util.*
 
 const val COMPRESSION_QUALITY = 20
 
-class DetailEventViewModel(private val eventsRepository: EventRepository) : BaseViewModel()  {
+class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : BaseViewModel()  {
+
+    companion object {
+
+        var eventsRepository = EventRepository
+        var userRepository = UserRepository
+
+        private fun randomPhotoNameGenerator(id: String): String {
+            val generator = Random()
+            var n = 10000
+            n = generator.nextInt(n)
+
+            return "${id}_${n}_${Date().time}"
+        }
+
+        private fun pushImageRefToDatabase(id: String, pushPath: DatabaseReference, value: Photo) {
+            RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
+                .subscribe(
+                    {
+                        Timber.d("success but always catch error")
+                    },
+                    {
+                        Timber.e("setValue error :  $it")
+                    }
+                ).addTo(CompositeDisposable())
+        }
+
+        private fun getCurrentUser() : User {
+            return userRepository.currentUser.value!!
+        }
+
+        fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
+
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
+            val data = baos.toByteArray()
+
+            RxFirebaseStorage.putBytes(
+                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data
+            )
+                .toFlowable()
+                .subscribe(
+                    {snapshot ->
+                        val pushPath = eventsRepository.allPictures.child(eventId).push()
+                        val key = pushPath.key
+                        val path = snapshot.metadata!!.path
+                        val authorId = getCurrentUser().id
+                        val authorName = getCurrentUser().name ?: ""
+                        authorId?.let {authorIdNotNull ->
+                            key?.let {keyNotNull ->
+                                val value = Photo(keyNotNull, authorIdNotNull, authorName,  0, path, mutableListOf())
+                                pushImageRefToDatabase(eventId, pushPath, value)
+                            }
+                        }
+
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                ).addTo(CompositeDisposable())
+
+        }
+    }
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
 
@@ -64,55 +127,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
     }
 
     fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
-
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
-        val data = baos.toByteArray()
-
-        RxFirebaseStorage.putBytes(
-            eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data
-        )
-            .toFlowable()
-            .subscribe(
-            {snapshot ->
-                val pushPath = eventsRepository.allPictures.child(eventId).push()
-                val key = pushPath.key
-                val path = snapshot.metadata!!.path
-                UserRepository.currentUser.value?.id.let {author ->
-                    author?.let {certifiedNotNullAuthor ->
-                        key?.let {
-                            val value = Photo(key, certifiedNotNullAuthor, 0, path, mutableListOf())
-                            pushImageRefToDatabase(eventId, pushPath, value)
-                        }
-                    }
-                }
-
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(CompositeDisposable())
-
-    }
-
-    private fun pushImageRefToDatabase(id: String, pushPath: DatabaseReference, value: Photo) {
-        RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
-            .subscribe(
-                {
-                    Timber.d("success but always catch error")
-                },
-                {
-                    Timber.e("setValue error :  $it")
-                }
-            ).addTo(CompositeDisposable())
-    }
-
-    private fun randomPhotoNameGenerator(id: String): String {
-        val generator = Random()
-        var n = 10000
-        n = generator.nextInt(n)
-
-        return "${id}_${n}_${Date().time}"
+        DetailEventViewModel.putImageWithBitmap(bitmap, eventId)
     }
 
     fun getBitmapWithResolver(resolver: ContentResolver, uri: Uri): Bitmap {
@@ -179,11 +194,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
         return imagePath
     }
 
-
-    class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return DetailEventViewModel(eventsRepository) as T
+            return DetailEventViewModel(eventsRepository, userRepository) as T
         }
     }
 }

@@ -23,7 +23,7 @@ class DetailPhotoFragment : BaseFragment() {
     private var eventId: String? = null
     private var photoId: String? = null
     private var idOrganizer: String? = null
-    private var photoAuthor: String? = null
+    private var photoAuthorId: String? = null
     private var photoURL: String? = null
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
@@ -57,13 +57,23 @@ class DetailPhotoFragment : BaseFragment() {
             {photo ->
                 this.photo.onNext(photo)
                 photo.url?.let {url ->
-                    GlideApp.with(context!!).load(viewModel.getStorageRef(url)).override(500,500).centerInside().placeholder(R.drawable.pic1).into(iv_photo)
+                    GlideApp
+                        .with(context!!)
+                        .load(viewModel.getStorageRef(url))
+                        .fitCenter()
+                        .into(iv_photo)
                 }
-                photo.auteur?.let {
-                    photoAuthor = it
+                photo.auteurId?.let {
+                    photoAuthorId = it
                 }
                 photo.url?.let {
                     photoURL = it
+                }
+                photo.like?.let {
+                    tv_like.text = it.toString()
+                }
+                photo.authorName?.let {
+                    tv_auteur.text = it
                 }
                 setFab()
             },
@@ -74,15 +84,14 @@ class DetailPhotoFragment : BaseFragment() {
             .addTo(viewDisposable)
 
         viewModel.getPhotoDetail(eventId, photoId)
-
     }
 
     private fun setFab() {
         val userId = UserRepository.currentUser.value?.id
-        val author = photoAuthor
+        val authorId = photoAuthorId
         val menu = FabSpeedDialMenu(context!!)
 
-        if (userId != null && author != null && (userId == author || userId == idOrganizer)) {
+        if (userId != null && (userId == authorId || userId == idOrganizer)) {
             menu.add(0,0,0,getString(R.string.delete_picture_fab_title)).setIcon(R.drawable.ic_delete)
         }
         menu.add(0,1,1,getString(R.string.save_image_fab_title)).setIcon(R.drawable.ic_file_download)
@@ -92,6 +101,7 @@ class DetailPhotoFragment : BaseFragment() {
         fab_detail_photo.addOnMenuItemClickListener { miniFab, label, itemId ->
             when (itemId) {
                 0 -> {
+                    //delete picture
                     eventId?.let { eventId ->
                         viewModel.photo.value?.let { photo ->
                             photo.id?.let { id ->
@@ -103,6 +113,7 @@ class DetailPhotoFragment : BaseFragment() {
                     }
                 }
                 1 -> {
+                    //save image
                     photoURL?.let {
                         viewModel.downloadImageOnPhone(it)
                             .subscribe(
@@ -123,6 +134,7 @@ class DetailPhotoFragment : BaseFragment() {
 
                 }
                 2 -> {
+                    //report image
                     photo.value?.let {
                         viewModel.reportPhoto(eventId!!,it)
                             .subscribe(

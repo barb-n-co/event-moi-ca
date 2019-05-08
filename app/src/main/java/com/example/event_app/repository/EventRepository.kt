@@ -100,4 +100,12 @@ object EventRepository {
     fun deletePhotoOrga(eventId: String, photoId: String): Task<Void> {
         return allPictures.child(eventId).child(photoId).removeValue()
     }
+
+    fun getReportedPicturesForEventList(list: List<EventItem>): List<Observable<MutableList<Photo>>> {
+        return list.map {event ->
+            RxFirebaseDatabase.observeSingleValueEvent(pictureReportRef.child(event.idEvent), DataSnapshotMapper.listOf(Photo::class.java)).toObservable()
+        }
+
+    }
+
 }

@@ -3,6 +3,8 @@ package com.example.event_app.ui.fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
@@ -10,6 +12,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
+import com.example.event_app.model.PhotoList
+import com.example.event_app.model.ReportedPhotoList
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
@@ -20,6 +24,7 @@ import timber.log.Timber
 class HomeFragment : BaseFragment(), HomeInterface {
 
     private val viewModel : HomeFragmentViewModel by instance(arg = this)
+    private var reportedPhotoList = ReportedPhotoList()
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
@@ -46,6 +51,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.adapter = adapter
         swiperefresh_fragment_home.isRefreshing = false
 
+        reportedPhotoList.listOfphotoList = mutableListOf()
         adapter.acceptClickPublisher.subscribe(
             {
                 viewModel.acceptInvitation(it)
@@ -77,12 +83,31 @@ class HomeFragment : BaseFragment(), HomeInterface {
         viewModel.myEventList.subscribe(
             {
                 if (it.isEmpty()) {
-                    rv_event_home_fragment.visibility = View.INVISIBLE
-                    g_no_item_home_fragment.visibility = View.VISIBLE
+                    rv_event_home_fragment.visibility = INVISIBLE
+                    g_no_item_home_fragment.visibility = VISIBLE
                 } else {
-                    rv_event_home_fragment.visibility = View.VISIBLE
-                    g_no_item_home_fragment.visibility = View.INVISIBLE
+                    rv_event_home_fragment.visibility = VISIBLE
+                    g_no_item_home_fragment.visibility = INVISIBLE
                     adapter.submitList(it)
+                    viewModel.getReportedPhotos(it).forEach {
+                        it.subscribe(
+                            {photoList ->
+                                if (photoList.isNotEmpty()) {
+                                    reportedPhotoList.listOfphotoList.add(PhotoList(photoList))
+                                    photo_reporting_fab.visibility = VISIBLE
+//                                    photo_reporting_fab.setOnClickListener {
+//                                        photoList?.let {
+//                                            val action = HomeFragmentDirections.actionMyHomeFragmentToReportedPhotoFragment(reportedPhotoList)
+//                                            NavHostFragment.findNavController(this).navigate(action)
+//                                        }
+//                                    }
+                                }
+                            },
+                            {
+                                Timber.e(it)
+                            }
+                        )
+                    }
                 }
                 swiperefresh_fragment_home.isRefreshing = false
             },
@@ -91,6 +116,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 swiperefresh_fragment_home.isRefreshing = false
             })
             .addTo(viewDisposable)
+
+        photo_reporting_fab.setOnClickListener {
+            val action = HomeFragmentDirections.actionMyHomeFragmentToReportedPhotoFragment(reportedPhotoList)
+            NavHostFragment.findNavController(this).navigate(action)
+        }
     }
 
     private fun setFab() {
@@ -120,6 +150,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_home))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        reportedPhotoList.listOfphotoList = mutableListOf()
     }
 
     override fun getInvitation(idEvent: String) {

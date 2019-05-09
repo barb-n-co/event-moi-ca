@@ -93,6 +93,7 @@
     <string name="delete_picture_orga">Supprimer</string>
     <string name="selectEventToShare">Choisissez l\'évenement où envoyer la photo :</string>
     <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur</string>
+    <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
 
 
 </resources>

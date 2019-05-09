@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
+
+
 class HomeFragment : BaseFragment(), HomeInterface {
 
     private val viewModel : HomeFragmentViewModel by instance(arg = this)
@@ -130,6 +132,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         viewModel.addInvitation(idEvent)
     }
 
+    override fun openFilter() {
+        val bottomSheetDialog = FilterDialogFragment.instance
+        bottomSheetDialog.show(requireFragmentManager(), TAG)
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.getMyEvents()
@@ -138,4 +145,5 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
 interface HomeInterface {
     fun getInvitation(idEvent: String)
+    fun openFilter()
 }

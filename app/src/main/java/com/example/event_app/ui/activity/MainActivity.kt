@@ -107,29 +107,24 @@ class MainActivity : BaseActivity() {
         currentController.navigateUp()
     }
 
-    /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_logout -> {
-            val dialog = AlertDialog.Builder(this)
-            dialog.setTitle(R.string.tv_title_dialog_logout)
-                .setMessage(R.string.tv_message_dialog_logout)
-                .setNegativeButton(R.string.b_cancel_dialog_logout) { dialoginterface, i -> }
-                .setPositiveButton(R.string.b_validate_dialog_logout) { dialoginterface, i ->
-                    viewModel.logout()
-                    Toast.makeText(this, getString(R.string.t_sign_out), Toast.LENGTH_SHORT).show()
-                    LoginActivity.start(this)
-                    finish()
-                }.show()
+        R.id.action_filter -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is HomeInterface) {
+                frg.openFilter()
+            }
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
-    }*/
+    }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

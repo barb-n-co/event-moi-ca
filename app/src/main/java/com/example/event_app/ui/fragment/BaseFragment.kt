@@ -32,4 +32,6 @@ abstract class BaseFragment: Fragment(), KodeinAware{
         (activity as MainActivity).finish()
     }
 
+
+
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.adapter.HomeViewPagerAdapter
@@ -13,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 
 class HomeFragment : BaseFragment(), HomeInterface {
+
 
     private val viewModel : HomeFragmentViewModel by instance(arg = this)
 

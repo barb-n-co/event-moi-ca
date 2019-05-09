@@ -6,9 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
+import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
+import com.example.event_app.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
 import org.kodein.di.generic.instance
 import java.text.DateFormat
@@ -17,6 +21,7 @@ import java.util.*
 
 
 class AddEventFragment : BaseFragment() {
+
 
     var dateStart: Date? = null
     var dateEnd: Date? = null
@@ -45,12 +50,16 @@ class AddEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         et_place_add_event_fragment.setOnClickListener {
 
-            val transaction = fragmentManager?.beginTransaction()
-            val fragment = MapsFragment()
+//            val transaction = fragmentManager?.beginTransaction()
+//            val fragment = MapsFragment()
+//
+//            transaction?.replace(R.id.content_home, fragment)
+//            transaction?.addToBackStack(null)
+//            transaction?.commit()
 
-            transaction?.replace(R.id.content_home, fragment)
-            transaction?.addToBackStack(null)
-            transaction?.commit()
+            val action = AddEventFragmentDirections.actionAddEventFragmentToMapsFragment()
+            NavHostFragment.findNavController(this).navigate(action)
+
         }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()

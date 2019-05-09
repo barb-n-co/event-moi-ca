@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -20,6 +21,7 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
+            var isFromMap = false
 
     companion object {
         fun start(fromActivity: FragmentActivity) {
@@ -44,11 +46,43 @@ class MainActivity : BaseActivity() {
         ).dispose()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.action_bar_menu, menu)
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (isFromMap){
+            menuInflater.inflate(R.menu.menu_maps, menu)
+            setSearchView(menu)
+        }
+
+        else{
+            isFromMap = !isFromMap
+            menuInflater.inflate(R.menu.action_bar_menu, menu)
+
+        }
         return super.onCreateOptionsMenu(menu)
     }
 
+    private fun setSearchView(menu: Menu) {
+        val searchView = menu.findItem(R.id.sv_search_map).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                query?.let {
+                    viewModel.searchAdress("71 rue Peter Frink")
+                    //                    viewModel.action(NannyParentsAction.SearchAddress(it))
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return false
+            }
+        })
+    }
+    fun updateToolbar(isfrommap : Boolean){
+        isFromMap = isfrommap
+        setSupportActionBar(findViewById(R.id.toolbar))
+
+    }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_logout -> {
             val dialog = AlertDialog.Builder(this)
@@ -100,6 +134,9 @@ class MainActivity : BaseActivity() {
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
+
+
+
 }
 
 

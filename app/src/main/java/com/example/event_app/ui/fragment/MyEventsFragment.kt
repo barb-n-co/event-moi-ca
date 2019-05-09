@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import timber.log.Timber
 private lateinit var viewModel: HomeFragmentViewModel
 
 class MyEventsFragment : BaseFragment() {
+
     companion object {
         const val TAG = "MYEVENTSFRAGMENT"
         fun newInstance(): MyEventsFragment = MyEventsFragment()

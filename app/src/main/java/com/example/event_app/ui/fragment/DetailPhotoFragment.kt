@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
@@ -20,6 +21,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 class DetailPhotoFragment : BaseFragment() {
+
 
     private var eventId: String? = null
     private var photoId: String? = null

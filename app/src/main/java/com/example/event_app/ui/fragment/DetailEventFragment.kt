@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
@@ -40,6 +41,7 @@ import java.lang.ref.WeakReference
 
 
 class DetailEventFragment : BaseFragment() {
+
 
     private val viewModel : DetailEventViewModel by instance(arg = this)
     private lateinit var adapter : CustomAdapter

@@ -10,6 +10,8 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.ViewCompat
@@ -23,7 +25,6 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
-import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -73,7 +74,7 @@ class DetailEventFragment : BaseFragment() {
 
         requestPermissions()
 
-        setFab()
+
 
         Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
@@ -87,21 +88,28 @@ class DetailEventFragment : BaseFragment() {
                 idOrganizer = it.idOrganizer
 
                 if (it.organizer != 1) {
-                    iv_generate_qrCode.visibility = View.INVISIBLE
-                    iv_share_deepLink.visibility = View.INVISIBLE
+                    iv_generate_qrCode.visibility = GONE
+                    iv_share_deepLink.visibility = GONE
+                    rv_listImage.visibility = VISIBLE
                 } else {
-                    iv_generate_qrCode.visibility = View.VISIBLE
-                    iv_share_deepLink.visibility = View.VISIBLE
-                    iv_generate_qrCode.setOnClickListener {
-                        eventId?.let {
-                            GenerationQrCodeActivity.start(activity as MainActivity, it)
+                    if (it.accepted == 1) {
+                        setFab()
+                        fabmenu_detail_event.visibility = VISIBLE
+                        rv_listImage.visibility = VISIBLE
+                        iv_generate_qrCode.visibility = VISIBLE
+                        iv_share_deepLink.visibility = VISIBLE
+                        iv_generate_qrCode.setOnClickListener {
+                            eventId?.let {
+                                GenerationQrCodeActivity.start(activity as MainActivity, it)
+                            }
                         }
-                    }
-                    iv_share_deepLink.setOnClickListener {
-                        eventId?.let {
+                        iv_share_deepLink.setOnClickListener {
+                            eventId?.let {
 
+                            }
                         }
                     }
+
                 }
             },
             {

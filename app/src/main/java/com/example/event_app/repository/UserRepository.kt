@@ -1,6 +1,7 @@
 package com.example.event_app.repository
 
 import com.example.event_app.model.User
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
@@ -52,6 +53,12 @@ object UserRepository {
                 authResult.user != null
             }
             .toFlowable()
+    }
+
+    fun deleteAccount(idUser: String) {
+        fireBaseAuth.currentUser?.delete()?.addOnCompleteListener {
+            usersRef.child(idUser).removeValue()
+        }
     }
 
     fun registerUser(email: String, password: String, name: String): Flowable<Boolean> {

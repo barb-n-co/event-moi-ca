@@ -20,6 +20,13 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         userRepository.fireBaseAuth.signOut()
     }
 
+    fun deleteAccount() {
+        userRepository.currentUser.value?.id?.let { idUser ->
+            userRepository.deleteAccount(idUser)
+            eventRepository.deleteAllEventOfUser(idUser)
+        }
+    }
+
     fun getCurrentUser() {
         userRepository.currentUser.subscribe(
             {

@@ -11,7 +11,6 @@ import com.example.event_app.model.User
 import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.viewmodel.ProfileViewModel
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -38,6 +37,10 @@ class ProfileFragment: BaseFragment() {
             actionDeconnexion()
         }
 
+        b_delete_account_profile_fragment.setOnClickListener {
+
+        }
+
         viewModel.user.subscribe(
             {
                 initUser(it)
@@ -52,8 +55,8 @@ class ProfileFragment: BaseFragment() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(R.string.tv_title_dialog_logout)
             .setMessage(R.string.tv_message_dialog_logout)
-            .setNegativeButton(R.string.b_cancel_dialog_logout) { dialoginterface, i -> }
-            .setPositiveButton(R.string.b_validate_dialog_logout) { dialoginterface, i ->
+            .setNegativeButton(R.string.b_cancel_dialog) { dialoginterface, i -> }
+            .setPositiveButton(R.string.b_validate_dialog) { dialoginterface, i ->
                 viewModel.logout()
                 Toast.makeText(activity!!, getString(R.string.t_sign_out), Toast.LENGTH_SHORT).show()
                 LoginActivity.start(activity!!)

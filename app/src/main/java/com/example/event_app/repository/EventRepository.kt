@@ -43,12 +43,30 @@ object EventRepository {
 
     fun getMyEvent(idUser: String, idEvent: String): Observable<MyEvents> {
         return RxFirebaseDatabase.observeSingleValueEvent(
-            myEventsRef.child(idUser).child(idEvent), MyEvents::class.java).toObservable()
+            myEventsRef.child(idUser).child(idEvent), MyEvents::class.java
+        ).toObservable()
+    }
+
+    fun deleteAllEventOfUser(idUser: String) {
+        myEventsRef.child(idUser).removeValue()
+        fetchMyEvents(idUser).subscribe(
+            {
+                it.forEach {event ->
+                    event.idEvent?.let {idEvent ->
+                        eventParticipantsRef.child(idEvent).child(idUser).removeValue()
+                    }
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        )
     }
 
     fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
         myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
-        eventParticipantsRef.child(event.idEvent).child(idOrganizer).setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
+        eventParticipantsRef.child(event.idEvent).child(idOrganizer)
+            .setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 

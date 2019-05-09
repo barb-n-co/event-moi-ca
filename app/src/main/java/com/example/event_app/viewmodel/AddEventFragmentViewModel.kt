@@ -3,7 +3,6 @@ package com.example.event_app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
-import com.example.event_app.model.UserResponse
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 

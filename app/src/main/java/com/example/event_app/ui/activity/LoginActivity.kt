@@ -3,6 +3,7 @@ package com.example.event_app.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.adapter.AuthentificationViewPagerAdapter
 import com.example.event_app.ui.fragment.LoginFragment
@@ -19,7 +20,7 @@ class LoginActivity : BaseActivity() {
     private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
-        fun start(fromActivity: AppCompatActivity) {
+        fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
                 Intent(fromActivity, LoginActivity::class.java)
             )

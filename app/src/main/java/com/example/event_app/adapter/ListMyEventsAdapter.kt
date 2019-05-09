@@ -75,11 +75,11 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
 
     class DiffCardCallback : DiffUtil.ItemCallback<EventItem>() {
         override fun areItemsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
-            return oldItem.idEvent == newItem.idEvent
+            return oldItem.idEvent == newItem.idEvent && oldItem.accepted == newItem.accepted
         }
 
         override fun areContentsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
-            return oldItem.idEvent == newItem.idEvent
+            return oldItem.idEvent == newItem.idEvent && oldItem.accepted == newItem.accepted
         }
     }
 }

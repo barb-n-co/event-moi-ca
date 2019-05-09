@@ -44,6 +44,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 it.dateEnd,
                                 myEvents.accepted,
                                 myEvents.organizer,
+                                it.description,
+                                it.idOrganizer,
                                 it.reportedPhotoCount
                             )
                         }

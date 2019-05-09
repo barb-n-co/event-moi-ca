@@ -8,15 +8,12 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.event_app.model.Event
-import com.example.event_app.model.Photo
-import com.example.event_app.model.User
+import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -26,6 +23,7 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseStorage
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -100,28 +98,54 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
     }
 
-    val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
 
 
     fun getEventInfo(eventId: String) {
-        eventsRepository.getEventDetail(eventId).subscribe(
-            {
-                Log.d("DetailEvent","vm"+it.name)
+        userRepository.currentUser.value?.id?.let { idUser ->
+            eventsRepository.getEventDetail(eventId)
+            Observable.combineLatest(
+                eventsRepository.getEventDetail(eventId),
+                eventsRepository.getMyEvent(idUser, eventId),
+                BiFunction<Event, MyEvents, Pair<Event, MyEvents>> { t1, t2 ->
+                    Pair(
+                        t1,
+                        t2
+                    )
+                }).map { response ->
+                EventItem(
+                    response.first.idEvent,
+                    response.first.name,
+                    idUser,
+                    response.first.organizer,
+                    response.first.dateStart,
+                    response.first.dateEnd,
+                    response.second.accepted,
+                    response.second.organizer,
+                    response.first.description,
+                    response.first.idOrganizer
+                )
+
+            }.subscribe({
                 event.onNext(it)
             },
-            {
-                Timber.e(it)
-            }).addTo(disposeBag)
+                {
+                    Timber.e(it)
+                }).addTo(disposeBag)
 
+        }
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
-        return RxFirebaseDatabase.observeValueEvent(eventsRepository.allPictures.child(id), DataSnapshotMapper.listOf(Photo::class.java))
+        return RxFirebaseDatabase.observeValueEvent(
+            eventsRepository.allPictures.child(id),
+            DataSnapshotMapper.listOf(Photo::class.java)
+        )
             .toObservable()
     }
 
     fun pickImageFromGallery(): Intent {
-        val intent = Intent (Intent.ACTION_PICK)
+        val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         return intent
     }
@@ -136,7 +160,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     fun getAllPictures(eventId: String, context: Context) {
 
-        RxFirebaseDatabase.observeSingleValueEvent(eventsRepository.allPictures.child(eventId), DataSnapshotMapper.listOf(Photo::class.java))
+        RxFirebaseDatabase.observeSingleValueEvent(
+            eventsRepository.allPictures.child(eventId),
+            DataSnapshotMapper.listOf(Photo::class.java)
+        )
             .subscribe(
                 { photoList ->
                     val number = mutableListOf<String>()
@@ -144,27 +171,29 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                         GlideApp.with(context)
                             .asBitmap()
                             .load(EventRepository.ref.child(photo.url!!))
-                            .into(object : CustomTarget<Bitmap>(){
+                            .into(object : CustomTarget<Bitmap>() {
 
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
                                     super.onLoadFailed(errorDrawable)
-                                    Timber.e( "an error append $errorDrawable")
-                                    Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT).show()
+                                    Timber.e("an error append $errorDrawable")
+                                    Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                                    Timber.d( "image downloading in progress")
+                                    Timber.d("image downloading in progress")
                                     number.add(saveImage(resource, eventId, photo.id!!))
                                     if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
                                     }
                                 }
+
                                 override fun onLoadCleared(placeholder: Drawable?) {
-                                    Timber.d( "onLoadCleared $placeholder")
+                                    Timber.d("onLoadCleared $placeholder")
                                 }
 
                             })
-                        }
+                    }
                 },
                 {
 
@@ -194,7 +223,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return imagePath
     }
 
-    class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : ViewModelProvider.Factory {
+
+    class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return DetailEventViewModel(eventsRepository, userRepository) as T

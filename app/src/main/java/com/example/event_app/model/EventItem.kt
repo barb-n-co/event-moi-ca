@@ -9,5 +9,7 @@ class EventItem(
     val dateEnd: String,
     val accepted: Int = 0,
     val organizer: Int = 0,
+    val description: String,
+    val idOrganizer: String,
     val reportedPhotoCount: Int = 0
 )

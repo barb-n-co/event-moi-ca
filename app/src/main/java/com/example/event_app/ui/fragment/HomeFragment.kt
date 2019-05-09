@@ -113,11 +113,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         }
     }
 
-    fun openQrCode(){
+    private fun openQrCode(){
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    fun requestCameraPermission(){
+    private fun requestCameraPermission(){
         if (permissionManager.requestCameraPermission(activity!!)) {
             openQrCode()
         }

@@ -21,8 +21,8 @@
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
             android:textAlignment="center"
+            style="@style/Subtitle"
             android:text="@string/tv_description_authentification_activity"
-            android:textSize="22dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_logo_authentification_fragment"/>

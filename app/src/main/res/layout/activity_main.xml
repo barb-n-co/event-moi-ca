@@ -65,6 +65,13 @@
                 app:navGraph="@navigation/navigation_profile"/>
     </FrameLayout>
 
+
+    <androidx.constraintlayout.widget.Group
+            android:id="@+id/g_navBar_mainActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="view_main_activity, navigation"/>
+
     <View
             android:id="@+id/view_main_activity"
             android:layout_width="match_parent"

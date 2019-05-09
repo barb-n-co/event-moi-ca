@@ -2,16 +2,16 @@ package com.example.event_app.model
 
 class Event {
         var idEvent: String = ""
-        var idOrganizer: String? = null
+        var idOrganizer: String = ""
         var organizer: String = ""
         var name: String = ""
-        var description: String? = null
+        var description: String = ""
         var dateStart: String = ""
         var dateEnd: String = ""
 
     constructor() { }
 
-        constructor(idEvent: String, idOrganizer: String?, organizer: String, name: String, description: String?, dateStart: String, dateEnd: String) {
+        constructor(idEvent: String, idOrganizer: String, organizer: String, name: String, description: String, dateStart: String, dateEnd: String) {
                 this.idEvent = idEvent
                 this.idOrganizer = idOrganizer
                 this.organizer = organizer

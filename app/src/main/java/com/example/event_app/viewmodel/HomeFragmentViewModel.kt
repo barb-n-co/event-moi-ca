@@ -43,7 +43,9 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 it.dateStart,
                                 it.dateEnd,
                                 myEvents.accepted,
-                                myEvents.organizer
+                                myEvents.organizer,
+                                it.description,
+                                it.idOrganizer
                             )
                         }
                     }.filterNotNull()

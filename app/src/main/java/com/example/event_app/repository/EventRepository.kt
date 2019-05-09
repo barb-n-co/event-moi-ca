@@ -15,7 +15,7 @@ import timber.log.Timber
 
 object EventRepository {
 
-    val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
+    private val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
     val ref = db.reference
     private val database = FirebaseDatabase.getInstance()
 
@@ -41,6 +41,11 @@ object EventRepository {
         }.toObservable()
     }
 
+    fun getMyEvent(idUser: String, idEvent: String): Observable<MyEvents> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            myEventsRef.child(idUser).child(idEvent), MyEvents::class.java).toObservable()
+    }
+
     fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
         myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
         eventParticipantsRef.child(event.idEvent).child(idOrganizer).setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
@@ -62,10 +67,10 @@ object EventRepository {
         return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
     }
 
-    fun getEventDetail(eventId: String): Maybe<Event> {
+    fun getEventDetail(eventId: String): Observable<Event> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsRef.child(eventId), Event::class.java
-        )
+        ).toObservable()
     }
 
     fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {

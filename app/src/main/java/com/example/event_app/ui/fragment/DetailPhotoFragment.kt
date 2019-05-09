@@ -53,6 +53,7 @@ class DetailPhotoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         viewModel.photo.subscribe(
             {photo ->
                 this.photo.onNext(photo)
@@ -82,6 +83,14 @@ class DetailPhotoFragment : BaseFragment() {
                 setFab()
             })
             .addTo(viewDisposable)
+
+        viewModel.peopleWhoLike.subscribe {
+            tv_like.text = it.size.toString()
+        }.addTo(viewDisposable)
+
+        if(UserRepository.currentUser.value?.id != null && UserRepository.currentUser.value?.name != null){
+            tv_like.setOnClickListener { photoId?.let { it1 -> viewModel.addLikes(it1, UserRepository.currentUser.value!!) } }
+        }
 
         viewModel.getPhotoDetail(eventId, photoId)
     }

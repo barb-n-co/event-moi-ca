@@ -25,6 +25,7 @@ object EventRepository {
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
     private val commentsRef = database.getReference("commentaires")
+    private val likesRef = database.getReference("likes")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
 
@@ -141,4 +142,16 @@ object EventRepository {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
+    fun getLikesFromPhoto(photoId: String) : Flowable<List<User>>{
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            likesRef.child(photoId), DataSnapshotMapper.listOf(User::class.java)
+        ).toFlowable()
+    }
+    fun addLikes(photoId: String, user:User): Completable {
+        return if (user.id != null) {
+            RxFirebaseDatabase.setValue(likesRef.child(photoId).child(user.id!!), Pair("name", user.name))
+        } else {
+            Completable.error(Throwable("error: user id is null"))
+        }
+    }
 }

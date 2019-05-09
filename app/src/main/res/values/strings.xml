@@ -34,6 +34,13 @@
     <!-- Home Fragment -->
     <string name="fab_qrcode_title">Scanner un QR Code</string>
     <string name="fab_add_event_title">Ajouter un évènement</string>
+    <string name="filter">Filtre</string>
+
+    <!-- Filter Dialog Fragment -->
+    <string name="cb_filter_invitation_dialog_fragment">Filtrer par invitation</string>
+    <string name="cb_filter_participate_dialog_fragment">Filtrer par participation</string>
+    <string name="cb_filter_organizer_dialog_fragment">Filtrer par participation</string>
+    <string name="tv_filter_dialog_fragment">Filtre</string>
 
     <!-- Item My Events -->
     <string name="tv_state_invited">Invited</string>
@@ -61,16 +68,18 @@
     <!-- Profile Fragment -->
     <string name="tv_title_dialog_logout">Déconnexion</string>
     <string name="tv_message_dialog_logout">Voulez-vous vraiment vous déconnecter ?</string>
+    <string name="tv_title_dialog_delete_account">Supprimer mon compte</string>
+    <string name="tv_message_dialog_delete_account">Voulez-vous vraiment supprimer votre compte ?</string>
     <string name="b_cancel_dialog">Non</string>
     <string name="b_validate_dialog">Oui</string>
-
-
+    <string name="tv_number_invitation_profile_fragment">Invitation: %d</string>
+    <string name="tv_number_participate_profile_fragment">Participation: %d</string>
+    <string name="tv_number_organizer_profile_fragment">Organisateur %d</string>
     <string name="disconnection">Déconnexion</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="download_all_pictures_from_one_event">Tout télécharger</string>
-    <string name="t_sign_out">Sign Out</string>
     <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
     <string name="save_picture">Sauvegarder</string>

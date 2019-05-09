@@ -90,8 +90,8 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
         return eventsRepository.deletePhotoFromFireStore(photoUrl)
     }
 
-    fun reportPhoto(eventId: String, photo: Photo): Completable {
-        return eventsRepository.pushPictureReport(eventId, photo)
+    fun reportPhoto(eventId: String, photo: Photo, reportValue: Int): Completable {
+        return eventsRepository.pushPictureReport(eventId, photo, reportValue)
     }
 
     fun getStorageRef(url: String): StorageReference {

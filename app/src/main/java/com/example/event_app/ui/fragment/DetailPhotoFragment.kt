@@ -94,6 +94,12 @@ class DetailPhotoFragment : BaseFragment() {
         if (userId != null && (userId == authorId || userId == idOrganizer)) {
             menu.add(0,0,0,getString(R.string.delete_picture_fab_title)).setIcon(R.drawable.ic_delete)
         }
+        photo.value?.let {
+            if (userId != null && userId == idOrganizer && it.isReported == 1) {
+                menu.add(0,3,3,"Autoriser cette photo").setIcon(R.drawable.ic_validate)
+            }
+        }
+
         menu.add(0,1,1,getString(R.string.save_image_fab_title)).setIcon(R.drawable.ic_file_download)
         menu.add(0,2,2,"signaler la photo").setIcon(R.drawable.ic_report_problem)
         fab_detail_photo.setMenu(menu)
@@ -129,59 +135,76 @@ class DetailPhotoFragment : BaseFragment() {
                                     Toast.makeText(context, getString(R.string.error_on_download_toast), Toast.LENGTH_SHORT).show()
                                 }
                             )
-
                     }
-
                 }
                 2 -> {
                     //report image
-                    photo.value?.let {
-                        if (it.isReported == 0) {
-                            viewModel.reportPhoto(eventId!!,it)
-                                .subscribe(
-                                    {
-                                        Timber.d("photo reported ")
-                                        Toast.makeText(context, getString(R.string.picture_reported_to_owner), Toast.LENGTH_SHORT).show()
-                                    },
-                                    {
-                                        Timber.e(it)
-                                        Toast.makeText(context, "Un problème a eut lieu lors du signalement. Merci de réessayer.", Toast.LENGTH_SHORT).show()
-                                    }
-                                ).addTo(viewDisposable)
-                            viewModel.getEvents()
-                                .subscribe(
-                                    {
-                                        it.forEach {
-                                            if (it.idEvent == eventId) {
-                                                val updateEvent = it
-                                                updateEvent.reportedPhotoCount = it.reportedPhotoCount + 1
-                                                viewModel.updateEventReportedPhotoCount(eventId!!, updateEvent)
-                                                    .subscribe(
-                                                        {
-                                                            Timber.e("event updated")
-                                                        },
-                                                        {
-                                                            Timber.e("error for update event reported photo = $it")
-                                                        }
-                                                    )
-                                            }
-                                        }
-
-                                    },
-                                    {
-                                        Timber.e("error getting event for update reported photo = $it")
-                                    }
-                                )
-                        } else {
-                            Toast.makeText(context, "photo déjà siganlée",Toast.LENGTH_SHORT).show()
+                    eventId?.let { eventId ->
+                        photo.value?.let { photo ->
+                            if (photo.isReported == 0) {
+                                reportOrValidateImage(eventId, photo, 1, getString(R.string.picture_reported_to_owner))
+                            } else {
+                                Toast.makeText(context, "photo déjà signalée", Toast.LENGTH_SHORT).show()
+                            }
                         }
-                    }
 
+                    }
+                }
+                3 -> {
+                    //unreport image
+                    eventId?.let {eventId ->
+                        photo.value?.let {photo ->
+                            if (photo.isReported == 1) {
+                                reportOrValidateImage(eventId, photo, -1, getString(R.string.picture_authorized_by_admin))
+                            }
+                        }
+
+                    }
                 }
             }
         }
     }
 
+
+    private fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String) {
+        val reportValue = if (delta>0) 1 else 0
+        viewModel.reportPhoto(eventId, photo, reportValue)
+            .subscribe(
+                {
+                    Timber.d("photo unreported ")
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                },
+                {
+                    Timber.e(it)
+                    Toast.makeText(context, "Un problème a eut lieu lors du signalement. Merci de réessayer.", Toast.LENGTH_SHORT).show()
+                }
+            ).addTo(viewDisposable)
+        viewModel.getEvents()
+            .subscribe(
+                {
+                    it.forEach {
+                        if (it.idEvent == eventId) {
+                            val updateEvent = it
+                            updateEvent.reportedPhotoCount = it.reportedPhotoCount + delta
+                            viewModel.updateEventReportedPhotoCount(eventId, updateEvent)
+                                .subscribe(
+                                    {
+                                        Timber.e("event updated")
+                                        setFab()
+                                    },
+                                    {
+                                        Timber.e("error for update event reported photo = $it")
+                                    }
+                                )
+                        }
+                    }
+
+                },
+                {
+                    Timber.e("error getting event for update reported photo = $it")
+                }
+            ).addTo(viewDisposable)
+    }
 
     private fun deletePicture(eventId: String, id: String, url: String) {
         viewModel.deleteImageOrga(eventId, id).addOnCompleteListener {

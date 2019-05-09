@@ -19,7 +19,6 @@ object EventRepository {
     private val database = FirebaseDatabase.getInstance()
 
     val allPictures = database.reference.child("photos")
-    private val pictureReportRef = database.reference.child("reported-pictures")
     private val eventsRef = database.reference.child("events")
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
@@ -80,10 +79,10 @@ object EventRepository {
         ).toFlowable()
     }
 
-    fun pushPictureReport(eventId: String, photo: Photo): Completable {
+    fun pushPictureReport(eventId: String, photo: Photo, reportValue: Int): Completable {
         return if (photo.id != null) {
             val updatedPhoto = photo
-            updatedPhoto.isReported = 1
+            updatedPhoto.isReported = reportValue
             RxFirebaseDatabase.updateChildren(allPictures.child(eventId), mapOf(Pair(photo.id, updatedPhoto)))
         } else {
             Completable.error(Throwable("error: photo id is null"))
@@ -101,10 +100,6 @@ object EventRepository {
 
     fun deletePhotoOrga(eventId: String, photoId: String): Task<Void> {
         return allPictures.child(eventId).child(photoId).removeValue()
-    }
-
-    fun updatereportedPhotoCount(eventId: String): Maybe<MutableList<Event>> {
-        return RxFirebaseDatabase.observeSingleValueEvent(eventsRef, DataSnapshotMapper.listOf(Event::class.java))
     }
 
     fun updateEventForPhotoReporting(eventId: String, updateEvent: Event): Completable {

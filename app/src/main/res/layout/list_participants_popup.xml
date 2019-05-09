@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#FFF"
+        android:padding="20dp"
+>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Voici la liste des participants à l'évenement :"
+              android:textSize="15sp"
+              android:textStyle="bold"
+              android:layout_marginBottom="20dp"
+    />
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_listParticipants"
+            tools:listitem="@layout/list_participants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"/>
+    <Button
+            android:id="@+id/btn_popup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close Me"
+    />
+</LinearLayout>

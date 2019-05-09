@@ -18,10 +18,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.inflate
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -39,6 +37,7 @@ import com.example.event_app.model.Photo
 import com.example.event_app.model.User
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
+import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -94,10 +93,8 @@ class DetailEventFragment : BaseFragment() {
         }
 
         requestPermissions()
-
         setFab()
 
-        Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.nameEvent
@@ -168,6 +165,22 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
         }
+
+        b_exit_detail_event_fragment.setOnClickListener {
+            actionExitEvent()
+        }
+    }
+
+    private fun actionExitEvent() {
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle(getString(R.string.tv_dialogTitle_detail_event_fragment))
+            .setMessage(getString(R.string.tv_dialogMessage_detail_event_fragment))
+            .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
+            .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
+                viewModel.removeParticipant(eventId!!, listParticipantsAdapter.userClickPublisher.toString())
+                Toast.makeText(activity!!, getString(R.string.exit_event_toast_detail_event_fragment), Toast.LENGTH_SHORT).show()
+
+            }.show()
     }
 
     private fun openPopUp() {

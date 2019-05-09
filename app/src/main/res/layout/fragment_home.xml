@@ -28,7 +28,6 @@
             android:id="@+id/g_no_item_home_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             app:constraint_referenced_ids="tv_no_home_fragment, iv_no_list_home_fragment"/>
 
     <ImageView

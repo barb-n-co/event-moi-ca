@@ -12,7 +12,7 @@ import org.kodein.di.generic.provider
 
 val viewModelModule = Kodein.Module("ViewModelModule") {
 
-    bind<DetailEventViewModel.Factory>() with provider { DetailEventViewModel.Factory(instance()) }
+    bind<DetailEventViewModel.Factory>() with provider { DetailEventViewModel.Factory(instance(), instance()) }
     bind<DetailEventViewModel>() with factory{fragment: Fragment->
         ViewModelProvider(fragment, instance<DetailEventViewModel.Factory>()).get(DetailEventViewModel::class.java)
     }

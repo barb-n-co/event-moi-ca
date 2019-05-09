@@ -66,7 +66,7 @@ class MainActivity : BaseActivity() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 query?.let {
-                    viewModel.searchAdress("71 rue Peter Frink")
+                    viewModel.searchAdress(query)
                     //                    viewModel.action(NannyParentsAction.SearchAddress(it))
                 }
                 return false

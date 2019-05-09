@@ -31,6 +31,7 @@ class AddEventFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ADDEVENTFRAGMENT"
+        public var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -48,7 +49,7 @@ class AddEventFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        et_place_add_event_fragment.setOnClickListener {
+        chip_place_add_event_fragment.setOnClickListener {
 
 //            val transaction = fragmentManager?.beginTransaction()
 //            val fragment = MapsFragment()
@@ -73,11 +74,17 @@ class AddEventFragment : BaseFragment() {
             date.show(fragmentManager!!, tag)
         }
 
+        if (lieu !=null ){
+            chip_place_add_event_fragment.text=lieu
+
+
+        }
+
         b_validate_add_event_fragment.setOnClickListener {
             val id = java.util.UUID.randomUUID().toString()
             val organizer = et_organizer_add_event_fragment.text.toString()
             val name = et_name_add_event_fragment.text.toString()
-            val place = et_place_add_event_fragment.text.toString()
+            val place = chip_place_add_event_fragment.text.toString()
             val description = et_description_add_event_fragment.text.toString()
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
@@ -129,4 +136,6 @@ class AddEventFragment : BaseFragment() {
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
         return if (date != null) df.format(date) else "Erreur test"
     }
+
+
 }

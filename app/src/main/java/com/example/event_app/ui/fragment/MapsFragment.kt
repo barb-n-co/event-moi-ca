@@ -1,5 +1,8 @@
 package com.example.event_app.ui.fragment
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import com.example.event_app.R
@@ -12,8 +15,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.fragment_add_event.*
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
+
+
 
 class MapsFragment : BaseFragment(), OnMapReadyCallback{
 
@@ -36,6 +42,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
+    @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initMap(savedInstanceState)
@@ -43,6 +50,23 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
 
         viewModel.mapAdress.subscribe(
             {
+
+                val sydney = it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } }
+                mMap.addMarker(sydney?.let { it1 -> MarkerOptions().position(it1).title("Marker in Sydney") })
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,16.0f))
+
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("Lieu de l'évenement")
+                builder.setMessage("L'adresse de l'événement est : "+ it.address+" ?")
+                builder.setPositiveButton("Oui",{ dialogInterface: DialogInterface, i: Int ->
+
+                    AddEventFragment.lieu = it.address
+
+                })
+                builder.setNegativeButton("Non",{ dialogInterface: DialogInterface, i: Int -> })
+                builder.show()
+
 
             },
             {

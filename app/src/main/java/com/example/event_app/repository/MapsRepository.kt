@@ -16,9 +16,14 @@ import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
 import java.util.*
+import com.google.android.gms.location.places.AutocompleteFilter
+import com.google.android.gms.location.places.AutocompleteFilter.TYPE_FILTER_ADDRESS
+import com.google.android.gms.location.places.AutocompleteFilter.TYPE_FILTER_CITIES
+
 
 class MapsRepository(private val context: Context) {
     var placesClient: PlacesClient
+    var i : Int = 0
     var mapAdress: BehaviorSubject<AddressMap> = BehaviorSubject.create()
 
     init {
@@ -31,15 +36,25 @@ class MapsRepository(private val context: Context) {
         val token = AutocompleteSessionToken.newInstance()
 
 
+        val filters = ArrayList<TypeFilter>()
+        filters.add(TypeFilter.ADDRESS)
+        filters.add(TypeFilter.CITIES)
+        filters.add(TypeFilter.ESTABLISHMENT)
+        filters.add(TypeFilter.GEOCODE)
+        filters.add(TypeFilter.REGIONS)
+
         val request = FindAutocompletePredictionsRequest.builder()
             .setTypeFilter(TypeFilter.ADDRESS)
             .setSessionToken(token)
             .setQuery(address)
             .build()
 
-
         placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
             val placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+            if (placeFields.isEmpty()){
+
+            }
+
             val request = FetchPlaceRequest.builder(
                 response.autocompletePredictions.first().placeId,
                 placeFields

@@ -16,6 +16,10 @@
                 app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_my_home_fragment_to_detail_event_fragment"
                 app:destination="@id/detail_event_fragment"/>
+        <action android:id="@+id/action_my_home_fragment_to_reportedPhotoFragment"
+                app:destination="@+id/reportedPhotoFragment">
+            <argument android:defaultValue="@null" android:name="photoList"/>
+        </action>
     </fragment>
 
     <fragment

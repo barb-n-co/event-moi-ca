@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -33,12 +35,16 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
 
         fun bind(event: EventItem) {
             //disposition
+            if (event.reportedPhotoCount > 0) {
+                itemView.btn_reported_photo.visibility = VISIBLE
+            }
+
             itemView.tv_name_myevents_item.text = event.nameEvent
             itemView.tv_organizer_myevents_item.text = event.nameOrganizer
             itemView.tv_startDate_myevents_item.text = event.dateStart
             if(event.organizer == 1 || event.accepted == 1){
-                itemView.b_accept_myevents_item.visibility = View.GONE
-                itemView.b_refuse_myevents_item.visibility = View.GONE
+                itemView.b_accept_myevents_item.visibility = GONE
+                itemView.b_refuse_myevents_item.visibility = GONE
                 if(event.organizer == 1){
                     itemView.chip_user_state_myevents_item.chipBackgroundColor = ColorStateList.valueOf(context.resources.getColor(R.color.orange))
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_organizer)
@@ -47,8 +53,8 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_participate)
                 }
             } else {
-                itemView.b_accept_myevents_item.visibility = View.VISIBLE
-                itemView.b_refuse_myevents_item.visibility = View.VISIBLE
+                itemView.b_accept_myevents_item.visibility = VISIBLE
+                itemView.b_refuse_myevents_item.visibility = VISIBLE
                 itemView.chip_user_state_myevents_item.chipBackgroundColor = ColorStateList.valueOf(context.resources.getColor(R.color.colorPrimary))
                 itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_invited)
             }

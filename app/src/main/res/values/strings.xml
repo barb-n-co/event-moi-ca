@@ -3,6 +3,7 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="title_profile">Profil</string>
     <string name="title_qr_code">QR CODE</string>
     <string name="tb_invites">INVITATIONS</string>
     <string name="tb_myevents">MES EVENEMENTS</string>

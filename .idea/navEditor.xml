@@ -64,12 +64,12 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_my_event_fragment_to_detail_event_fragment">
+                            <entry key="action_my_home_fragment_to_add_event_fragment">
                               <value>
                                 <LayoutPositions />
                               </value>
                             </entry>
-                            <entry key="action_my_home_fragment_to_add_event_fragment">
+                            <entry key="action_my_home_fragment_to_detail_event_fragment">
                               <value>
                                 <LayoutPositions />
                               </value>
@@ -90,6 +90,28 @@
               <option name="myPositions">
                 <map>
                   <entry key="my_photo_fragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </LayoutPositions>
+          </value>
+        </entry>
+        <entry key="navigation_profile.xml">
+          <value>
+            <LayoutPositions>
+              <option name="myPositions">
+                <map>
+                  <entry key="my_profile_fragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">

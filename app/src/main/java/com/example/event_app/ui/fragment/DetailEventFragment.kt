@@ -5,18 +5,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.inflate
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -37,7 +33,6 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPO
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.model.User
-import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -46,7 +41,6 @@ import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import kotlinx.android.synthetic.main.list_participants_popup.*
 import kotlinx.android.synthetic.main.list_participants_popup.view.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -95,7 +89,7 @@ class DetailEventFragment : BaseFragment() {
 
         requestPermissions()
 
-        setFab()
+
 
         Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
@@ -109,9 +103,24 @@ class DetailEventFragment : BaseFragment() {
                 idOrganizer = it.idOrganizer
 
                 if (it.organizer != 1) {
-                    iv_generate_qrCode.visibility = View.INVISIBLE
+                    iv_generate_qrCode.visibility = GONE
+                    if (it.accepted != 1) {
+                        rv_listImage.visibility = GONE
+                        fabmenu_detail_event.visibility = GONE
+                        iv_alert_not_accepted_event.visibility = VISIBLE
+                        not_already_accepted_alert.visibility = VISIBLE
+                    } else {
+                        rv_listImage.visibility = VISIBLE
+                        fabmenu_detail_event.visibility = VISIBLE
+                        setFab()
+
+                    }
+
                 } else {
-                    iv_generate_qrCode.visibility = View.VISIBLE
+                    setFab()
+                    fabmenu_detail_event.visibility = VISIBLE
+                    rv_listImage.visibility = VISIBLE
+                    iv_generate_qrCode.visibility = VISIBLE
                     iv_generate_qrCode.setOnClickListener {
                         eventId?.let {
                             GenerationQrCodeActivity.start(activity as MainActivity, it)
@@ -123,6 +132,7 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+
         tv_listParticipant.setOnClickListener { openPopUp() }
 
         viewModel.participants.subscribe({
@@ -138,7 +148,6 @@ class DetailEventFragment : BaseFragment() {
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
 
-            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter

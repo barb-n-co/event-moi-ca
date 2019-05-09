@@ -159,6 +159,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             .toObservable()
     }
 
+
     fun pickImageFromGallery(): Intent {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"

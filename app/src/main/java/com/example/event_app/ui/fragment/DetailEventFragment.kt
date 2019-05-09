@@ -177,9 +177,10 @@ class DetailEventFragment : BaseFragment() {
             .setMessage(getString(R.string.tv_dialogMessage_detail_event_fragment))
             .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
             .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
-                viewModel.removeParticipant(eventId!!, listParticipantsAdapter.userClickPublisher.toString())
-                Toast.makeText(activity!!, getString(R.string.exit_event_toast_detail_event_fragment), Toast.LENGTH_SHORT).show()
-
+                eventId?.let {
+                    viewModel.exitEvent(it)
+                    Toast.makeText(activity!!, getString(R.string.exit_event_toast_detail_event_fragment), Toast.LENGTH_SHORT).show()
+                }
             }.show()
     }
 

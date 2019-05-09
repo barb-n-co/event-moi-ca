@@ -30,7 +30,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     )
                 })
                 .map { response ->
-                    response.second.map {myEvents ->
+                    response.second.map { myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }
@@ -73,7 +73,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     fun acceptInvitation(idEvent: String) {
         userRepository.currentUser.value?.let { user ->
             user.id?.let { id ->
-                user.name?.let {name ->
+                user.name?.let { name ->
                     eventsRepository.acceptInvitation(idEvent, id, name).addOnCompleteListener {
                         getMyEvents()
                     }

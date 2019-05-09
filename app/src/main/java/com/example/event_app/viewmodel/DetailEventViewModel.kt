@@ -37,7 +37,8 @@ import java.util.*
 
 const val COMPRESSION_QUALITY = 20
 
-class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : BaseViewModel()  {
+class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
+    BaseViewModel() {
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
@@ -56,7 +57,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
 
         private fun pushImageRefToDatabase(id: String, pushPath: DatabaseReference, value: Photo) {
-            RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
+            RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id), pushPath.setValue(value))
                 .subscribe(
                     {
                         Timber.d("success but always catch error")
@@ -67,10 +68,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 ).addTo(CompositeDisposable())
         }
 
-        private fun getCurrentUser() : User {
-            return userRepository.currentUser.value!!
-        }
-
         fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
 
             val baos = ByteArrayOutputStream()
@@ -78,19 +75,19 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             val data = baos.toByteArray()
 
             RxFirebaseStorage.putBytes(
-                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data
+                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"), data
             )
                 .toFlowable()
                 .subscribe(
-                    {snapshot ->
+                    { snapshot ->
                         val pushPath = eventsRepository.allPictures.child(eventId).push()
                         val key = pushPath.key
                         val path = snapshot.metadata!!.path
                         val authorId = getCurrentUser().id
                         val authorName = getCurrentUser().name ?: ""
-                        authorId?.let {authorIdNotNull ->
-                            key?.let {keyNotNull ->
-                                val value = Photo(keyNotNull, authorIdNotNull, authorName,  0, path, mutableListOf())
+                        authorId?.let { authorIdNotNull ->
+                            key?.let { keyNotNull ->
+                                val value = Photo(keyNotNull, authorIdNotNull, authorName, 0, path, mutableListOf())
                                 pushImageRefToDatabase(eventId, pushPath, value)
                             }
                         }
@@ -102,9 +99,11 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 ).addTo(CompositeDisposable())
 
         }
+
+        private fun getCurrentUser(): User {
+            return Companion.userRepository.currentUser.value!!
+        }
     }
-
-
 
     fun getEventInfo(eventId: String) {
         userRepository.currentUser.value?.id?.let { idUser ->
@@ -142,11 +141,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         getParticipant(eventId)
     }
 
-    fun getParticipant(eventId: String)
-    {
+    fun getParticipant(eventId: String) {
         eventsRepository.getParticipants(eventId).subscribe({
             participants.onNext(it)
-        },{
+        }, {
             Timber.e(it)
         }).addTo(disposeBag)
     }
@@ -238,10 +236,15 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return imagePath
     }
 
-    fun removeParticipant(idEvent: String,userId: String) {
+    fun removeParticipant(idEvent: String, userId: String) {
         eventsRepository.refuseInvitation(idEvent, userId)
     }
 
+    fun exitEvent(idEvent: String) {
+        userRepository.currentUser.value?.id?.let { idUser ->
+            eventsRepository.exitEvent(idEvent, idUser)
+        }
+    }
 
     class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
         ViewModelProvider.Factory {

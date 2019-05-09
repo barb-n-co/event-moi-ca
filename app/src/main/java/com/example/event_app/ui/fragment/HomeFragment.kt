@@ -21,10 +21,9 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-
 class HomeFragment : BaseFragment(), HomeInterface {
 
-    private val viewModel : HomeFragmentViewModel by instance(arg = this)
+    private val viewModel: HomeFragmentViewModel by instance(arg = this)
     private var reportedPhotoList = ReportedPhotoList()
 
     companion object {
@@ -51,6 +50,9 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.layoutManager = mLayoutManager
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
         rv_event_home_fragment.adapter = adapter
+
+        viewModel.getMyEvents()
+
         swiperefresh_fragment_home.isRefreshing = false
 
         reportedPhotoList.listOfphotoList = mutableListOf()
@@ -80,16 +82,18 @@ class HomeFragment : BaseFragment(), HomeInterface {
             }
         ).addTo(viewDisposable)
 
-        swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
+        swiperefresh_fragment_home.setOnRefreshListener {
+            viewModel.getMyEvents()
+        }
 
         viewModel.myEventList.subscribe(
-            {eventList ->
+            { eventList ->
                 if (eventList.isEmpty()) {
-                    rv_event_home_fragment.visibility = INVISIBLE
+                    rv_event_home_fragment.visibility = View.GONE
                     g_no_item_home_fragment.visibility = VISIBLE
                 } else {
                     rv_event_home_fragment.visibility = VISIBLE
-                    g_no_item_home_fragment.visibility = INVISIBLE
+                    g_no_item_home_fragment.visibility = View.GONE
                     adapter.submitList(eventList)
                 }
                 swiperefresh_fragment_home.isRefreshing = false
@@ -116,11 +120,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         }
     }
 
-    private fun openQrCode(){
+    private fun openQrCode() {
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    private fun requestCameraPermission(){
+    private fun requestCameraPermission() {
         if (permissionManager.requestCameraPermission(activity!!)) {
             openQrCode()
         }

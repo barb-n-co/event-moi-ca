@@ -53,12 +53,12 @@ object EventRepository {
 
     fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
-        eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 0, 0))
+        eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idUser, nameUser, 0, 0))
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 1, 0))
-        return eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 1, 0))
+        return eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idUser, nameUser, 1, 0))
     }
 
     fun refuseInvitation(idEvent: String, idUser: String): Task<Void> {
@@ -72,10 +72,17 @@ object EventRepository {
         ).toObservable()
     }
 
+    fun getParticipants(idEvent: String): Observable<List<User>>{
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            eventParticipantsRef.child(idEvent), DataSnapshotMapper.listOf(User::class.java)
+        ).toObservable()
+    }
+
     fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             allPictures.child(eventId).child(photoId), Photo::class.java
         )
+
     }
 
     fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {

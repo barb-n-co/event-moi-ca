@@ -39,6 +39,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
+        setVisibilityNavBar(true)
         setFab()
 
         val adapter = ListMyEventsAdapter(activity!!)

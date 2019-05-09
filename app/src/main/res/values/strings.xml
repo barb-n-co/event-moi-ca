@@ -3,6 +3,7 @@
 
     <!-- Title -->
     <string name="title_home">Evenements</string>
+    <string name="title_profile">Profil</string>
     <string name="title_qr_code">QR CODE</string>
     <string name="tb_invites">INVITATIONS</string>
     <string name="tb_myevents">MES EVENEMENTS</string>
@@ -62,16 +63,24 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="download_all_pictures_from_one_event">Tout télécharger</string>
-    <string name="tv_title_dialog_logout">Déconexion</string>
+    <string name="tv_title_dialog_logout">Déconnexion</string>
     <string name="tv_message_dialog_logout">Voulez-vous vraiment vous déconnecter ?</string>
     <string name="b_cancel_dialog_logout">Non</string>
     <string name="b_validate_dialog_logout">Oui</string>
     <string name="t_sign_out">Sign Out</string>
     <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
-    <string name="tv_no_invitation_fragment">Vous n\'avez aucune invitation.</string>
-    <string name="tv_no_event_myevents_fragment">Vous n\'avez aucun événement en prévision ou en cours.</string>
+    <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
     <string name="save_picture">Sauvegarder</string>
+    <string name="delete_picture_fab_title">Supprimer l\'image</string>
+    <string name="save_image_fab_title">Sauvegarder l\'image</string>
+    <string name="picture_downloaded_toast">Image téléchargée</string>
+    <string name="error_on_download_toast">Une erreur est survenue lors du téléchargement</string>
+    <string name="picture_deleted">Image supprimée</string>
+    <string name="unable_to_delete_picture">Impossible de supprimer l\'image %s</string>
+    <string name="picture_reported_to_owner">image signalée à l\'organisateur</string>
     <string name="delete_picture_orga">Supprimer</string>
     <string name="selectEventToShare">Choisissez l\'évenement où envoyer la photo :</string>
+    <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur</string>
+
 
 </resources>

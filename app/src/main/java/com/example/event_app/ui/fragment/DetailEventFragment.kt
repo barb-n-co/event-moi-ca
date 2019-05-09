@@ -37,6 +37,7 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPO
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.model.User
+import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -54,17 +55,17 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel: DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter: CustomAdapter
+    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter : CustomAdapter
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
+
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     lateinit var participants: List<User>
     var popupWindow: PopupWindow? = null
 
     private var eventId: String? = null
     private lateinit var weakContext: WeakReference<Context>
-    private var idOrganizer = ""
-
+    var idOrganizer = ""
 
     var imageIdList = ArrayList<Photo>()
 
@@ -91,18 +92,6 @@ class DetailEventFragment : BaseFragment() {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-        iv_generate_qrCode.setOnClickListener {
-            eventId?.let {
-                GenerationQrCodeActivity.start(activity as MainActivity, it)
-            }
-        }
-
-        iv_share_deepLink.setOnClickListener {
-            eventId?.let {
-
-            }
-        }
-
         requestPermissions()
 
         setFab()
@@ -110,13 +99,31 @@ class DetailEventFragment : BaseFragment() {
         Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
-                tv_eventName.text = it.name
+                tv_eventName.text = it.nameEvent
                 tv_eventDescription.text = it.description
-                tv_eventOrga.text = it.organizer
+                tv_eventOrga.text = it.nameOrganizer
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
-                setTitleToolbar(it.name)
-                idOrganizer = it.idOrganizer!!
+                setTitleToolbar(it.nameEvent)
+                idOrganizer = it.idOrganizer
+
+                if (it.organizer != 1) {
+                    iv_generate_qrCode.visibility = View.INVISIBLE
+                    iv_share_deepLink.visibility = View.INVISIBLE
+                } else {
+                    iv_generate_qrCode.visibility = View.VISIBLE
+                    iv_share_deepLink.visibility = View.VISIBLE
+                    iv_generate_qrCode.setOnClickListener {
+                        eventId?.let {
+                            GenerationQrCodeActivity.start(activity as MainActivity, it)
+                        }
+                    }
+                    iv_share_deepLink.setOnClickListener {
+                        eventId?.let {
+
+                        }
+                    }
+                }
             },
             {
                 Timber.e(it)
@@ -203,9 +210,9 @@ class DetailEventFragment : BaseFragment() {
 
     private fun setFab() {
 
-        fabmenu_detail_event.addOnMenuItemClickListener(object: OnMenuItemClick {
+        fabmenu_detail_event.addOnMenuItemClickListener(object : OnMenuItemClick {
             override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {
-                when(itemId) {
+                when (itemId) {
                     R.id.action_camera -> {
                         if (permissionManager.checkPermissions(
                                 arrayOf(

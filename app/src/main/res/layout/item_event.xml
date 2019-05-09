@@ -5,6 +5,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        app:cardCornerRadius="2dp"
+        app:cardElevation="2dp"
         android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                style="@style/Subtitle"
+                style="@style/SubtitleRed"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -46,21 +48,41 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="0dp"
+                   android:src="@drawable/ic_manager"
+                   android:layout_marginEnd="8dp"
+                   android:backgroundTint="@color/colorPrimary"
+                   app:layout_constraintTop_toTopOf="@id/tv_organizer_myevents_item"
+                   app:layout_constraintBottom_toBottomOf="@id/tv_organizer_myevents_item"
+                   app:layout_constraintEnd_toStartOf="@id/tv_organizer_myevents_item"/>
+
         <TextView
                 android:id="@+id/tv_organizer_myevents_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                style="@style/body"
                 app:layout_constraintTop_toBottomOf="@id/v_myevents_item"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Carlos"/>
+
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="0dp"
+                   android:src="@drawable/ic_calendar"
+                   android:layout_marginEnd="8dp"
+                   android:backgroundTint="@color/colorPrimary"
+                   app:layout_constraintTop_toTopOf="@id/tv_startDate_myevents_item"
+                   app:layout_constraintBottom_toBottomOf="@id/tv_startDate_myevents_item"
+                   app:layout_constraintEnd_toStartOf="@id/tv_startDate_myevents_item"/>
 
         <TextView
                 android:id="@+id/tv_startDate_myevents_item"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
+                style="@style/body"
                 app:layout_constraintTop_toBottomOf="@+id/tv_organizer_myevents_item"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -91,6 +113,18 @@
                 app:layout_constraintStart_toEndOf="@id/b_refuse_myevents_item"
                 app:layout_constraintTop_toBottomOf="@id/tv_startDate_myevents_item"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageButton
+                android:id="@+id/btn_reported_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_report_problem"
+                android:tint="@color/colorPrimary"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+        />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

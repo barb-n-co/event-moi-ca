@@ -12,7 +12,7 @@ import org.kodein.di.generic.provider
 
 val viewModelModule = Kodein.Module("ViewModelModule") {
 
-    bind<DetailEventViewModel.Factory>() with provider { DetailEventViewModel.Factory(instance()) }
+    bind<DetailEventViewModel.Factory>() with provider { DetailEventViewModel.Factory(instance(), instance()) }
     bind<DetailEventViewModel>() with factory{fragment: Fragment->
         ViewModelProvider(fragment, instance<DetailEventViewModel.Factory>()).get(DetailEventViewModel::class.java)
     }
@@ -45,6 +45,12 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     bind<LoginViewModel>() with factory { fragment: Fragment ->
         ViewModelProvider(fragment, instance<LoginViewModel.Factory>())
             .get(LoginViewModel::class.java)
+    }
+
+    bind<ProfileViewModel.Factory>() with provider { ProfileViewModel.Factory(instance(), instance()) }
+    bind<ProfileViewModel>() with factory { fragment: Fragment ->
+        ViewModelProvider(fragment, instance<ProfileViewModel.Factory>())
+            .get(ProfileViewModel::class.java)
     }
 
     bind<AddEventFragmentViewModel.Factory>() with provider { AddEventFragmentViewModel.Factory(instance(), instance()) }

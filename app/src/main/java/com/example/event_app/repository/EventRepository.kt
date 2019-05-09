@@ -49,17 +49,23 @@ object EventRepository {
 
     fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
-        eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 0, 0))
+        eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idUser, nameUser, 0, 0))
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 1, 0))
-        return eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idEvent, nameUser, 1, 0))
+        return eventParticipantsRef.child(idUser).child(idEvent).setValue(EventParticipant(idUser, nameUser, 1, 0))
     }
 
     fun refuseInvitation(idEvent: String, idUser: String): Task<Void> {
         myEventsRef.child(idUser).child(idEvent).removeValue()
         return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
+    }
+
+    fun getParticipants(idEvent: String): Observable<List<User>>{
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            eventParticipantsRef.child(idEvent), DataSnapshotMapper.listOf(User::class.java)
+        ).toObservable()
     }
 
     fun getEventDetail(eventId: String): Maybe<Event> {

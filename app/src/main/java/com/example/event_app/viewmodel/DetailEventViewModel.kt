@@ -56,11 +56,11 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
 
     fun getParticipant(eventId: String)
     {
-//        eventsRepository.getParticipant(eventId).subscribe({
-//            participants.onNext(it)
-//        },{
-//            Timber.e(it)
-//        }).addTo(disposeBag)
+        eventsRepository.getParticipants(eventId).subscribe({
+            participants.onNext(it)
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
@@ -185,6 +185,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository) : Base
             e.printStackTrace()
         }
         return imagePath
+    }
+
+    fun removeParticipant(idEvent: String,userId: String) {
+        eventsRepository.refuseInvitation(idEvent, userId)
     }
 
 

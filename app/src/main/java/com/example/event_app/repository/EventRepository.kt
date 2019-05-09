@@ -82,7 +82,9 @@ object EventRepository {
 
     fun pushPictureReport(eventId: String, photo: Photo): Completable {
         return if (photo.id != null) {
-            RxFirebaseDatabase.setValue(pictureReportRef.child(eventId).child(photo.id!!), photo)
+            val updatedPhoto = photo
+            updatedPhoto.isReported = 1
+            RxFirebaseDatabase.updateChildren(allPictures.child(eventId), mapOf(Pair(photo.id, updatedPhoto)))
         } else {
             Completable.error(Throwable("error: photo id is null"))
         }
@@ -101,11 +103,12 @@ object EventRepository {
         return allPictures.child(eventId).child(photoId).removeValue()
     }
 
-    fun getReportedPicturesForEventList(list: List<EventItem>): List<Observable<MutableList<Photo>>> {
-        return list.map {event ->
-            RxFirebaseDatabase.observeSingleValueEvent(pictureReportRef.child(event.idEvent), DataSnapshotMapper.listOf(Photo::class.java)).toObservable()
-        }
+    fun updatereportedPhotoCount(eventId: String): Maybe<MutableList<Event>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(eventsRef, DataSnapshotMapper.listOf(Event::class.java))
+    }
 
+    fun updateEventForPhotoReporting(eventId: String, updateEvent: Event): Completable {
+        return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
 }

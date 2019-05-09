@@ -56,19 +56,5 @@
                 app:argType="string"/>
     </fragment>
 
-    <fragment
-            android:id="@+id/reportedPhotoFragment"
-            android:name="com.example.event_app.ui.fragment.ReportedPhotoFragment"
-            android:label="fragment_reported_photos"
-            tools:layout="@layout/fragment_reported_photo">
-        <argument
-                android:name="list"
-                app:argType="com.example.event_app.model.ReportedPhotoList"/>
-        <action android:id="@+id/action_reportedPhotoFragment_to_detailPhotoFragment"
-                app:destination="@id/detailPhotoFragment"/>
-    </fragment>
-
-
-
 
 </navigation>

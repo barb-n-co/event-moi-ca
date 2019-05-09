@@ -136,17 +136,45 @@ class DetailPhotoFragment : BaseFragment() {
                 2 -> {
                     //report image
                     photo.value?.let {
-                        viewModel.reportPhoto(eventId!!,it)
-                            .subscribe(
-                                {
-                                    Timber.d("photo reported ")
-                                    Toast.makeText(context, getString(R.string.picture_reported_to_owner), Toast.LENGTH_SHORT).show()
-                                },
-                                {
-                                    Timber.e(it)
-                                    Toast.makeText(context, "Un problème a eut lieu lors du signalement. Merci de réessayer.", Toast.LENGTH_SHORT).show()
-                                }
-                            )
+                        if (it.isReported == 0) {
+                            viewModel.reportPhoto(eventId!!,it)
+                                .subscribe(
+                                    {
+                                        Timber.d("photo reported ")
+                                        Toast.makeText(context, getString(R.string.picture_reported_to_owner), Toast.LENGTH_SHORT).show()
+                                    },
+                                    {
+                                        Timber.e(it)
+                                        Toast.makeText(context, "Un problème a eut lieu lors du signalement. Merci de réessayer.", Toast.LENGTH_SHORT).show()
+                                    }
+                                ).addTo(viewDisposable)
+                            viewModel.getEvents()
+                                .subscribe(
+                                    {
+                                        it.forEach {
+                                            if (it.idEvent == eventId) {
+                                                val updateEvent = it
+                                                updateEvent.reportedPhotoCount = it.reportedPhotoCount + 1
+                                                viewModel.updateEventReportedPhotoCount(eventId!!, updateEvent)
+                                                    .subscribe(
+                                                        {
+                                                            Timber.e("event updated")
+                                                        },
+                                                        {
+                                                            Timber.e("error for update event reported photo = $it")
+                                                        }
+                                                    )
+                                            }
+                                        }
+
+                                    },
+                                    {
+                                        Timber.e("error getting event for update reported photo = $it")
+                                    }
+                                )
+                        } else {
+                            Toast.makeText(context, "photo déjà siganlée",Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                 }

@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
-import com.example.event_app.model.PhotoList
 import com.example.event_app.model.ReportedPhotoList
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
@@ -81,33 +80,14 @@ class HomeFragment : BaseFragment(), HomeInterface {
         swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
 
         viewModel.myEventList.subscribe(
-            {
-                if (it.isEmpty()) {
+            {eventList ->
+                if (eventList.isEmpty()) {
                     rv_event_home_fragment.visibility = INVISIBLE
                     g_no_item_home_fragment.visibility = VISIBLE
                 } else {
                     rv_event_home_fragment.visibility = VISIBLE
                     g_no_item_home_fragment.visibility = INVISIBLE
-                    adapter.submitList(it)
-                    viewModel.getReportedPhotos(it).forEach {
-                        it.subscribe(
-                            {photoList ->
-                                if (photoList.isNotEmpty()) {
-                                    reportedPhotoList.listOfphotoList.add(PhotoList(photoList))
-                                    photo_reporting_fab.visibility = VISIBLE
-//                                    photo_reporting_fab.setOnClickListener {
-//                                        photoList?.let {
-//                                            val action = HomeFragmentDirections.actionMyHomeFragmentToReportedPhotoFragment(reportedPhotoList)
-//                                            NavHostFragment.findNavController(this).navigate(action)
-//                                        }
-//                                    }
-                                }
-                            },
-                            {
-                                Timber.e(it)
-                            }
-                        )
-                    }
+                    adapter.submitList(eventList)
                 }
                 swiperefresh_fragment_home.isRefreshing = false
             },
@@ -117,10 +97,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
             })
             .addTo(viewDisposable)
 
-        photo_reporting_fab.setOnClickListener {
-            val action = HomeFragmentDirections.actionMyHomeFragmentToReportedPhotoFragment(reportedPhotoList)
-            NavHostFragment.findNavController(this).navigate(action)
-        }
     }
 
     private fun setFab() {

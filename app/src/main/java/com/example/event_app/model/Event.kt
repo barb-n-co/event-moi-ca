@@ -11,5 +11,6 @@ data class Event(
         var name: String = "",
         var description: String? = null,
         var dateStart: String = "",
-        var dateEnd: String = ""
+        var dateEnd: String = "",
+        var reportedPhotoCount: Int = 0
 ) : Parcelable

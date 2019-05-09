@@ -10,5 +10,6 @@ data class Photo(
     var authorName: String? = null,
     var like: Int? = null,
     var url: String? = null,
-    var commentaires: MutableList<Commentaire> = ArrayList()
+    var commentaires: MutableList<Commentaire> = ArrayList(),
+    var isReported: Int = 0
 ) : Parcelable

@@ -8,12 +8,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Commentaire
+import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -94,6 +96,15 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
     fun getStorageRef(url: String): StorageReference {
         return eventsRepository.ref.child(url)
+    }
+
+    fun getEvents(): Observable<List<Event>> {
+        return eventsRepository.fetchEvents()
+    }
+
+    fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
+        return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
+
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

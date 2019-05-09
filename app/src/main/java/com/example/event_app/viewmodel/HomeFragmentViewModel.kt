@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.MyEvents
-import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Observable
@@ -44,7 +43,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 it.dateStart,
                                 it.dateEnd,
                                 myEvents.accepted,
-                                myEvents.organizer
+                                myEvents.organizer,
+                                it.reportedPhotoCount
                             )
                         }
                     }.filterNotNull()
@@ -56,10 +56,6 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                         Timber.e(it)
                     })
         }
-    }
-
-    fun getReportedPhotos(list: List<EventItem>): List<Observable<MutableList<Photo>>> {
-        return eventsRepository.getReportedPicturesForEventList(list)
     }
 
     fun addInvitation(idEvent: String) {

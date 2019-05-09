@@ -105,8 +105,6 @@ class DetailEventFragment : BaseFragment() {
 
         eventId?.let {notNullId ->
             viewModel.getEventInfo(notNullId)
-
-            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter

@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PhotoList(var list: MutableList<Photo>?) : Parcelable
+data class PhotoList(var list: MutableList<Photo>?, var eventId: String?) : Parcelable

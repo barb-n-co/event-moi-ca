@@ -63,6 +63,7 @@ class DetailEventFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
+        setVisibilityNavBar(false)
 
         weakContext = WeakReference<Context>(context)
         adapter = CustomAdapter(weakContext.get()!!)
@@ -88,18 +89,11 @@ class DetailEventFragment : BaseFragment() {
 
                 if (it.organizer != 1) {
                     iv_generate_qrCode.visibility = View.INVISIBLE
-                    iv_share_deepLink.visibility = View.INVISIBLE
                 } else {
                     iv_generate_qrCode.visibility = View.VISIBLE
-                    iv_share_deepLink.visibility = View.VISIBLE
                     iv_generate_qrCode.setOnClickListener {
                         eventId?.let {
                             GenerationQrCodeActivity.start(activity as MainActivity, it)
-                        }
-                    }
-                    iv_share_deepLink.setOnClickListener {
-                        eventId?.let {
-
                         }
                     }
                 }
@@ -233,5 +227,4 @@ class DetailEventFragment : BaseFragment() {
         super.onDestroyView()
 
     }
-
 }

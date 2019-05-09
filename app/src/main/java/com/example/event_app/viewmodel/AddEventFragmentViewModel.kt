@@ -13,7 +13,7 @@ class AddEventFragmentViewModel(private val userRepository: UserRepository, priv
         userRepository.currentUser.value?.let {user ->
             user.id?.let { id ->
                 user.name?.let { userName ->
-                    eventsRepository.addEvent(id, name, Event(idEvent, id, organizer, name, description, startDateString, endDateString))
+                    eventsRepository.addEvent(id, userName, Event(idEvent, id, organizer, name, description, startDateString, endDateString))
                 }
             }
         }

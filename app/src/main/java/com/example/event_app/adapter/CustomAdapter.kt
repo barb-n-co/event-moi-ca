@@ -3,6 +3,7 @@ package com.example.event_app.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
@@ -13,6 +14,7 @@ import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.utils.GlideApp
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.list_pic_event.view.*
 
 
 class CustomAdapter(private val context: Context) :
@@ -45,6 +47,11 @@ class CustomAdapter(private val context: Context) :
         private var photo: Photo? = null
 
         fun bindPhoto(photo: Photo) {
+
+            if (photo.isReported == 1) {
+                v.report_tag.visibility = VISIBLE
+            }
+
             v.setOnClickListener {
                 photo.id?.let {
                     photosClickPublisher.onNext(photo.id!!)

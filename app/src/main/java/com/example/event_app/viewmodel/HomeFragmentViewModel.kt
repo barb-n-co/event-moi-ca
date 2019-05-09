@@ -45,7 +45,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 myEvents.accepted,
                                 myEvents.organizer,
                                 it.description,
-                                it.idOrganizer
+                                it.idOrganizer,
+                                it.reportedPhotoCount
                             )
                         }
                     }.filterNotNull()

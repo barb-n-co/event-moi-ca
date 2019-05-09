@@ -3,6 +3,7 @@ package com.example.event_app.repository
 import com.example.event_app.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseAuth
@@ -11,11 +12,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
-import durdinapps.rxfirebase2.RxFirebaseUser.updateProfile
-import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.auth.FirebaseUser
-
-
 
 
 object UserRepository {
@@ -75,10 +71,10 @@ object UserRepository {
                         name,
                         it.email
                     )
-                    val userAnth = fireBaseAuth.currentUser
+                    val userAuth = fireBaseAuth.currentUser
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(name).build()
-                    userAnth?.updateProfile(profileUpdates)
+                    userAuth?.updateProfile(profileUpdates)
                     currentUser.onNext(user)
                     setNameFirebase(it.uid, name, email)
                 }

@@ -110,6 +110,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
         return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
 
     }
+
     fun getNumberOfLikes(photoId: String){
         eventsRepository.getLikesFromPhoto(photoId).subscribe({
             peopleWhoLike.onNext(it)

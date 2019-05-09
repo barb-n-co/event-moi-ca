@@ -14,6 +14,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.model.*
+import com.example.event_app.model.Event
+import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -35,6 +38,9 @@ import java.util.*
 const val COMPRESSION_QUALITY = 20
 
 class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : BaseViewModel()  {
+
+    val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
+    val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
 
     companion object {
 
@@ -98,7 +104,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
     }
 
-    val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
 
 
     fun getEventInfo(eventId: String) {
@@ -134,6 +139,16 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 }).addTo(disposeBag)
 
         }
+        getParticipant(eventId)
+    }
+
+    fun getParticipant(eventId: String)
+    {
+        eventsRepository.getParticipants(eventId).subscribe({
+            participants.onNext(it)
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
@@ -221,6 +236,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             e.printStackTrace()
         }
         return imagePath
+    }
+
+    fun removeParticipant(idEvent: String,userId: String) {
+        eventsRepository.refuseInvitation(idEvent, userId)
     }
 
 

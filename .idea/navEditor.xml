@@ -83,6 +83,18 @@
                       </LayoutPositions>
                     </value>
                   </entry>
+                  <entry key="modify_event_fragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="7" />
+                            <option name="y" value="427" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="my_home_fragment">
                     <value>
                       <LayoutPositions>
@@ -94,6 +106,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_my_home_fragment_to_ModifyEventFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_my_home_fragment_to_add_event_fragment">
                               <value>
                                 <LayoutPositions />

@@ -10,12 +10,16 @@
             android:name="com.example.event_app.ui.fragment.HomeFragment"
             android:label="MyHomeFragment"
             tools:layout="@layout/fragment_home">
+
         <action android:id="@+id/action_my_home_fragment_to_add_event_fragment"
                 app:destination="@id/add_event_fragment" app:enterAnim="@anim/nav_default_enter_anim"
                 app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_my_home_fragment_to_detail_event_fragment"
                 app:destination="@id/detail_event_fragment"/>
+        <action android:id="@+id/action_my_home_fragment_to_ModifyEventFragment"
+                app:destination="@+id/modify_event_fragment"
+        />
     </fragment>
 
     <fragment
@@ -57,6 +61,8 @@
                 app:argType="string"/>
     </fragment>
 
+
+
     <fragment
             android:id="@+id/MapsFragment"
             android:name="com.example.event_app.ui.fragment.MapsFragment"
@@ -68,11 +74,15 @@
 
 
     <fragment
-            android:id="@+id/ModifyEventFragment"
-            android:name="com.example.event_app.ui.fragment.MapsFragment"
-            android:label="MapsOrganizerFragment"
-            tools:layout="@layout/fragment_maps">
-        <action android:id="@+id/action_MapsFragment_to_add_event_fragment" app:destination="@id/add_event_fragment"/>
+            android:id="@+id/modify_event_fragment"
+            android:name="com.example.event_app.ui.fragment.ModifyEventFragment"
+            android:label="ModifyEvent"
+            tools:layout="@layout/fragment_modify_event">
+
+
+        <argument
+                android:name="eventId"
+                app:argType="string"/>
 
     </fragment>
 

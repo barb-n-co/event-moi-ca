@@ -57,6 +57,7 @@ class DetailEventFragment : BaseFragment() {
     var popupWindow: PopupWindow? = null
 
     private var eventId: String? = null
+
     private lateinit var weakContext: WeakReference<Context>
     var idOrganizer = ""
 

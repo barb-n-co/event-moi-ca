@@ -20,7 +20,7 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
     val eventClickPublisher: PublishSubject<String> = PublishSubject.create()
     val acceptClickPublisher: PublishSubject<String> = PublishSubject.create()
     val refuseClickPublisher: PublishSubject<String> = PublishSubject.create()
-
+    val modifyClickPublisher: PublishSubject<String> = PublishSubject.create()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_event, parent, false)
         return EventViewHolder(view)
@@ -69,6 +69,10 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
 
             itemView.b_refuse_myevents_item.setOnClickListener {
                 refuseClickPublisher.onNext(event.idEvent)
+            }
+
+            itemView.Modif.setOnClickListener {
+                modifyClickPublisher.onNext(event.idEvent)
             }
         }
     }

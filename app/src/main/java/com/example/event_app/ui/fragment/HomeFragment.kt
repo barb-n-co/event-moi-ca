@@ -81,6 +81,14 @@ class HomeFragment : BaseFragment(), HomeInterface {
             }
         ).addTo(viewDisposable)
 
+        adapter.modifyClickPublisher.subscribe(
+            {
+            val action = HomeFragmentDirections.actionMyHomeFragmentToModifyEventFragment(it)
+            NavHostFragment.findNavController(this).navigate(action)
+        },{
+                Timber.e(it)
+        }).addTo(viewDisposable)
+
         swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
 
         viewModel.myEventList.subscribe(

@@ -14,6 +14,14 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="0dp"
+                   android:src="@drawable/ic_calendar"
+                   android:layout_marginEnd="8dp"
+                   android:backgroundTint="@color/colorPrimary"
+                   app:layout_constraintTop_toTopOf="@id/tv_startDate_myevents_item"
+                   app:layout_constraintBottom_toBottomOf="@id/tv_startDate_myevents_item"
+                   app:layout_constraintEnd_toStartOf="@id/tv_startDate_myevents_item" android:id="@+id/imageView2"/>
         <TextView
                 android:id="@+id/tv_name_myevents_item"
                 android:layout_width="wrap_content"
@@ -70,12 +78,12 @@
 
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="0dp"
-                   android:src="@drawable/ic_calendar"
+                   android:src="@drawable/ic_modify"
                    android:layout_marginEnd="8dp"
                    android:backgroundTint="@color/colorPrimary"
-                   app:layout_constraintTop_toTopOf="@id/tv_startDate_myevents_item"
-                   app:layout_constraintBottom_toBottomOf="@id/tv_startDate_myevents_item"
-                   app:layout_constraintEnd_toStartOf="@id/tv_startDate_myevents_item"/>
+
+                   android:id="@+id/Modif" app:layout_constraintEnd_toEndOf="parent"
+                   android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
                 android:id="@+id/tv_startDate_myevents_item"

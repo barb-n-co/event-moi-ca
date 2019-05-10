@@ -67,5 +67,15 @@
    </fragment>
 
 
+    <fragment
+            android:id="@+id/ModifyEventFragment"
+            android:name="com.example.event_app.ui.fragment.MapsFragment"
+            android:label="MapsOrganizerFragment"
+            tools:layout="@layout/fragment_maps">
+        <action android:id="@+id/action_MapsFragment_to_add_event_fragment" app:destination="@id/add_event_fragment"/>
+
+    </fragment>
+
+
 
 </navigation>

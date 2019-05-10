@@ -123,6 +123,7 @@
     <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
     <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement</string>
+    <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
 
 
 </resources>

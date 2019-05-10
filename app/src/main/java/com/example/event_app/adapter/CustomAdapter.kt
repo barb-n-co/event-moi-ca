@@ -43,7 +43,7 @@ class CustomAdapter(private val context: Context, private val isOrganizer: Int) 
 
     inner class ViewHolder(private var v: View, private val photosClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(v) {
-        internal var iv: ImageView? = v.findViewById(R.id.image_item)
+        private var iv: ImageView? = v.findViewById(R.id.image_item)
         private var photo: Photo? = null
 
         fun bindPhoto(photo: Photo) {

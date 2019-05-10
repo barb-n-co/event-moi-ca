@@ -43,17 +43,14 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel : DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter : CustomAdapter
-
-    val event: BehaviorSubject<Event> = BehaviorSubject.create()
-    lateinit var participants: List<User>
-    var popupWindow: PopupWindow? = null
-
-    private var eventId: String? = null
     private lateinit var weakContext: WeakReference<Context>
+    private lateinit var adapter : CustomAdapter
+    lateinit var participants: List<User>
+    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private var eventId: String? = null
+    val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    var popupWindow: PopupWindow? = null
     var idOrganizer = ""
-
     var imageIdList = ArrayList<Photo>()
 
     companion object {
@@ -139,10 +136,13 @@ class DetailEventFragment : BaseFragment() {
             .addTo(viewDisposable)
 
         tv_eventPlace.setOnClickListener{
-            val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
+            val query = tv_eventPlace.text.toString()
+            val address = getString(R.string.map_query, query)
+            if (query.isNotEmpty()) {
+                val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(address))
+                startActivity(mapsIntent)
+            }
 
-            val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
-            startActivity(mapsIntent)
         }
 
         eventId?.let { notNullId ->
@@ -233,7 +233,7 @@ class DetailEventFragment : BaseFragment() {
 
     private fun openPopUp() {
 
-        var isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
+        val isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
         viewModel.getParticipant(eventId!!)
 
         fun removeUser(userId :String){

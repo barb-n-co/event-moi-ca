@@ -6,8 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
+import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
+import com.example.event_app.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
 import org.kodein.di.generic.instance
 import java.text.DateFormat
@@ -17,6 +22,7 @@ import java.util.*
 
 class AddEventFragment : BaseFragment() {
 
+
     var dateStart: Date? = null
     var dateEnd: Date? = null
     var startDateTimePicker: Calendar = Calendar.getInstance()
@@ -25,6 +31,7 @@ class AddEventFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ADDEVENTFRAGMENT"
+        public var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -46,6 +53,16 @@ class AddEventFragment : BaseFragment() {
         setVisibilityNavBar(false)
         setTitleToolbar(getString(R.string.toolbar_add_event_fragment_add_event))
 
+
+        arguments?.let {
+          chip_place_add_event_fragment.text =  AddEventFragmentArgs.fromBundle(it).address
+        }
+        chip_place_add_event_fragment.setOnClickListener {
+
+            val action = AddEventFragmentDirections.actionAddEventFragmentToMapsFragment()
+            NavHostFragment.findNavController(this).navigate(action)
+
+        }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, startDateCode)
@@ -58,22 +75,28 @@ class AddEventFragment : BaseFragment() {
             date.show(fragmentManager!!, tag)
         }
 
+
+
+
+
         b_validate_add_event_fragment.setOnClickListener {
             val id = java.util.UUID.randomUUID().toString()
             val organizer = et_organizer_add_event_fragment.text.toString()
             val name = et_name_add_event_fragment.text.toString()
+            val place = chip_place_add_event_fragment.text.toString()
             val description = et_description_add_event_fragment.text.toString()
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
 
             if(dateEnd != null && dateStart != null && organizer.isNotEmpty() && name.isNotEmpty()){
-                viewModel.addEventFragment(id, organizer, name, description, startDateString, endDateString)
+                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString)
                 fragmentManager?.popBackStack()
             } else {
                 Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT).show()
             }
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -112,4 +135,6 @@ class AddEventFragment : BaseFragment() {
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
         return if (date != null) df.format(date) else "Erreur test"
     }
+
+
 }

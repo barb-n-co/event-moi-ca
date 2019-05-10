@@ -12,6 +12,7 @@ import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
+import com.example.event_app.repository.UserRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
@@ -23,7 +24,7 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
-class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
+class DetailPhotoViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
     val peopleWhoLike: BehaviorSubject<List<User>> = BehaviorSubject.create()
@@ -46,7 +47,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
                 eventsRepository.fetchCommentaires(photoId).subscribe(
                     {
-                        Log.d("DetailEvent", "getCommentaires ${it.get(0)}")
+                        Log.d("DetailEvent", "getCommentaires ${it[0]}")
                         commentaires.onNext(it)
                     },
                     {
@@ -55,6 +56,11 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
             }
         }
 
+    }
+
+    fun addComment(comment: String, photoId: String): Completable {
+        val user = userRepository.currentUser.value!!
+        return eventsRepository.addCommentToPhoto(comment, photoId, user)
     }
 
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
@@ -127,10 +133,10 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
         getNumberOfLikes(photoId)
     }
 
-    class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return DetailPhotoViewModel(eventsRepository) as T
+            return DetailPhotoViewModel(eventsRepository, userRepository) as T
         }
     }
 }

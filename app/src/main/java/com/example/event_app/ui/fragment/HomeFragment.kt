@@ -7,17 +7,21 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
+import com.example.event_app.model.UserEventState
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+
+
 
 class HomeFragment : BaseFragment(), HomeInterface {
 
@@ -105,7 +109,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
                     requestCameraPermission()
                 }
                 R.id.action_add_event -> {
-                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
+                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
                     NavHostFragment.findNavController(this).navigate(action)
                 }
             }
@@ -127,7 +131,10 @@ class HomeFragment : BaseFragment(), HomeInterface {
     }
 
     override fun openFilter() {
-        val bottomSheetDialog = FilterDialogFragment.instance
+        val bottomSheetDialog = FilterDialogFragment(stateSelectedListener = {
+            viewModel.stateUserEvent = it
+            viewModel.getMyEvents()
+        }, filterState = viewModel.stateUserEvent)
         bottomSheetDialog.show(requireFragmentManager(), TAG)
     }
 

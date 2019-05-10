@@ -6,23 +6,22 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import android.widget.PopupWindow
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.TransitionManager
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
-import com.example.event_app.adapter.ListParticipantsAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
@@ -30,6 +29,8 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPO
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.model.User
+import com.example.event_app.model.*
+import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
@@ -38,7 +39,6 @@ import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import kotlinx.android.synthetic.main.list_participants_popup.view.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -46,9 +46,8 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel: DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter: CustomAdapter
-    private lateinit var listParticipantsAdapter: ListParticipantsAdapter
+    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter : CustomAdapter
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     lateinit var participants: List<User>
@@ -92,6 +91,8 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventName.text = it.nameEvent
                 tv_eventDescription.text = it.description
                 tv_eventOrga.text = it.nameOrganizer
+
+                tv_eventPlace.text = spannable { url("",it.place) }
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
@@ -113,9 +114,7 @@ class DetailEventFragment : BaseFragment() {
                         b_exit_detail_event_fragment.setOnClickListener {
                             actionExitEvent()
                         }
-
                         setFab()
-
                     }
 
                 } else {
@@ -150,10 +149,16 @@ class DetailEventFragment : BaseFragment() {
             Timber.e(it)
         }).addTo(viewDisposable)
 
+        tv_eventPlace.setOnClickListener{
+            val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
+
+            val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
+            startActivity(mapsIntent)
+        }
+
         eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
-
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter
@@ -171,6 +176,15 @@ class DetailEventFragment : BaseFragment() {
                     Timber.e(it)
                 }
             ).addTo(viewDisposable)
+
+            tv_listParticipant.setOnClickListener { openPopUp() }
+
+            viewModel.participants.subscribe({
+                tv_listParticipant.text = getString(R.string.participants, it.size)
+                participants = it
+            }, {
+                Timber.e(it)
+            }).addTo(viewDisposable)
 
             adapter.submitList(imageIdList)
 
@@ -224,35 +238,18 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun openPopUp() {
-        // Inflate a custom view using layout inflater
-        val popup = inflate(this.context, R.layout.list_participants_popup, null)
 
-
-        popupWindow = PopupWindow(popup, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        popupWindow?.elevation = 10.0F
-        TransitionManager.beginDelayedTransition(root_layout)
-        popupWindow?.showAtLocation(
-            root_layout, // Location to display popup window
-            Gravity.CENTER, // Exact position of layout to display popup
-            0, // X offset
-            0 // Y offset
-        )
-        val mLinear = LinearLayoutManager(context)
-        listParticipantsAdapter = ListParticipantsAdapter(context!!, idOrganizer)
-        popup.rv_listParticipants.layoutManager = mLinear
-        popup.rv_listParticipants.adapter = listParticipantsAdapter
+        var isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
         viewModel.getParticipant(eventId!!)
-        listParticipantsAdapter.submitList(participants)
-        listParticipantsAdapter.userClickPublisher.subscribe(
-            {
-                viewModel.removeParticipant(eventId!!, it)
-                listParticipantsAdapter.notifyDataSetChanged()
-            }, {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-        val buttonPopup = popup.findViewById<Button>(R.id.btn_popup)
-        buttonPopup.setOnClickListener { popupWindow?.dismiss() }
+
+        fun removeUser(userId :String){
+            viewModel.removeParticipant(eventId!!, userId)
+            Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
+        }
+
+
+        val popup = ListParticipantFragment(deleteSelectedListener = {removeUser(it)},idOrganizer = idOrganizer, isNotAnOrga = isNotAnOrga, participants = participants)
+        popup.show(requireFragmentManager(), "listParticipant")
     }
 
     private fun setFab() {
@@ -297,7 +294,7 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun requestPermissions() {
-        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION)
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
 

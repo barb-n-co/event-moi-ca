@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.LoginViewModel
@@ -12,6 +13,10 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import android.widget.LinearLayout
+import android.widget.EditText
+
+
 
 class LoginFragment: BaseFragment() {
 
@@ -35,6 +40,37 @@ class LoginFragment: BaseFragment() {
             val email = et_email_signin_fragment.text.toString()
             val password = et_password_signin_fragment.text.toString()
             userLogin(email, password)
+        }
+
+        b_reset_password_signin_fragment.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(activity!!)
+            alertDialog.setTitle(getString(R.string.tv_title_reset_password_fragment))
+            alertDialog.setMessage(getString(R.string.tv_message_reset_password_fragment))
+
+            val input = EditText(activity!!)
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            input.layoutParams = lp
+            alertDialog.setView(input)
+
+            alertDialog.setPositiveButton(
+                getString(R.string.b_validate_dialog)
+            ) { dialog, which ->
+                val email = input.text.toString()
+                if (email.length == 0) {
+                    Toast.makeText(activity!!, getString(R.string.t_empty_email_reset_password_dialog_fragment), Toast.LENGTH_LONG).show()
+                } else {
+                    viewModel.resetPassword(email)
+                }
+            }
+
+            alertDialog.setNegativeButton(
+                getString(R.string.b_cancel_dialog)
+            ) { dialog, which -> dialog.cancel() }
+
+            alertDialog.show()
         }
     }
 

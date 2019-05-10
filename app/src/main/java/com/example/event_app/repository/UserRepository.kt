@@ -27,6 +27,10 @@ object UserRepository {
             .map { authResult -> authResult.currentUser != null }
     }
 
+    fun resetPassword(email: String) {
+        fireBaseAuth.sendPasswordResetEmail(email)
+    }
+
     fun getUserNameFromFirebase() {
         fireBaseAuth.currentUser?.uid?.let { it ->
             RxFirebaseDatabase.observeSingleValueEvent(

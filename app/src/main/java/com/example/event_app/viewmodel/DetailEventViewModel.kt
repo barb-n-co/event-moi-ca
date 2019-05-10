@@ -123,6 +123,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.first.name,
                     idUser,
                     response.first.organizer,
+                    response.first.place,
                     response.first.dateStart,
                     response.first.dateEnd,
                     response.second.accepted,
@@ -235,6 +236,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     fun removeParticipant(idEvent: String, userId: String) {
         eventsRepository.refuseInvitation(idEvent, userId)
+        getParticipant(idEvent)
     }
 
     fun exitEvent(idEvent: String): Task<Void>? {

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import kotlinx.android.synthetic.main.fragment_photo.*
 import java.io.File
@@ -19,6 +20,8 @@ import java.io.FileOutputStream
 import java.util.*
 
 class PhotoFragment : BaseFragment() {
+
+
     companion object {
         const val TAG = "PHOTOFRAGMENT"
         private const val PERMISSION_ALL = 1

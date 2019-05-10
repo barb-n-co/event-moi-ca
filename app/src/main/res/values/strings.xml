@@ -15,6 +15,11 @@
     <string name="tv_description_authentification_activity">Veuillez vous inscrire ou vous connecter</string>
     <string name="ti_login_authentification_activity">Connexion</string>
     <string name="ti_signup_authentification_activity">Inscription</string>
+    <string name="tv_reset_password_authentification_activity">Mot de passe oublié ?</string>
+    <string name="t_empty_email_reset_password_dialog_fragment">Vous devez rentrer le mail de votre compte pour réinitialiser votre mot de passe</string>
+    <string name="tv_title_reset_password_fragment">Mot de passe oublié</string>
+    <string name="tv_message_reset_password_fragment">Veuillez rentrer votre mail lié à votre compte</string>
+
 
     <!-- Log In Fragment -->
     <string name="tv_email_login_fragment">Email</string>
@@ -37,10 +42,11 @@
     <string name="filter">Filtre</string>
 
     <!-- Filter Dialog Fragment -->
-    <string name="cb_filter_invitation_dialog_fragment">Filtrer par invitation</string>
-    <string name="cb_filter_participate_dialog_fragment">Filtrer par participation</string>
-    <string name="cb_filter_organizer_dialog_fragment">Filtrer par participation</string>
-    <string name="tv_filter_dialog_fragment">Filtre</string>
+    <string name="cb_filter_invitation_dialog_fragment">Invitation</string>
+    <string name="cb_filter_participate_dialog_fragment">Participation</string>
+    <string name="cb_filter_organizer_dialog_fragment">Organisateur</string>
+    <string name="tv_filter_dialog_fragment">Filtrer par …</string>
+    <string name="b_filter_dialog_fragment">Valider</string>
 
     <!-- Item My Events -->
     <string name="tv_state_invited">Invited</string>
@@ -80,6 +86,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="download_all_pictures_from_one_event">Tout télécharger</string>
+
+    <string name="b_cancel_dialog_logout">Non</string>
+    <string name="b_validate_dialog_logout">Oui</string>
+    <string name="t_sign_out">Sign Out</string>
     <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
     <string name="save_picture">Sauvegarder</string>
@@ -106,6 +116,13 @@
     <string name="tv_delete_event_cancel_detail_event_fragment">Non</string>
     <string name="tv_delete_event_valider_detail_event_fragment">Oui</string>
     <string name="tv_delete_event_toast_detail_event_fragment">Suppression réussie.</string>
+    <string name="add_comment_to_photo">Ajouter un commentaire</string>
+    <string name="ToastRemoveParticipant">Le participant a été supprimé de l\'évenement</string>
+    <string name="participants">%s participants</string>
+
+    <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
+    <string name="tv_place_detail_event_fragment">Adresse :</string>
+    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement</string>
 
 
 </resources>

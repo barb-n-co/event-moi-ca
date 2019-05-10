@@ -13,6 +13,9 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 object EventRepository {
 
@@ -24,8 +27,8 @@ object EventRepository {
     private val eventsRef = database.reference.child("events")
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
-    private val commentsRef = database.getReference("commentaires")
-    private val likesRef = database.getReference("likes")
+    private val commentsRef = database.reference.child("commentaires")
+    private val likesRef = database.reference.child("likes")
     private val userRef = database.reference.child("users")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
@@ -84,7 +87,7 @@ object EventRepository {
 
     fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
-        eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 0, 0))
+        //eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 0, 0))
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {
@@ -179,17 +182,27 @@ object EventRepository {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
-    fun getLikesFromPhoto(photoId: String): Flowable<List<User>> {
+    fun getLikesFromPhoto(photoId: String) : Flowable<List<User>>{
         return RxFirebaseDatabase.observeSingleValueEvent(
             likesRef.child(photoId), DataSnapshotMapper.listOf(User::class.java)
         ).toFlowable()
     }
-
-    fun addLikes(photoId: String, user: User): Completable {
+    fun addLikes(photoId: String, user:User): Completable {
         return if (user.id != null) {
             RxFirebaseDatabase.setValue(likesRef.child(photoId).child(user.id!!), Pair("name", user.name))
         } else {
             Completable.error(Throwable("error: user id is null"))
         }
+    }
+
+    fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {
+        val date = Calendar.getInstance().get(Calendar.DATE)
+        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
+        val newDate = df.format(date)
+        val pushPath = commentsRef.child(photoId).push().key!!
+        val author = user.name ?: ""
+        val userId = user.id!!
+        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
+        return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 }

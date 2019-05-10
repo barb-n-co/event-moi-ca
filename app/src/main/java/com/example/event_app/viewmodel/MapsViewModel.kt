@@ -9,7 +9,7 @@ import io.reactivex.subjects.BehaviorSubject
 
 class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(){
     var mapAdress: BehaviorSubject<AddressMap> = BehaviorSubject.create()
-    init {
+    fun searchAdress() {
         mapsRepository.mapAdress.subscribe(
             {
                 mapAdress.onNext(it)

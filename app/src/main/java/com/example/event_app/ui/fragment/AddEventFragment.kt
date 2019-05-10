@@ -49,14 +49,12 @@ class AddEventFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        chip_place_add_event_fragment.setOnClickListener {
 
-//            val transaction = fragmentManager?.beginTransaction()
-//            val fragment = MapsFragment()
-//
-//            transaction?.replace(R.id.content_home, fragment)
-//            transaction?.addToBackStack(null)
-//            transaction?.commit()
+
+        arguments?.let {
+          chip_place_add_event_fragment.text =  AddEventFragmentArgs.fromBundle(it).address
+        }
+        chip_place_add_event_fragment.setOnClickListener {
 
             val action = AddEventFragmentDirections.actionAddEventFragmentToMapsFragment()
             NavHostFragment.findNavController(this).navigate(action)
@@ -74,11 +72,9 @@ class AddEventFragment : BaseFragment() {
             date.show(fragmentManager!!, tag)
         }
 
-        if (lieu !=null ){
-            chip_place_add_event_fragment.text=lieu
 
 
-        }
+
 
         b_validate_add_event_fragment.setOnClickListener {
             val id = java.util.UUID.randomUUID().toString()

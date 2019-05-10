@@ -45,7 +45,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
                     requestCameraPermission()
                 }
                 R.id.action_add_event -> {
-                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
+                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
                     NavHostFragment.findNavController(this).navigate(action)
                 }
             }

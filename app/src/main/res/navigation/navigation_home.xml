@@ -24,6 +24,9 @@
             android:label="AddEventFragment"
             tools:layout="@layout/fragment_add_event">
         <action android:id="@+id/action_add_event_fragment_to_MapsFragment" app:destination="@id/MapsFragment"/>
+        <argument
+                android:name="address"
+                app:argType="string"/>
     </fragment>
 
     <fragment
@@ -58,7 +61,10 @@
             android:id="@+id/MapsFragment"
             android:name="com.example.event_app.ui.fragment.MapsFragment"
             android:label="MapsOrganizerFragment"
-            tools:layout="@layout/fragment_maps"/>
+            tools:layout="@layout/fragment_maps">
+        <action android:id="@+id/action_MapsFragment_to_add_event_fragment" app:destination="@id/add_event_fragment"/>
+
+   </fragment>
 
 
 

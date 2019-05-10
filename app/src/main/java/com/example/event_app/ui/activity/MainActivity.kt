@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.SearchView
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -21,7 +21,10 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
-            var isFromMap = false
+    var isFromMap = false
+    private var searchBtn: MenuItem? = null
+    private var logoutBtn: MenuItem? = null
+
 
     companion object {
         fun start(fromActivity: FragmentActivity) {
@@ -47,17 +50,37 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (isFromMap){
-            menuInflater.inflate(R.menu.menu_maps, menu)
-            setSearchView(menu)
-        }
+        menuInflater.inflate(R.menu.menu_maps, menu)
+        menuInflater.inflate(R.menu.action_bar_menu, menu)
 
-        else{
-            isFromMap = !isFromMap
-            menuInflater.inflate(R.menu.action_bar_menu, menu)
+       searchBtn = menu?.findItem(R.id.sv_search_map)
+       logoutBtn = menu?.findItem(R.id.action_logout)
+        displaySearchButton(false)
+        displayLogoutButton(false)
 
-        }
+
+
+       if (isFromMap){
+           displaySearchButton(true)
+           displayLogoutButton(false)
+           setSearchView(menu)
+       }
+
+       else{
+           isFromMap = !isFromMap
+           displaySearchButton(false)
+           displayLogoutButton(true)
+
+       }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    fun displaySearchButton(value: Boolean) {
+        searchBtn?.isVisible = value
+    }
+
+    fun displayLogoutButton(value: Boolean) {
+        logoutBtn?.isVisible = value
     }
 
     private fun setSearchView(menu: Menu) {
@@ -67,7 +90,6 @@ class MainActivity : BaseActivity() {
 
                 query?.let {
                     viewModel.searchAdress(query)
-                    //                    viewModel.action(NannyParentsAction.SearchAddress(it))
                 }
                 return false
             }
@@ -78,11 +100,13 @@ class MainActivity : BaseActivity() {
             }
         })
     }
-    fun updateToolbar(isfrommap : Boolean){
+
+    fun updateToolbar(isfrommap: Boolean) {
         isFromMap = isfrommap
         setSupportActionBar(findViewById(R.id.toolbar))
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_logout -> {
             val dialog = AlertDialog.Builder(this)
@@ -134,7 +158,6 @@ class MainActivity : BaseActivity() {
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
-
 
 
 }

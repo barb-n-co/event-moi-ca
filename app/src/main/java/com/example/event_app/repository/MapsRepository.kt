@@ -73,6 +73,7 @@ class MapsRepository(private val context: Context) {
                     mapAdress.onNext(addressmap)
                 }
             }
+
         }.addOnFailureListener { exception ->
             Timber.e("Place not found: " + exception.localizedMessage)
         }

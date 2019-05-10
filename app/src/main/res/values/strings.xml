@@ -68,5 +68,6 @@
     <string name="delete_picture_orga">Supprimer</string>
     <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
+    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement</string>
 
 </resources>

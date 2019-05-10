@@ -7,6 +7,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import timber.log.Timber
 
 
 class HomeFragment : BaseFragment(), HomeInterface {
+
 
     private val viewModel : HomeFragmentViewModel by instance(arg = this)
 
@@ -70,6 +72,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
         adapter.eventClickPublisher.subscribe(
             {
+
                 val action = HomeFragmentDirections.actionMyHomeFragmentToDetailEventFragment(it)
                 NavHostFragment.findNavController(this).navigate(action)
             },
@@ -107,7 +110,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
                     requestCameraPermission()
                 }
                 R.id.action_add_event -> {
-                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
+                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
                     NavHostFragment.findNavController(this).navigate(action)
                 }
             }

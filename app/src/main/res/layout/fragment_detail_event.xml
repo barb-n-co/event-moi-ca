@@ -77,13 +77,36 @@
                     app:layout_constraintEnd_toStartOf="@+id/iv_generate_qrCode"/>
 
             <TextView
+                android:text="@string/tv_place_detail_event_fragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_place_detail_event"
+                app:layout_constraintTop_toBottomOf="@+id/tv_eventOrga"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textStyle="bold" android:textSize="16sp" android:layout_marginStart="8dp"/>
+
+            <TextView
+                    android:id="@+id/tv_eventPlace"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+
+                    app:layout_constraintStart_toEndOf="@+id/tv_place_detail_event"
+                    android:layout_marginStart="16dp"
+                    android:linksClickable="true"
+                    tools:text="Test" android:textSize="16sp" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_eventOrga" android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_generate_qrCode"/>
+
+            <TextView
                     android:id="@+id/tv_dateS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/detail_event_startDate"
                     style="@style/ItemTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_eventOrga"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_eventPlace"
                     app:layout_constraintStart_toStartOf="@+id/tv_orga"/>
 
             <TextView
@@ -96,7 +119,8 @@
                     style="@style/ItemTitle"
                     app:layout_constraintTop_toTopOf="@+id/tv_dateS"
                     app:layout_constraintStart_toEndOf="@+id/tv_dateS"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_generate_qrCode"/>
+                    app:layout_constraintEnd_toStartOf="@+id/iv_generate_qrCode" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_eventPlace"/>
 
             <TextView
                     android:id="@+id/tv_dateE"

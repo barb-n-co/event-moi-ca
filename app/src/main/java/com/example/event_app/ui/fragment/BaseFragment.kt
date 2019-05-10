@@ -43,4 +43,8 @@ abstract class BaseFragment: Fragment(), KodeinAware{
     protected fun displayFilterMenu(value: Boolean) {
         (activity as MainActivity).displayFilterMenu(value)
     }
+
+    protected fun displaySearchViewMenu(value: Boolean) {
+        (activity as MainActivity).displaySearchButton(value)
+    }
 }

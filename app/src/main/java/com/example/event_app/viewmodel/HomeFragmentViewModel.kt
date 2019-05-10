@@ -54,6 +54,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 it.name,
                                 idUser,
                                 it.organizer,
+                                it.place,
                                 it.dateStart,
                                 it.dateEnd,
                                 myEvents.accepted,

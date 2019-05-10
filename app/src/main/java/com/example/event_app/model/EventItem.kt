@@ -5,6 +5,7 @@ class EventItem(
     val nameEvent: String,
     val idUser: String,
     val nameOrganizer: String,
+    var place: String = "",
     val dateStart: String,
     val dateEnd: String,
     val accepted: Int = 0,

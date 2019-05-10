@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
 import com.example.event_app.model.Photo
@@ -22,6 +23,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 class DetailPhotoFragment : BaseFragment() {
+
 
     private var eventId: String? = null
     private var photoId: String? = null

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -26,6 +27,8 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
+    private var searchBtn: MenuItem? = null
+
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -96,7 +99,7 @@ class MainActivity : BaseActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    private fun initView(){
+    private fun initView() {
         navControllerHome = (supportFragmentManager
             .findFragmentById(R.id.content_home) as NavHostFragment)
             .navController
@@ -113,10 +116,32 @@ class MainActivity : BaseActivity() {
         currentController.navigateUp()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu?.findItem(R.id.action_filter)
+        searchBtn = menu?.findItem(R.id.sv_search_map)
+        setSearchView(menu)
+        displaySearchButton(false)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setSearchView(menu: Menu) {
+        val searchView = menu.findItem(R.id.sv_search_map).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                query?.let {
+                    viewModel.searchAdress(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return false
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -161,6 +186,10 @@ class MainActivity : BaseActivity() {
         filterButtonMenu?.isVisible = value
     }
 
+    fun displaySearchButton(value: Boolean) {
+        searchBtn?.isVisible = value
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         currentController.navigateUp()
         return true
@@ -169,12 +198,14 @@ class MainActivity : BaseActivity() {
     override fun onBackPressed() {
         currentController
             .let { if (it.popBackStack().not()) finish() }
-            .or { finish ()}
+            .or { finish() }
     }
 
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
+
+
 }
 
 

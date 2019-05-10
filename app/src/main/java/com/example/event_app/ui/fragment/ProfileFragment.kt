@@ -62,6 +62,8 @@ class ProfileFragment: BaseFragment() {
         ).addTo(viewDisposable)
     }
 
+
+
     private fun actionDeconnexion() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(R.string.tv_title_dialog_logout)

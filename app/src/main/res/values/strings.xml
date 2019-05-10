@@ -72,6 +72,8 @@
     <string name="detail_event_endDate">Date de fin :</string>
 
     <!-- Profile Fragment -->
+    <string name="tv_title_dialog_logout">Déconnexion</string>
+    <string name="tv_message_dialog_logout">Voulez-vous vraiment vous déconnecter ?</string>
     <string name="tv_title_dialog_delete_account">Supprimer mon compte</string>
     <string name="tv_message_dialog_delete_account">Voulez-vous vraiment supprimer votre compte ?</string>
     <string name="b_cancel_dialog">Non</string>

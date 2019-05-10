@@ -62,10 +62,12 @@ class ProfileFragment: BaseFragment() {
         ).addTo(viewDisposable)
     }
 
+
+
     private fun actionDeconnexion() {
         val dialog = AlertDialog.Builder(activity!!)
-        dialog.setTitle("se deco")
-            .setMessage("sedeco")
+        dialog.setTitle(R.string.tv_title_dialog_logout)
+            .setMessage(R.string.tv_message_dialog_logout)
             .setNegativeButton(R.string.b_cancel_dialog) { dialoginterface, i -> }
             .setPositiveButton(R.string.b_validate_dialog) { dialoginterface, i ->
                 viewModel.logout()

@@ -130,6 +130,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_home))
+        displayFilterMenu(true)
     }
 
     override fun getInvitation(idEvent: String) {
@@ -147,7 +148,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onStart() {
         super.onStart()
         viewModel.getMyEvents()
-        displayFilterMenu(true)
     }
 
     override fun onPause() {

@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <!-- "Mark Favorite", should appear as action button if possible -->
     <item
-            android:id="@+id/action_filter"
-            android:icon="@drawable/ic_filter"
-            android:title="@string/filter"
-            app:showAsAction="always"/>
-
-    <item
-            android:id="@+id/sv_search_map"
+            android:id="@+id/qr_code_menu"
             android:title="Search"
             android:icon="@drawable/ic_search"
-            android:visible="false"
             app:actionViewClass="androidx.appcompat.widget.SearchView"
             app:showAsAction="ifRoom|collapseActionView"/>
-
 </menu>

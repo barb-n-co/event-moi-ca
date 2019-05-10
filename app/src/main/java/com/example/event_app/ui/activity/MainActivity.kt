@@ -27,7 +27,6 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
-    private var searchBtn: MenuItem? = null
 
 
     private lateinit var currentController: NavController
@@ -57,7 +56,6 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
-                displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
 
                 returnValue = true
@@ -69,7 +67,6 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
                 app_bar.visibility = View.VISIBLE
-                displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true
@@ -81,8 +78,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-
+        setSupportActionBar(toolbar)
         initView()
 
         viewModel.user.subscribe(
@@ -117,12 +113,9 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        filterButtonMenu = menu?.findItem(R.id.action_filter)
-        searchBtn = menu?.findItem(R.id.sv_search_map)
+        filterButtonMenu = menu.findItem(R.id.action_filter)
         setSearchView(menu)
-        displaySearchButton(false)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -184,10 +177,6 @@ class MainActivity : BaseActivity() {
 
     fun displayFilterMenu(value: Boolean) {
         filterButtonMenu?.isVisible = value
-    }
-
-    fun displaySearchButton(value: Boolean) {
-        searchBtn?.isVisible = value
     }
 
     override fun onSupportNavigateUp(): Boolean {

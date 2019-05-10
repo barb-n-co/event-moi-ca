@@ -26,6 +26,14 @@ abstract class BaseFragment: Fragment(), KodeinAware{
         (activity as MainActivity).supportActionBar?.title = title
     }
 
+    protected fun setVisibilityToolbar(value: Boolean) {
+        if(value) {
+            (activity as MainActivity).app_bar.visibility = View.VISIBLE
+        } else {
+            (activity as MainActivity).app_bar.visibility = View.GONE
+        }
+    }
+
     protected fun setDisplayHomeAsUpEnabled(value : Boolean) {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(value)
     }
@@ -42,9 +50,5 @@ abstract class BaseFragment: Fragment(), KodeinAware{
 
     protected fun displayFilterMenu(value: Boolean) {
         (activity as MainActivity).displayFilterMenu(value)
-    }
-
-    protected fun displaySearchViewMenu(value: Boolean) {
-        (activity as MainActivity).displaySearchButton(value)
     }
 }

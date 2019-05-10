@@ -29,7 +29,8 @@ import org.kodein.di.generic.instance
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import io.reactivex.rxkotlin.addTo
-
+import kotlinx.android.synthetic.main
+.activity_main.*
 
 class MapsFragment : BaseFragment(), OnMapReadyCallback{
 
@@ -59,6 +60,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         super.onViewCreated(view, savedInstanceState)
         initMap()
         viewModel.searchAdress()
+        setVisibilityToolbar(false)
 
         viewModel.mapAdress.subscribe(
             {addressMap ->
@@ -86,6 +88,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     }
 
 
+
+
     private fun initMap(){
 
         var mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -96,17 +100,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     override fun onMapReady(p0: GoogleMap) {
         mMap = p0
    }
-
-    override fun onStart() {
-        super.onStart()
-        displaySearchViewMenu(true)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        displaySearchViewMenu(false)
-    }
-
 }
 
 interface MapInterface {

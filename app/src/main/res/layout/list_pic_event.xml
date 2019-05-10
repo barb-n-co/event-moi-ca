@@ -3,16 +3,18 @@
         xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:padding="1dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     <ImageView
             android:id="@+id/image_item"
-            android:background="@color/black"
+            android:background="@color/background"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:src="@drawable/pic1"
-    />
+            tools:src="@drawable/pic1"/>
 
     <ImageView
             android:id="@+id/report_tag"

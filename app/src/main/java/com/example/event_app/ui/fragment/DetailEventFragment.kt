@@ -284,7 +284,6 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
-
     override fun onDestroyView() {
         weakContext.clear()
         popupWindow?.dismiss()

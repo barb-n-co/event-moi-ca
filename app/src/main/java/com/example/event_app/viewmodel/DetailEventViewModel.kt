@@ -20,6 +20,7 @@ import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -37,7 +38,8 @@ import java.util.*
 
 const val COMPRESSION_QUALITY = 20
 
-class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) : BaseViewModel()  {
+class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
+    BaseViewModel() {
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
@@ -56,7 +58,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
 
         private fun pushImageRefToDatabase(id: String, pushPath: DatabaseReference, value: Photo) {
-            RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id),pushPath.setValue(value))
+            RxFirebaseDatabase.setValue(eventsRepository.allPictures.child(id), pushPath.setValue(value))
                 .subscribe(
                     {
                         Timber.d("success but always catch error")
@@ -67,10 +69,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 ).addTo(CompositeDisposable())
         }
 
-        private fun getCurrentUser() : User {
-            return userRepository.currentUser.value!!
-        }
-
         fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
 
             val baos = ByteArrayOutputStream()
@@ -78,19 +76,19 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             val data = baos.toByteArray()
 
             RxFirebaseStorage.putBytes(
-                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"),data
+                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"), data
             )
                 .toFlowable()
                 .subscribe(
-                    {snapshot ->
+                    { snapshot ->
                         val pushPath = eventsRepository.allPictures.child(eventId).push()
                         val key = pushPath.key
                         val path = snapshot.metadata!!.path
                         val authorId = getCurrentUser().id
                         val authorName = getCurrentUser().name ?: ""
-                        authorId?.let {authorIdNotNull ->
-                            key?.let {keyNotNull ->
-                                val value = Photo(keyNotNull, authorIdNotNull, authorName,  0, path, mutableListOf())
+                        authorId?.let { authorIdNotNull ->
+                            key?.let { keyNotNull ->
+                                val value = Photo(keyNotNull, authorIdNotNull, authorName, 0, path, mutableListOf())
                                 pushImageRefToDatabase(eventId, pushPath, value)
                             }
                         }
@@ -102,9 +100,11 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 ).addTo(CompositeDisposable())
 
         }
+
+        private fun getCurrentUser(): User {
+            return Companion.userRepository.currentUser.value!!
+        }
     }
-
-
 
     fun getEventInfo(eventId: String) {
         userRepository.currentUser.value?.id?.let { idUser ->
@@ -143,21 +143,20 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         getParticipant(eventId)
     }
 
-    fun getParticipant(eventId: String)
-    {
+    fun getParticipant(eventId: String) {
         eventsRepository.getParticipants(eventId).subscribe({
             participants.onNext(it)
-        },{
-            Timber.e(it)
-        }).addTo(disposeBag)
+        },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
         return RxFirebaseDatabase.observeValueEvent(
             eventsRepository.allPictures.child(id),
             DataSnapshotMapper.listOf(Photo::class.java)
-        )
-            .toObservable()
+        ).toObservable()
     }
 
 
@@ -176,11 +175,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun getAllPictures(eventId: String, context: Context) {
-
-        RxFirebaseDatabase.observeSingleValueEvent(
-            eventsRepository.allPictures.child(eventId),
-            DataSnapshotMapper.listOf(Photo::class.java)
-        )
+        eventsRepository.fetchPictures(eventId)
             .subscribe(
                 { photoList ->
                     val number = mutableListOf<String>()
@@ -208,7 +203,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                 override fun onLoadCleared(placeholder: Drawable?) {
                                     Timber.d("onLoadCleared $placeholder")
                                 }
-
                             })
                     }
                 },
@@ -240,11 +234,57 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return imagePath
     }
 
-    fun removeParticipant(idEvent: String,userId: String) {
+    fun removeParticipant(idEvent: String, userId: String) {
         eventsRepository.refuseInvitation(idEvent, userId)
         getParticipant(idEvent)
     }
 
+    fun exitEvent(idEvent: String): Task<Void>? {
+        return userRepository.currentUser.value?.id?.let { idUser ->
+            eventsRepository.exitEvent(idEvent, idUser)
+        }
+    }
+
+    fun deleteEvent(idEvent: String): Task<Void> {
+        eventsRepository.fetchPictures(idEvent).subscribe(
+            {
+                it.forEach { picture ->
+                    picture.id?.let { pictureId ->
+                        eventsRepository.removeLikes(pictureId).addOnCompleteListener {
+                            picture.url?.let { url ->
+                                eventsRepository.deletePhotoFromFireStore(url).subscribe(
+                                    {
+                                        eventsRepository.removePictureReference(idEvent)
+                                    },
+                                    {
+                                        Timber.e(it)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+        eventsRepository.getAllUsers().subscribe(
+            {
+                it.forEach { user ->
+                    user.id?.let { userId ->
+                        eventsRepository.removeParticipation(userId, idEvent).addOnCompleteListener {
+                            eventsRepository.removeEvent(idEvent)
+                        }
+                    }
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+        return eventsRepository.removePaticipant(idEvent)
+    }
 
     class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
         ViewModelProvider.Factory {

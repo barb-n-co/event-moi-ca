@@ -57,11 +57,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        initMap(savedInstanceState)
+        initMap()
         viewModel.searchAdress()
-        (activity as MainActivity).updateToolbar(true)
 
         viewModel.mapAdress.subscribe(
             {addressMap ->
@@ -89,9 +86,9 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     }
 
 
-    private fun initMap(savedInstanceState: Bundle?){
+    private fun initMap(){
 
-        var mapFragment : SupportMapFragment = childFragmentManager?.findFragmentById(R.id.map) as SupportMapFragment
+        var mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setHasOptionsMenu(true)
     }
@@ -100,14 +97,20 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         mMap = p0
    }
 
-    override fun onDestroyView() {
-        ( activity as MainActivity).updateToolbar(false)
-        super.onDestroyView()
-
+    override fun onStart() {
+        super.onStart()
+        displaySearchViewMenu(true)
     }
 
+    override fun onStop() {
+        super.onStop()
+        displaySearchViewMenu(false)
+    }
 
+}
 
+interface MapInterface {
+    fun getInvitation()
 }
 
 

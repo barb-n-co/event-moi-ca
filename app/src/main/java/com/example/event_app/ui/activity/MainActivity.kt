@@ -7,10 +7,10 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.SearchView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -27,9 +27,7 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
-    var isFromMap = false
     private var searchBtn: MenuItem? = null
-    private var logoutBtn: MenuItem? = null
 
 
     private lateinit var currentController: NavController
@@ -38,6 +36,8 @@ class MainActivity : BaseActivity() {
 
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
+
+    private var filterButtonMenu: MenuItem? = null
 
     companion object {
         fun start(fromActivity: FragmentActivity) {
@@ -57,6 +57,7 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
 
                 returnValue = true
@@ -68,6 +69,7 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true
@@ -97,7 +99,7 @@ class MainActivity : BaseActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    private fun initView(){
+    private fun initView() {
         navControllerHome = (supportFragmentManager
             .findFragmentById(R.id.content_home) as NavHostFragment)
             .navController
@@ -117,35 +119,11 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-
-       searchBtn = menu?.findItem(R.id.sv_search_map)
-       logoutBtn = menu?.findItem(R.id.action_filter)
+        filterButtonMenu = menu?.findItem(R.id.action_filter)
+        searchBtn = menu?.findItem(R.id.sv_search_map)
+        setSearchView(menu)
         displaySearchButton(false)
-        displayLogoutButton(false)
-
-
-
-       if (isFromMap){
-           displaySearchButton(true)
-           displayLogoutButton(false)
-           setSearchView(menu)
-       }
-
-       else{
-           isFromMap = !isFromMap
-           displaySearchButton(false)
-           displayLogoutButton(true)
-
-       }
         return super.onCreateOptionsMenu(menu)
-    }
-
-    fun displaySearchButton(value: Boolean) {
-        searchBtn?.isVisible = value
-    }
-
-    fun displayLogoutButton(value: Boolean) {
-        logoutBtn?.isVisible = value
     }
 
     private fun setSearchView(menu: Menu) {
@@ -164,12 +142,6 @@ class MainActivity : BaseActivity() {
                 return false
             }
         })
-    }
-
-    fun updateToolbar(isfrommap: Boolean) {
-        isFromMap = isfrommap
-        setSupportActionBar(findViewById(R.id.toolbar))
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -210,6 +182,14 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    fun displayFilterMenu(value: Boolean) {
+        filterButtonMenu?.isVisible = value
+    }
+
+    fun displaySearchButton(value: Boolean) {
+        searchBtn?.isVisible = value
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         currentController.navigateUp()
         return true
@@ -218,7 +198,7 @@ class MainActivity : BaseActivity() {
     override fun onBackPressed() {
         currentController
             .let { if (it.popBackStack().not()) finish() }
-            .or { finish ()}
+            .or { finish() }
     }
 
     private fun openQrCode() {

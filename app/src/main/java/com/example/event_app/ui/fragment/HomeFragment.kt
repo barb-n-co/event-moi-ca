@@ -142,6 +142,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
         super.onStart()
         setTitleToolbar(getString(R.string.title_home))
         viewModel.getMyEvents()
+        displayFilterMenu(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        displayFilterMenu(false)
     }
 }
 

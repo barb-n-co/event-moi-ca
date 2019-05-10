@@ -39,7 +39,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                             true
                         } else if(stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1){
                             true
-                        } else if(stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 1 && it.accepted == 1){
+                        } else if(stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1){
                             true
                         } else {
                             false

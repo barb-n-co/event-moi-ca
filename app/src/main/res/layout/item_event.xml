@@ -5,8 +5,10 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="2dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        android:outlineSpotShadowColor="@color/colorPrimary"
+        android:outlineAmbientShadowColor="@color/colorPrimary"
         android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,14 +18,15 @@
 
         <TextView
                 android:id="@+id/tv_name_myevents_item"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                style="@style/SubtitleRed"
+                style="@style/SubtitleBlack"
+                android:textAlignment="center"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_reported_photo_no_visible"
+                app:layout_constraintEnd_toStartOf="@id/btn_reported_photo"
                 tools:text="Eurockéennes"/>
 
         <com.google.android.material.chip.Chip
@@ -31,6 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Accepted"
+                android:clickable="false"
                 app:chipBackgroundColor="@color/colorPrimary"
                 android:textColor="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/tv_name_myevents_item"
@@ -63,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 style="@style/body"
+                android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/v_myevents_item"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,6 +88,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 style="@style/body"
+                android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@+id/tv_organizer_myevents_item"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,17 +121,27 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_startDate_myevents_item"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ImageButton
+        <ImageView
                 android:id="@+id/btn_reported_photo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_report_problem"
-                android:tint="@color/colorPrimary"
-                android:visibility="gone"
+                android:tint="@android:color/holo_red_dark"
+                android:visibility="invisible"
                 tools:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_name_myevents_item"
         />
+
+        <ImageView
+                android:id="@+id/btn_reported_photo_no_visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_report_problem"
+                android:tint="@color/colorPrimary"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_name_myevents_item"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

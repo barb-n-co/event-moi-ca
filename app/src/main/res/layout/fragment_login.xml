@@ -68,6 +68,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/til_password_signin_fragment"/>
 
+            <TextView
+                    android:id="@+id/b_reset_password_signin_fragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_reset_password_authentification_activity"
+                    android:padding="16dp"
+                    style="@style/bodyRed"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/b_signin_fragment"/>
+
             <ProgressBar
                     android:id="@+id/progress_bar_signin"
                     android:layout_width="wrap_content"

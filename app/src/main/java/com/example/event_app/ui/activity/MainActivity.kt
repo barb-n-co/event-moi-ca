@@ -34,6 +34,8 @@ class MainActivity : BaseActivity() {
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
 
+    private var filterButtonMenu: MenuItem? = null
+
     companion object {
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
@@ -52,6 +54,7 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
 
                 returnValue = true
@@ -63,6 +66,7 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true
@@ -111,6 +115,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
+        filterButtonMenu = menu?.findItem(R.id.action_filter)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -150,6 +155,10 @@ class MainActivity : BaseActivity() {
         if (requestCode == PermissionManager.REQUEST_PERMISSION_CAMERA && grantResults[permissions.indexOf(Manifest.permission.CAMERA)] == PackageManager.PERMISSION_GRANTED) {
             openQrCode()
         }
+    }
+
+    fun displayFilterMenu(value: Boolean) {
+        filterButtonMenu?.isVisible = value
     }
 
     override fun onSupportNavigateUp(): Boolean {

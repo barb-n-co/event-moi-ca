@@ -23,7 +23,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:title="@string/title_home"
                 android:background="?attr/colorPrimary"
-                app:titleTextColor="@android:color/white"
+                app:titleTextColor="@android:color/black"
                 android:theme="@style/ToolbarTheme"/>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -88,8 +88,9 @@
             android:layout_gravity="bottom"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
-            android:background="@color/white"
+            android:background="@color/black_grey"
             android:elevation="16dp"
+            app:itemIconTint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

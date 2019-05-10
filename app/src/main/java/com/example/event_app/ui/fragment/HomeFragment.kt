@@ -147,6 +147,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onStart() {
         super.onStart()
         viewModel.getMyEvents()
+        displayFilterMenu(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        displayFilterMenu(false)
     }
 }
 

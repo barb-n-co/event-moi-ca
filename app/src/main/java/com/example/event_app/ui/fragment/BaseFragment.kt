@@ -39,4 +39,12 @@ abstract class BaseFragment: Fragment(), KodeinAware{
             (activity as AppCompatActivity).g_navBar_mainActivity.visibility = View.VISIBLE
         } else (activity as AppCompatActivity).g_navBar_mainActivity.visibility = View.GONE
     }
+
+    protected fun displayFilterMenu(value: Boolean) {
+        (activity as MainActivity).displayFilterMenu(value)
+    }
+
+    protected fun displaySearchViewMenu(value: Boolean) {
+        (activity as MainActivity).displaySearchButton(value)
+    }
 }

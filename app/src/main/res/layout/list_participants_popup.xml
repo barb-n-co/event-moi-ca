@@ -7,14 +7,15 @@
         android:orientation="vertical"
         android:background="#FFF"
         android:padding="20dp"
->
+><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:text="Voici la liste des participants à l'évenement :"
               android:textSize="15sp"
               android:textStyle="bold"
               android:layout_marginBottom="20dp"
-    />
+    /><ImageView android:id="@+id/iv_closeDialog" android:src="@drawable/ic_delete" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_listParticipants"
             tools:listitem="@layout/list_participants"
@@ -24,10 +25,5 @@
             android:layout_marginBottom="40dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"/>
-    <Button
-            android:id="@+id/btn_popup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Close Me"
-    />
+
 </LinearLayout>

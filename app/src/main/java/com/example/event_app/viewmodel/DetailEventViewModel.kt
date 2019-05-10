@@ -241,6 +241,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     fun removeParticipant(idEvent: String,userId: String) {
         eventsRepository.refuseInvitation(idEvent, userId)
+        getParticipant(idEvent)
     }
 
 

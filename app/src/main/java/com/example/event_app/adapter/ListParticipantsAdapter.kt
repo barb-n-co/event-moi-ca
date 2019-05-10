@@ -13,7 +13,7 @@ import com.example.event_app.model.User
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.list_participants.view.*
 
-class ListParticipantsAdapter(private val context: Context, private val idOrga: String) :
+class ListParticipantsAdapter(private val context: Context, private val idOrga: String, private val isNotAnOrga : Boolean) :
     ListAdapter<User, ListParticipantsAdapter.ViewHolder>(DiffUserscallback()) {
     val userClickPublisher: PublishSubject<String> = PublishSubject.create()
 
@@ -42,8 +42,9 @@ class ListParticipantsAdapter(private val context: Context, private val idOrga: 
 
         fun bindUser(user: User) {
             v.tv_participants.text = user.name
-            if(user.id == idOrga){v.iv_remove.visibility = View.GONE}
+            if(user.id == idOrga || isNotAnOrga){v.iv_remove.visibility = View.GONE}
             v.iv_remove.setOnClickListener {
+                Log.d("ListPartFragm", "in adapter")
                 user.id?.let {
                     userClickPublisher.onNext(user.id!!)
                 }

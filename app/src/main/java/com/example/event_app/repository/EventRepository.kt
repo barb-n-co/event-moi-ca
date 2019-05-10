@@ -13,6 +13,9 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 object EventRepository {
 
@@ -24,8 +27,8 @@ object EventRepository {
     private val eventsRef = database.reference.child("events")
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
-    private val commentsRef = database.getReference("commentaires")
-    private val likesRef = database.getReference("likes")
+    private val commentsRef = database.reference.child("commentaires")
+    private val likesRef = database.reference.child("likes")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
 
@@ -153,5 +156,16 @@ object EventRepository {
         } else {
             Completable.error(Throwable("error: user id is null"))
         }
+    }
+
+    fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {
+        val date = Calendar.getInstance().get(Calendar.DATE)
+        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
+        val newDate = df.format(date)
+        val pushPath = commentsRef.child(photoId).push().key!!
+        val author = user.name ?: ""
+        val userId = user.id!!
+        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
+        return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 }

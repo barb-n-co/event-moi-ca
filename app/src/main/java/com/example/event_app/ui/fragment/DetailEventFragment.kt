@@ -132,6 +132,13 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
+        tv_eventPlace.setOnClickListener{
+            val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
+
+        val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
+        startActivity(mapsIntent)
+        }
+
         eventId?.let {notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)

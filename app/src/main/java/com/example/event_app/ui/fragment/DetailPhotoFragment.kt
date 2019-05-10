@@ -70,7 +70,7 @@ class DetailPhotoFragment : BaseFragment() {
                         .subscribe(
                             {
                                 Toast.makeText(context, "commentaire ajouté", Toast.LENGTH_SHORT).show()
-                                ////
+                                viewModel.getPhotoDetail(eventId, photoId)
                             },
                             { error ->
                                 Timber.e(error)

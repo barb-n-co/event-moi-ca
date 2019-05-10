@@ -146,7 +146,6 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.participants.subscribe({
             tv_listParticipant.text = "${it.size} participants"
-            tv_listParticipant.paintFlags = Paint.UNDERLINE_TEXT_FLAG
             participants = it
         }, {
             Timber.e(it)

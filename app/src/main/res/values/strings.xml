@@ -102,6 +102,7 @@
     <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
     <string name="ToastRemoveParticipant">Le participant a été supprimé de l\'évenement</string>
     <string name="participants">%s participants</string>
+    <string name="TitleListParticipants">Voici la liste des participants à l\'évenement :</string>
 
 
 </resources>

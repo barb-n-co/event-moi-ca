@@ -1,11 +1,13 @@
 package com.example.event_app.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
+import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListParticipantsAdapter
@@ -13,7 +15,12 @@ import com.example.event_app.model.User
 import kotlinx.android.synthetic.main.list_participants_popup.*
 import timber.log.Timber
 
-class ListParticipantFragment (private val deleteSelectedListener: (String) -> Unit,private val idOrganizer: String, private val isNotAnOrga: Boolean, private val participants: List<User>
+
+class ListParticipantFragment(
+    private val deleteSelectedListener: (String) -> Unit,
+    private val idOrganizer: String,
+    private val isNotAnOrga: Boolean,
+    private val participants: List<User>
 ) : DialogFragment() {
 
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
@@ -31,13 +38,16 @@ class ListParticipantFragment (private val deleteSelectedListener: (String) -> U
         rv_listParticipants.layoutManager = mLinear
         rv_listParticipants.adapter = listParticipantsAdapter
         listParticipantsAdapter.submitList(participants)
+        val itemDecor = DividerItemDecoration(context, VERTICAL)
+        rv_listParticipants.addItemDecoration(itemDecor)
 
         listParticipantsAdapter.userClickPublisher.subscribe({
             deleteSelectedListener(it)
             dismiss()
-        },{
+        }, {
             Timber.e(it)
         })
+        iv_closeDialog.setOnClickListener { dismiss() }
     }
 
 }

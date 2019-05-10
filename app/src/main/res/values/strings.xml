@@ -15,6 +15,11 @@
     <string name="tv_description_authentification_activity">Veuillez vous inscrire ou vous connecter</string>
     <string name="ti_login_authentification_activity">Connexion</string>
     <string name="ti_signup_authentification_activity">Inscription</string>
+    <string name="tv_reset_password_authentification_activity">Mot de passe oublié ?</string>
+    <string name="t_empty_email_reset_password_dialog_fragment">Vous devez rentrer le mail de votre compte pour réinitialiser votre mot de passe</string>
+    <string name="tv_title_reset_password_fragment">Mot de passe oublié</string>
+    <string name="tv_message_reset_password_fragment">Veuillez rentrer votre mail lié à votre compte</string>
+
 
     <!-- Log In Fragment -->
     <string name="tv_email_login_fragment">Email</string>

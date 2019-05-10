@@ -17,6 +17,10 @@ class LoginViewModel(private val userRepository: UserRepository): BaseViewModel(
         return userRepository.registerUser(email, password, name)
     }
 
+    fun resetPassword(email: String){
+        userRepository.resetPassword(email)
+    }
+
     fun getFirebaseAuth(): FirebaseAuth {
         return userRepository.fireBaseAuth
     }

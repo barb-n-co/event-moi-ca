@@ -15,6 +15,11 @@
     <string name="tv_description_authentification_activity">Veuillez vous inscrire ou vous connecter</string>
     <string name="ti_login_authentification_activity">Connexion</string>
     <string name="ti_signup_authentification_activity">Inscription</string>
+    <string name="tv_reset_password_authentification_activity">Mot de passe oublié ?</string>
+    <string name="t_empty_email_reset_password_dialog_fragment">Vous devez rentrer le mail de votre compte pour réinitialiser votre mot de passe</string>
+    <string name="tv_title_reset_password_fragment">Mot de passe oublié</string>
+    <string name="tv_message_reset_password_fragment">Veuillez rentrer votre mail lié à votre compte</string>
+
 
     <!-- Log In Fragment -->
     <string name="tv_email_login_fragment">Email</string>
@@ -37,10 +42,11 @@
     <string name="filter">Filtre</string>
 
     <!-- Filter Dialog Fragment -->
-    <string name="cb_filter_invitation_dialog_fragment">Filtrer par invitation</string>
-    <string name="cb_filter_participate_dialog_fragment">Filtrer par participation</string>
-    <string name="cb_filter_organizer_dialog_fragment">Filtrer par participation</string>
-    <string name="tv_filter_dialog_fragment">Filtre</string>
+    <string name="cb_filter_invitation_dialog_fragment">Invitation</string>
+    <string name="cb_filter_participate_dialog_fragment">Participation</string>
+    <string name="cb_filter_organizer_dialog_fragment">Organisateur</string>
+    <string name="tv_filter_dialog_fragment">Filtrer par …</string>
+    <string name="b_filter_dialog_fragment">Valider</string>
 
     <!-- Item My Events -->
     <string name="tv_state_invited">Invited</string>
@@ -95,6 +101,9 @@
     <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur</string>
     <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
     <string name="add_comment_to_photo">Ajouter un commentaire</string>
+    <string name="ToastRemoveParticipant">Le participant a été supprimé de l\'évenement</string>
+    <string name="participants">%s participants</string>
+
 
 
 </resources>

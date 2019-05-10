@@ -117,15 +117,19 @@
                     app:layout_constraintStart_toStartOf="@+id/tv_eventDateStart"
                     android:layout_marginTop="8dp"/>
 
-            <TextView
-                    android:text="TextView"
+            <com.google.android.material.chip.Chip
+                    android:id="@+id/tv_listParticipant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="participant"
+                    app:chipBackgroundColor="@color/white"
+                    app:chipStrokeWidth="1dp"
+                    app:chipStrokeColor="@color/green"
+                    android:textColor="@color/green"
+                    android:layout_marginTop="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_eventDateEnd"
-                    android:id="@+id/tv_listParticipant"
-                    android:layout_marginStart="32dp" android:textSize="16sp" android:layout_marginTop="16dp"
-                    android:textAllCaps="false"/>
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             <ImageView
                     android:id="@+id/iv_share_deepLink"

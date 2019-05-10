@@ -80,7 +80,7 @@ object EventRepository {
 
     fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
-        eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 0, 0))
+        //eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 0, 0))
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {

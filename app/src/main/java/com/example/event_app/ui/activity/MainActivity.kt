@@ -119,8 +119,8 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
-        filterButtonMenu = menu?.findItem(R.id.action_filter)
-        searchBtn = menu?.findItem(R.id.sv_search_map)
+        filterButtonMenu = menu.findItem(R.id.action_filter)
+        searchBtn = menu.findItem(R.id.sv_search_map)
         setSearchView(menu)
         displaySearchButton(false)
         return super.onCreateOptionsMenu(menu)

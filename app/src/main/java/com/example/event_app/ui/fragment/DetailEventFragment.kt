@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
@@ -22,11 +24,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
-import com.example.event_app.adapter.ListParticipantsAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
+import com.example.event_app.model.Event
+import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
@@ -47,7 +51,6 @@ class DetailEventFragment : BaseFragment() {
 
     private val viewModel: DetailEventViewModel by instance(arg = this)
     private lateinit var adapter: CustomAdapter
-    private lateinit var listParticipantsAdapter: ListParticipantsAdapter
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     lateinit var participants: List<User>
@@ -84,8 +87,8 @@ class DetailEventFragment : BaseFragment() {
         }
 
         requestPermissions()
+        setFab()
 
-        Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.nameEvent
@@ -105,15 +108,25 @@ class DetailEventFragment : BaseFragment() {
                         fabmenu_detail_event.visibility = GONE
                         iv_alert_not_accepted_event.visibility = VISIBLE
                         not_already_accepted_alert.visibility = VISIBLE
+                        b_exit_detail_event_fragment.visibility = GONE
                     } else {
                         rv_listImage.visibility = VISIBLE
                         fabmenu_detail_event.visibility = VISIBLE
+                        b_exit_detail_event_fragment.text = getString(R.string.b_exit_detail_event_fragment)
+                        b_exit_detail_event_fragment.visibility = VISIBLE
+                        b_exit_detail_event_fragment.setOnClickListener {
+                            actionExitEvent()
+                        }
                         setFab()
-
                     }
 
                 } else {
                     setFab()
+                    b_exit_detail_event_fragment.text = getString(R.string.b_delete_detail_event_fragment)
+                    b_exit_detail_event_fragment.visibility = VISIBLE
+                    b_exit_detail_event_fragment.setOnClickListener {
+                        actionDeleteEvent()
+                    }
                     fabmenu_detail_event.visibility = VISIBLE
                     rv_listImage.visibility = VISIBLE
                     iv_generate_qrCode.visibility = VISIBLE
@@ -129,17 +142,26 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        tv_eventPlace.setOnClickListener {
+        tv_listParticipant.setOnClickListener { openPopUp() }
+
+        viewModel.participants.subscribe({
+            tv_listParticipant.text = "${it.size} participants"
+            tv_listParticipant.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+            participants = it
+        }, {
+            Timber.e(it)
+        }).addTo(viewDisposable)
+
+        tv_eventPlace.setOnClickListener{
             val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
 
-            val mapsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(adress));
+            val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
             startActivity(mapsIntent)
         }
 
         eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
-
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter
@@ -158,6 +180,7 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
 
+            tv_listParticipant.setOnClickListener { openPopUp() }
 
             viewModel.participants.subscribe({
                 tv_listParticipant.text = getString(R.string.participants, it.size)
@@ -177,9 +200,44 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
         }
+    }
 
-        tv_listParticipant.setOnClickListener { openPopUp() }
+    private fun actionDeleteEvent() {
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
+            .setMessage(getString(R.string.tv_delete_event_message_detail_event_fragment))
+            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { dialoginterface, i -> }
+            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { dialoginterface, i ->
+                eventId?.let {
+                    viewModel.deleteEvent(it).addOnCompleteListener {
+                        fragmentManager?.popBackStack()
+                        Toast.makeText(
+                            activity!!,
+                            getString(R.string.tv_delete_event_toast_detail_event_fragment),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }.show()
+    }
 
+    private fun actionExitEvent() {
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle(getString(R.string.tv_dialogTitle_detail_event_fragment))
+            .setMessage(getString(R.string.tv_dialogMessage_detail_event_fragment))
+            .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
+            .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
+                eventId?.let {
+                    viewModel.exitEvent(it)?.addOnCompleteListener {
+                        fragmentManager?.popBackStack()
+                    }
+                    Toast.makeText(
+                        activity!!,
+                        getString(R.string.exit_event_toast_detail_event_fragment),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }.show()
     }
 
     private fun openPopUp() {
@@ -291,7 +349,6 @@ class DetailEventFragment : BaseFragment() {
             }
         }
     }
-
 
     override fun onDestroyView() {
         weakContext.clear()

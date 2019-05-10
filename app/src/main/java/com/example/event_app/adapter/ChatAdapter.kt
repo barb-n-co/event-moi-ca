@@ -1,18 +1,18 @@
 package com.example.event_app.adapter
 
 /*
-class ChatAdapter(private val idUser: Int, private val context: Context): ListAdapter<Message, ChatAdapter.ChatViewHolder>(DiffCardCallback()) {
+class ChatAdapter(private val idUser: Int, private val context: Context): ListAdapter<Message, ChatAdapter.CommentsViewHolder>(DiffCardCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_user, parent, false)
-        return ChatViewHolder(view)
+        return CommentsViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CommentsViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class CommentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(message: Message) {
             if(message.idUser == idUser){

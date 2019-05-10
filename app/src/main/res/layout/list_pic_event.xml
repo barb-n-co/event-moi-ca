@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             android:src="@drawable/ic_report_problem"
-            android:tint="@color/colorPrimary"
+            android:tint="@android:color/holo_red_dark"
             android:padding="8dp"
             tools:visibility="visible"
             android:visibility="gone"

@@ -17,7 +17,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.list_pic_event.view.*
 
 
-class CustomAdapter(private val context: Context) :
+class CustomAdapter(private val context: Context, private val isOrganizer: Int) :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
     val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
@@ -48,7 +48,7 @@ class CustomAdapter(private val context: Context) :
 
         fun bindPhoto(photo: Photo) {
 
-            if (photo.isReported == 1) {
+            if (photo.isReported == 1 && isOrganizer == 1) {
                 v.report_tag.visibility = VISIBLE
             }
 

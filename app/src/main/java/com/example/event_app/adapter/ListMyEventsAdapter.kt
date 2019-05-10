@@ -35,7 +35,7 @@ class ListMyEventsAdapter(val context : Context) : ListAdapter<EventItem, ListMy
 
         fun bind(event: EventItem) {
             //disposition
-            if (event.reportedPhotoCount > 0) {
+            if (event.reportedPhotoCount > 0 && event.organizer == 1) {
                 itemView.btn_reported_photo.visibility = VISIBLE
             }
 

@@ -71,7 +71,7 @@ class DetailPhotoFragment : BaseFragment() {
                     viewModel.addComment(comment, photoId)
                         .subscribe(
                             {
-                                Toast.makeText(context, "commentaire ajouté", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, getString(R.string.detail_photo_fragment_comment_added), Toast.LENGTH_SHORT).show()
                                 viewModel.getPhotoDetail(eventId, photoId)
                             },
                             { error ->
@@ -79,7 +79,7 @@ class DetailPhotoFragment : BaseFragment() {
                             }
                         )
                 } else {
-                    Toast.makeText(context, "Veuillez saisir un commentaire", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.detail_photo_fragment_toast_commentaire_error), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -153,12 +153,12 @@ class DetailPhotoFragment : BaseFragment() {
         }
         photo.value?.let {
             if (userId != null && userId == idOrganizer && it.isReported == 1) {
-                menu.add(0, 3, 3, "Autoriser cette photo").setIcon(R.drawable.ic_validate)
+                menu.add(0, 3, 3, getString(R.string.detail_photo_fragment_fab_autoriser)).setIcon(R.drawable.ic_validate)
             }
         }
 
         menu.add(0, 1, 1, getString(R.string.save_image_fab_title)).setIcon(R.drawable.ic_file_download)
-        menu.add(0, 2, 2, "signaler la photo").setIcon(R.drawable.ic_report_problem)
+        menu.add(0, 2, 2, getString(R.string.detail_photo_fragment_fab_signaler)).setIcon(R.drawable.ic_report_problem)
         fab_detail_photo.setMenu(menu)
 
         fab_detail_photo.addOnMenuItemClickListener { miniFab, label, itemId ->

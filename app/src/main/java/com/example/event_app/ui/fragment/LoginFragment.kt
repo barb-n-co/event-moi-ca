@@ -15,7 +15,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 import android.widget.LinearLayout
 import android.widget.EditText
-
+import kotlinx.android.synthetic.main.activity_authentification.*
 
 
 class LoginFragment: BaseFragment() {
@@ -81,7 +81,7 @@ class LoginFragment: BaseFragment() {
             },
             {
                 Timber.e(it)
-                Toast.makeText(context,"${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
             }
         ).addTo(viewDisposable)
     }

@@ -154,7 +154,6 @@ class MainActivity : BaseActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         currentController.navigateUp()
-        //super.onBackPressed()
         return true
     }
 

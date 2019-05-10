@@ -126,6 +126,7 @@
                     android:id="@+id/tv_listParticipant"
                     android:layout_marginStart="32dp" android:textSize="16sp" android:layout_marginTop="16dp"
                     android:textAllCaps="false"/>
+
             <ImageView
                     android:id="@+id/iv_share_deepLink"
                     android:layout_width="40dp"

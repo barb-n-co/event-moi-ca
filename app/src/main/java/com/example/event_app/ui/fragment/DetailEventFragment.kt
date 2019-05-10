@@ -89,8 +89,6 @@ class DetailEventFragment : BaseFragment() {
 
         requestPermissions()
 
-
-
         Log.d("DetailEvent", "event id :" + eventId)
         viewModel.event.subscribe(
             {

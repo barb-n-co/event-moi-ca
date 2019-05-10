@@ -62,6 +62,10 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         viewModel.searchAdress()
         setVisibilityToolbar(false)
 
+        iv_search_menu.setOnClickListener {
+            viewModel.searchAdress(et_search_menu.text.toString())
+        }
+
         viewModel.mapAdress.subscribe(
             {addressMap ->
                 btn_maps.visibility = View.VISIBLE
@@ -100,10 +104,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     override fun onMapReady(p0: GoogleMap) {
         mMap = p0
    }
-}
-
-interface MapInterface {
-    fun getInvitation()
 }
 
 

@@ -37,10 +37,11 @@
     <string name="filter">Filtre</string>
 
     <!-- Filter Dialog Fragment -->
-    <string name="cb_filter_invitation_dialog_fragment">Filtrer par invitation</string>
-    <string name="cb_filter_participate_dialog_fragment">Filtrer par participation</string>
-    <string name="cb_filter_organizer_dialog_fragment">Filtrer par participation</string>
-    <string name="tv_filter_dialog_fragment">Filtre</string>
+    <string name="cb_filter_invitation_dialog_fragment">Invitation</string>
+    <string name="cb_filter_participate_dialog_fragment">Participation</string>
+    <string name="cb_filter_organizer_dialog_fragment">Organisateur</string>
+    <string name="tv_filter_dialog_fragment">Filtrer par …</string>
+    <string name="b_filter_dialog_fragment">Valider</string>
 
     <!-- Item My Events -->
     <string name="tv_state_invited">Invited</string>

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
+import com.example.event_app.model.UserEventState
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
@@ -133,7 +134,10 @@ class HomeFragment : BaseFragment(), HomeInterface {
     }
 
     override fun openFilter() {
-        val bottomSheetDialog = FilterDialogFragment.instance
+        val bottomSheetDialog = FilterDialogFragment(stateSelectedListener = {
+            viewModel.stateUserEvent = it
+            viewModel.getMyEvents()
+        }, filterState = viewModel.stateUserEvent)
         bottomSheetDialog.show(requireFragmentManager(), TAG)
     }
 

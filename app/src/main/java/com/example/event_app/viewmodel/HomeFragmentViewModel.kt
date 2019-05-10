@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.MyEvents
+import com.example.event_app.model.UserEventState
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Observable
@@ -16,6 +17,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     BaseViewModel() {
 
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
+    var stateUserEvent = UserEventState.NOTHING
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
@@ -30,7 +32,19 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     )
                 })
                 .map { response ->
-                    response.second.map {myEvents ->
+                    response.second.filter {
+                        if(stateUserEvent.equals(UserEventState.NOTHING)){
+                            true
+                        } else if(stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0){
+                            true
+                        } else if(stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1){
+                            true
+                        } else if(stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 1 && it.accepted == 1){
+                            true
+                        } else {
+                            false
+                        }
+                    }.map {myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }
@@ -50,8 +64,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                             )
                         }
                     }.filterNotNull()
-                }
-                .subscribe({
+                }.subscribe({
                     myEventList.onNext(it)
                 },
                     {

@@ -25,7 +25,6 @@ import timber.log.Timber
 
 class HomeFragment : BaseFragment(), HomeInterface {
 
-
     private val viewModel : HomeFragmentViewModel by instance(arg = this)
 
     companion object {
@@ -52,12 +51,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.layoutManager = mLayoutManager
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
         rv_event_home_fragment.adapter = adapter
+
         swiperefresh_fragment_home.isRefreshing = false
 
         adapter.acceptClickPublisher.subscribe(
             {
                 viewModel.acceptInvitation(it)
-                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -65,14 +64,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
         adapter.refuseClickPublisher.subscribe(
             {
                 viewModel.refuseInvitation(it)
-                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
 
         adapter.eventClickPublisher.subscribe(
             {
-
                 val action = HomeFragmentDirections.actionMyHomeFragmentToDetailEventFragment(it)
                 NavHostFragment.findNavController(this).navigate(action)
             },
@@ -81,16 +78,18 @@ class HomeFragment : BaseFragment(), HomeInterface {
             }
         ).addTo(viewDisposable)
 
-        swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
+        swiperefresh_fragment_home.setOnRefreshListener {
+            viewModel.getMyEvents()
+        }
 
         viewModel.myEventList.subscribe(
-            {eventList ->
+            { eventList ->
                 if (eventList.isEmpty()) {
-                    rv_event_home_fragment.visibility = INVISIBLE
+                    rv_event_home_fragment.visibility = View.GONE
                     g_no_item_home_fragment.visibility = VISIBLE
                 } else {
                     rv_event_home_fragment.visibility = VISIBLE
-                    g_no_item_home_fragment.visibility = INVISIBLE
+                    g_no_item_home_fragment.visibility = View.GONE
                     adapter.submitList(eventList)
                 }
                 swiperefresh_fragment_home.isRefreshing = false
@@ -117,19 +116,14 @@ class HomeFragment : BaseFragment(), HomeInterface {
         }
     }
 
-    private fun openQrCode(){
+    private fun openQrCode() {
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    private fun requestCameraPermission(){
+    private fun requestCameraPermission() {
         if (permissionManager.requestCameraPermission(activity!!)) {
             openQrCode()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setTitleToolbar(getString(R.string.title_home))
     }
 
     override fun getInvitation(idEvent: String) {
@@ -146,6 +140,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onStart() {
         super.onStart()
+        setTitleToolbar(getString(R.string.title_home))
         viewModel.getMyEvents()
         displayFilterMenu(true)
     }

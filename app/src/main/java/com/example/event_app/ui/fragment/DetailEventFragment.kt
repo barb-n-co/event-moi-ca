@@ -161,7 +161,6 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
 
-            tv_listParticipant.setOnClickListener { openPopUp() }
 
             viewModel.participants.subscribe({
                 tv_listParticipant.text = getString(R.string.participants, it.size)
@@ -181,6 +180,9 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
         }
+
+        tv_listParticipant.setOnClickListener { openPopUp() }
+
     }
 
     private fun openPopUp() {

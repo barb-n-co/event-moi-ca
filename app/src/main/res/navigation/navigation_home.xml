@@ -16,17 +16,18 @@
                 app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_my_home_fragment_to_detail_event_fragment"
                 app:destination="@id/detail_event_fragment"/>
-        <action android:id="@+id/action_my_home_fragment_to_reportedPhotoFragment"
-                app:destination="@+id/reportedPhotoFragment">
-            <argument android:defaultValue="@null" android:name="photoList"/>
-        </action>
     </fragment>
 
     <fragment
             android:id="@+id/add_event_fragment"
             android:name="com.example.event_app.ui.fragment.AddEventFragment"
             android:label="AddEventFragment"
-            tools:layout="@layout/fragment_add_event"/>
+            tools:layout="@layout/fragment_add_event">
+        <action android:id="@+id/action_add_event_fragment_to_MapsFragment" app:destination="@id/MapsFragment"/>
+        <argument
+                android:name="address"
+                app:argType="string"/>
+    </fragment>
 
     <fragment
             android:id="@+id/detail_event_fragment"
@@ -55,6 +56,16 @@
                 android:name="idOrganizer"
                 app:argType="string"/>
     </fragment>
+
+    <fragment
+            android:id="@+id/MapsFragment"
+            android:name="com.example.event_app.ui.fragment.MapsFragment"
+            android:label="MapsOrganizerFragment"
+            tools:layout="@layout/fragment_maps">
+        <action android:id="@+id/action_MapsFragment_to_add_event_fragment" app:destination="@id/add_event_fragment"/>
+
+   </fragment>
+
 
 
 </navigation>

@@ -9,6 +9,7 @@ data class Event(
         var idOrganizer: String = "",
         var organizer: String = "",
         var name: String = "",
+        var place: String = "",
         var description: String = "",
         var dateStart: String = "",
         var dateEnd: String = "",

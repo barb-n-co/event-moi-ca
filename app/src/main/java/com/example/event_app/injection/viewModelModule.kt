@@ -16,7 +16,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     bind<DetailEventViewModel>() with factory{fragment: Fragment->
         ViewModelProvider(fragment, instance<DetailEventViewModel.Factory>()).get(DetailEventViewModel::class.java)
     }
-    bind<DetailPhotoViewModel.Factory>() with provider { DetailPhotoViewModel.Factory(instance()) }
+    bind<DetailPhotoViewModel.Factory>() with provider { DetailPhotoViewModel.Factory(instance(), instance()) }
     bind<DetailPhotoViewModel>() with factory{fragment:Fragment->
         ViewModelProvider(fragment, instance<DetailPhotoViewModel.Factory>()).get(DetailPhotoViewModel::class.java)
     }
@@ -32,7 +32,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     }
 
     bind<MainActivityViewModel>() with factory { activity: FragmentActivity ->
-        val factory = MainActivityViewModel.Factory(instance())
+        val factory = MainActivityViewModel.Factory(instance(),instance())
         ViewModelProvider(activity, factory).get(MainActivityViewModel::class.java)
     }
 
@@ -58,6 +58,15 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
         ViewModelProvider(fragment, instance<AddEventFragmentViewModel.Factory>())
             .get(AddEventFragmentViewModel::class.java)
     }
+
+
+    bind<MapsViewModel.Factory>() with provider { MapsViewModel.Factory(instance()) }
+    bind<MapsViewModel>() with factory { fragment: Fragment ->
+        ViewModelProvider(fragment, instance<MapsViewModel.Factory>())
+            .get(MapsViewModel::class.java)
+    }
+
+
 
     bind<ShareGalleryViewModel>() with factory { activity: FragmentActivity ->
         val factory = ShareGalleryViewModel.Factory(instance(), instance())

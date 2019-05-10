@@ -5,7 +5,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Commentaire(
-    var auteur: String,
-    var commentaire: String,
-    var date: String
+    var commentId: String = "",
+    var author: String = "",
+    var authorId: String = "",
+    var comment: String = "",
+    var photoId: String = "",
+    var date: String = ""
 ) : Parcelable

@@ -100,6 +100,12 @@
     <string name="tv_dialogCancel_detail_event_fragment">Non</string>
     <string name="tv_dialogValidate_detail_event_fragment">Oui</string>
     <string name="exit_event_toast_detail_event_fragment">Vous avez quitté l\'évènement</string>
+    <string name="b_delete_detail_event_fragment">Supprimer l\'évènement</string>
+    <string name="tv_delete_event_detail_event_fragment">Supprimer évènement</string>
+    <string name="tv_delete_event_message_detail_event_fragment">Voulez-vous supprimer votre évènement ?</string>
+    <string name="tv_delete_event_cancel_detail_event_fragment">Non</string>
+    <string name="tv_delete_event_valider_detail_event_fragment">Oui</string>
+    <string name="tv_delete_event_toast_detail_event_fragment">Suppression réussie.</string>
 
 
 </resources>

@@ -20,6 +20,7 @@ import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -144,18 +145,19 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     fun getParticipant(eventId: String) {
         eventsRepository.getParticipants(eventId).subscribe({
             participants.onNext(it)
-        }, {
-            Timber.e(it)
-        }).addTo(disposeBag)
+        },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
     }
 
     fun initPhotoEventListener(id: String): Observable<List<Photo>> {
         return RxFirebaseDatabase.observeValueEvent(
             eventsRepository.allPictures.child(id),
             DataSnapshotMapper.listOf(Photo::class.java)
-        )
-            .toObservable()
+        ).toObservable()
     }
+
 
     fun pickImageFromGallery(): Intent {
         val intent = Intent(Intent.ACTION_PICK)
@@ -172,11 +174,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun getAllPictures(eventId: String, context: Context) {
-
-        RxFirebaseDatabase.observeSingleValueEvent(
-            eventsRepository.allPictures.child(eventId),
-            DataSnapshotMapper.listOf(Photo::class.java)
-        )
+        eventsRepository.fetchPictures(eventId)
             .subscribe(
                 { photoList ->
                     val number = mutableListOf<String>()
@@ -204,7 +202,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                 override fun onLoadCleared(placeholder: Drawable?) {
                                     Timber.d("onLoadCleared $placeholder")
                                 }
-
                             })
                     }
                 },
@@ -240,10 +237,51 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         eventsRepository.refuseInvitation(idEvent, userId)
     }
 
-    fun exitEvent(idEvent: String) {
-        userRepository.currentUser.value?.id?.let { idUser ->
+    fun exitEvent(idEvent: String): Task<Void>? {
+        return userRepository.currentUser.value?.id?.let { idUser ->
             eventsRepository.exitEvent(idEvent, idUser)
         }
+    }
+
+    fun deleteEvent(idEvent: String): Task<Void> {
+        eventsRepository.fetchPictures(idEvent).subscribe(
+            {
+                it.forEach { picture ->
+                    picture.id?.let { pictureId ->
+                        eventsRepository.removeLikes(pictureId).addOnCompleteListener {
+                            picture.url?.let { url ->
+                                eventsRepository.deletePhotoFromFireStore(url).subscribe(
+                                    {
+                                        eventsRepository.removePictureReference(idEvent)
+                                    },
+                                    {
+                                        Timber.e(it)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+        eventsRepository.getAllUsers().subscribe(
+            {
+                it.forEach { user ->
+                    user.id?.let { userId ->
+                        eventsRepository.removeParticipation(userId, idEvent).addOnCompleteListener {
+                            eventsRepository.removeEvent(idEvent)
+                        }
+                    }
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+        return eventsRepository.removePaticipant(idEvent)
     }
 
     class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :

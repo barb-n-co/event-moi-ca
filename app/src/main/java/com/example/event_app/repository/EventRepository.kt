@@ -25,6 +25,8 @@ object EventRepository {
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
     private val commentsRef = database.getReference("commentaires")
+    private val likesRef = database.getReference("likes")
+    private val userRef = database.reference.child("users")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
 
@@ -45,6 +47,12 @@ object EventRepository {
         }.toObservable()
     }
 
+    fun getAllUsers(): Observable<List<User>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            userRef, DataSnapshotMapper.listOf(User::class.java)
+        ).toObservable()
+    }
+
     fun getMyEvent(idUser: String, idEvent: String): Observable<MyEvents> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             myEventsRef.child(idUser).child(idEvent), MyEvents::class.java
@@ -55,8 +63,8 @@ object EventRepository {
         myEventsRef.child(idUser).removeValue()
         fetchMyEvents(idUser).subscribe(
             {
-                it.forEach {event ->
-                    event.idEvent?.let {idEvent ->
+                it.forEach { event ->
+                    event.idEvent?.let { idEvent ->
                         eventParticipantsRef.child(idEvent).child(idUser).removeValue()
                     }
                 }
@@ -89,9 +97,9 @@ object EventRepository {
         return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
     }
 
-    fun exitEvent(idEvent: String, idUser: String) {
+    fun exitEvent(idEvent: String, idUser: String): Task<Void> {
         myEventsRef.child(idUser).child(idEvent).removeValue()
-        eventParticipantsRef.child(idEvent).child(idUser).removeValue()
+        return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
     }
 
     fun getEventDetail(eventId: String): Observable<Event> {
@@ -100,9 +108,36 @@ object EventRepository {
         ).toObservable()
     }
 
-    fun getParticipants(idEvent: String): Observable<List<User>>{
+    fun removeLikes(pictureId: String): Task<Void> {
+        return likesRef.child(pictureId).removeValue()
+    }
+
+    fun removePictureReference(eventId: String) {
+        allPictures.child(eventId).removeValue()
+    }
+
+    fun removeParticipation(userId: String, eventId: String): Task<Void> {
+        return myEventsRef.child(userId).child(eventId).removeValue()
+    }
+
+    fun removeEvent(eventId: String) {
+        eventsRef.child(eventId).removeValue()
+    }
+
+    fun removePaticipant(eventId: String): Task<Void> {
+        return eventParticipantsRef.child(eventId).removeValue()
+    }
+
+    fun getParticipants(idEvent: String): Observable<List<User>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventParticipantsRef.child(idEvent), DataSnapshotMapper.listOf(User::class.java)
+        ).toObservable()
+    }
+
+    fun fetchPictures(eventId: String): Observable<List<Photo>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            allPictures.child(eventId),
+            DataSnapshotMapper.listOf(Photo::class.java)
         ).toObservable()
     }
 
@@ -110,7 +145,6 @@ object EventRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             allPictures.child(eventId).child(photoId), Photo::class.java
         )
-
     }
 
     fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
@@ -127,7 +161,6 @@ object EventRepository {
         } else {
             Completable.error(Throwable("error: photo id is null"))
         }
-
     }
 
     fun deletePhotoFromFireStore(photoUrl: String): Completable {
@@ -135,7 +168,7 @@ object EventRepository {
     }
 
     fun downloadImageFile(url: String): Maybe<ByteArray> {
-        return RxFirebaseStorage.getBytes(ref.child(url), 2000*1000*4)
+        return RxFirebaseStorage.getBytes(ref.child(url), 2000 * 1000 * 4)
     }
 
     fun deletePhotoOrga(eventId: String, photoId: String): Task<Void> {
@@ -146,4 +179,17 @@ object EventRepository {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
+    fun getLikesFromPhoto(photoId: String): Flowable<List<User>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            likesRef.child(photoId), DataSnapshotMapper.listOf(User::class.java)
+        ).toFlowable()
+    }
+
+    fun addLikes(photoId: String, user: User): Completable {
+        return if (user.id != null) {
+            RxFirebaseDatabase.setValue(likesRef.child(photoId).child(user.id!!), Pair("name", user.name))
+        } else {
+            Completable.error(Throwable("error: user id is null"))
+        }
+    }
 }

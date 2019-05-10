@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
-import com.example.event_app.model.ReportedPhotoList
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
@@ -20,11 +19,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-
 class HomeFragment : BaseFragment(), HomeInterface {
 
-    private val viewModel: HomeFragmentViewModel by instance(arg = this)
-    private var reportedPhotoList = ReportedPhotoList()
+    private val viewModel : HomeFragmentViewModel by instance(arg = this)
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
@@ -51,15 +48,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
         rv_event_home_fragment.adapter = adapter
 
-        viewModel.getMyEvents()
-
         swiperefresh_fragment_home.isRefreshing = false
 
-        reportedPhotoList.listOfphotoList = mutableListOf()
         adapter.acceptClickPublisher.subscribe(
             {
                 viewModel.acceptInvitation(it)
-                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -67,7 +60,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         adapter.refuseClickPublisher.subscribe(
             {
                 viewModel.refuseInvitation(it)
-                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -130,16 +122,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        setTitleToolbar(getString(R.string.title_home))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        reportedPhotoList.listOfphotoList = mutableListOf()
-    }
-
     override fun getInvitation(idEvent: String) {
         viewModel.addInvitation(idEvent)
     }
@@ -151,6 +133,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onStart() {
         super.onStart()
+        setTitleToolbar(getString(R.string.title_home))
         viewModel.getMyEvents()
     }
 }

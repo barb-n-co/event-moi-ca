@@ -5,18 +5,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.inflate
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -35,9 +30,7 @@ import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPO
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.model.User
-import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
-import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -45,7 +38,6 @@ import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import kotlinx.android.synthetic.main.list_participants_popup.*
 import kotlinx.android.synthetic.main.list_participants_popup.view.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -54,8 +46,8 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-    private val viewModel : DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter : CustomAdapter
+    private val viewModel: DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter: CustomAdapter
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
@@ -106,9 +98,36 @@ class DetailEventFragment : BaseFragment() {
                 idOrganizer = it.idOrganizer
 
                 if (it.organizer != 1) {
-                    iv_generate_qrCode.visibility = View.INVISIBLE
+                    iv_generate_qrCode.visibility = GONE
+                    if (it.accepted != 1) {
+                        rv_listImage.visibility = GONE
+                        fabmenu_detail_event.visibility = GONE
+                        iv_alert_not_accepted_event.visibility = VISIBLE
+                        not_already_accepted_alert.visibility = VISIBLE
+                        b_exit_detail_event_fragment.visibility = GONE
+                    } else {
+                        rv_listImage.visibility = VISIBLE
+                        fabmenu_detail_event.visibility = VISIBLE
+                        b_exit_detail_event_fragment.text = getString(R.string.b_exit_detail_event_fragment)
+                        b_exit_detail_event_fragment.visibility = VISIBLE
+                        b_exit_detail_event_fragment.setOnClickListener {
+                            actionExitEvent()
+                        }
+
+                        setFab()
+
+                    }
+
                 } else {
-                    iv_generate_qrCode.visibility = View.VISIBLE
+                    setFab()
+                    b_exit_detail_event_fragment.text = getString(R.string.b_delete_detail_event_fragment)
+                    b_exit_detail_event_fragment.visibility = VISIBLE
+                    b_exit_detail_event_fragment.setOnClickListener {
+                        actionDeleteEvent()
+                    }
+                    fabmenu_detail_event.visibility = VISIBLE
+                    rv_listImage.visibility = VISIBLE
+                    iv_generate_qrCode.visibility = VISIBLE
                     iv_generate_qrCode.setOnClickListener {
                         eventId?.let {
                             GenerationQrCodeActivity.start(activity as MainActivity, it)
@@ -120,6 +139,7 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+
         tv_listParticipant.setOnClickListener { openPopUp() }
 
         viewModel.participants.subscribe({
@@ -130,12 +150,10 @@ class DetailEventFragment : BaseFragment() {
             Timber.e(it)
         }).addTo(viewDisposable)
 
-
         eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
 
-            //val mGrid = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             val mGrid = GridLayoutManager(context, 3)
             rv_listImage.layoutManager = mGrid
             rv_listImage.adapter = adapter
@@ -165,10 +183,25 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
         }
+    }
 
-        b_exit_detail_event_fragment.setOnClickListener {
-            actionExitEvent()
-        }
+    private fun actionDeleteEvent() {
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
+            .setMessage(getString(R.string.tv_delete_event_message_detail_event_fragment))
+            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { dialoginterface, i -> }
+            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { dialoginterface, i ->
+                eventId?.let {
+                    viewModel.deleteEvent(it).addOnCompleteListener {
+                        fragmentManager?.popBackStack()
+                        Toast.makeText(
+                            activity!!,
+                            getString(R.string.tv_delete_event_toast_detail_event_fragment),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }.show()
     }
 
     private fun actionExitEvent() {
@@ -178,15 +211,21 @@ class DetailEventFragment : BaseFragment() {
             .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
             .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
                 eventId?.let {
-                    viewModel.exitEvent(it)
-                    Toast.makeText(activity!!, getString(R.string.exit_event_toast_detail_event_fragment), Toast.LENGTH_SHORT).show()
+                    viewModel.exitEvent(it)?.addOnCompleteListener {
+                        fragmentManager?.popBackStack()
+                    }
+                    Toast.makeText(
+                        activity!!,
+                        getString(R.string.exit_event_toast_detail_event_fragment),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }.show()
     }
 
     private fun openPopUp() {
         // Inflate a custom view using layout inflater
-        val popup = inflate(this.context,R.layout.list_participants_popup,null)
+        val popup = inflate(this.context, R.layout.list_participants_popup, null)
 
 
         popupWindow = PopupWindow(popup, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -206,14 +245,14 @@ class DetailEventFragment : BaseFragment() {
         listParticipantsAdapter.submitList(participants)
         listParticipantsAdapter.userClickPublisher.subscribe(
             {
-                viewModel.removeParticipant(eventId!!,it)
+                viewModel.removeParticipant(eventId!!, it)
                 listParticipantsAdapter.notifyDataSetChanged()
-            },{
+            }, {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
         val buttonPopup = popup.findViewById<Button>(R.id.btn_popup)
-        buttonPopup.setOnClickListener {popupWindow?.dismiss()}
+        buttonPopup.setOnClickListener { popupWindow?.dismiss() }
     }
 
     private fun setFab() {

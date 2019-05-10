@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Commentaire
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
@@ -25,12 +26,15 @@ import java.io.FileOutputStream
 class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+    val peopleWhoLike: BehaviorSubject<List<User>> = BehaviorSubject.create()
+
     private val folderName = "Event-Moi-Ca"
 
 
     fun getPhotoDetail(eventId: String?, photoId: String?) {
         eventId?.let {eventId ->
             photoId?.let {photoId ->
+                getNumberOfLikes(photoId)
                 eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
                     { picture ->
                         Log.d("DetailEvent", "vm" + picture.url)
@@ -105,6 +109,22 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
     fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
         return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
 
+    }
+
+    fun getNumberOfLikes(photoId: String){
+        eventsRepository.getLikesFromPhoto(photoId).subscribe({
+            peopleWhoLike.onNext(it)
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
+    }
+    fun addLikes(photoId: String, user: User){
+        eventsRepository.addLikes(photoId, user).subscribe({
+            Log.d("DetailPhoto", "addLikes")
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
+        getNumberOfLikes(photoId)
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

@@ -5,22 +5,19 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.SpannableStringBuilder
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
@@ -48,8 +45,8 @@ import java.lang.ref.WeakReference
 class DetailEventFragment : BaseFragment() {
 
 
-    private val viewModel : DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter : CustomAdapter
+    private val viewModel: DetailEventViewModel by instance(arg = this)
+    private lateinit var adapter: CustomAdapter
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
 
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
@@ -95,7 +92,7 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventDescription.text = it.description
                 tv_eventOrga.text = it.nameOrganizer
 
-                tv_eventPlace.text = spannable { url("",it.place) }
+                tv_eventPlace.text = spannable { url("", it.place) }
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
@@ -132,14 +129,14 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        tv_eventPlace.setOnClickListener{
+        tv_eventPlace.setOnClickListener {
             val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
 
-        val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
-        startActivity(mapsIntent)
+            val mapsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(adress));
+            startActivity(mapsIntent)
         }
 
-        eventId?.let {notNullId ->
+        eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
 
@@ -190,13 +187,18 @@ class DetailEventFragment : BaseFragment() {
         var isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
         viewModel.getParticipant(eventId!!)
 
-        fun removeUser(userId :String){
+        fun removeUser(userId: String) {
             viewModel.removeParticipant(eventId!!, userId)
             Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
         }
 
 
-        val popup = ListParticipantFragment(deleteSelectedListener = {removeUser(it)},idOrganizer = idOrganizer, isNotAnOrga = isNotAnOrga, participants = participants)
+        val popup = ListParticipantFragment(
+            deleteSelectedListener = { removeUser(it) },
+            idOrganizer = idOrganizer,
+            isNotAnOrga = isNotAnOrga,
+            participants = participants
+        )
         popup.show(requireFragmentManager(), "listParticipant")
     }
 
@@ -242,7 +244,11 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun requestPermissions() {
-        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION)
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
 

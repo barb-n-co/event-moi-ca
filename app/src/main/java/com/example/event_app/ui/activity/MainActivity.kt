@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.widget.SearchView
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -26,6 +27,10 @@ import timber.log.Timber
 class MainActivity : BaseActivity() {
 
     private val viewModel: MainActivityViewModel by instance(arg = this)
+    var isFromMap = false
+    private var searchBtn: MenuItem? = null
+    private var logoutBtn: MenuItem? = null
+
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -109,9 +114,62 @@ class MainActivity : BaseActivity() {
         currentController.navigateUp()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
+
+       searchBtn = menu?.findItem(R.id.sv_search_map)
+       logoutBtn = menu?.findItem(R.id.action_filter)
+        displaySearchButton(false)
+        displayLogoutButton(false)
+
+
+
+       if (isFromMap){
+           displaySearchButton(true)
+           displayLogoutButton(false)
+           setSearchView(menu)
+       }
+
+       else{
+           isFromMap = !isFromMap
+           displaySearchButton(false)
+           displayLogoutButton(true)
+
+       }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    fun displaySearchButton(value: Boolean) {
+        searchBtn?.isVisible = value
+    }
+
+    fun displayLogoutButton(value: Boolean) {
+        logoutBtn?.isVisible = value
+    }
+
+    private fun setSearchView(menu: Menu) {
+        val searchView = menu.findItem(R.id.sv_search_map).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                query?.let {
+                    viewModel.searchAdress(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return false
+            }
+        })
+    }
+
+    fun updateToolbar(isfrommap: Boolean) {
+        isFromMap = isfrommap
+        setSupportActionBar(findViewById(R.id.toolbar))
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -166,6 +224,8 @@ class MainActivity : BaseActivity() {
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
     }
+
+
 }
 
 

@@ -123,6 +123,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.first.name,
                     idUser,
                     response.first.organizer,
+                    response.first.place,
                     response.first.dateStart,
                     response.first.dateEnd,
                     response.second.accepted,

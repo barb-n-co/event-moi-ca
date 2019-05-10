@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.LoginViewModel
@@ -14,6 +15,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 class SignupFragment: BaseFragment() {
+
 
     private val viewModel: LoginViewModel by instance(arg = this)
 

@@ -5,8 +5,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +20,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
@@ -25,9 +30,7 @@ import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
-import com.example.event_app.model.Event
-import com.example.event_app.model.Photo
-import com.example.event_app.model.User
+import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
@@ -43,6 +46,7 @@ import java.lang.ref.WeakReference
 
 
 class DetailEventFragment : BaseFragment() {
+
 
     private val viewModel : DetailEventViewModel by instance(arg = this)
     private lateinit var adapter : CustomAdapter
@@ -90,6 +94,8 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventName.text = it.nameEvent
                 tv_eventDescription.text = it.description
                 tv_eventOrga.text = it.nameOrganizer
+
+                tv_eventPlace.text = spannable { url("",it.place) }
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
@@ -126,17 +132,14 @@ class DetailEventFragment : BaseFragment() {
             })
             .addTo(viewDisposable)
 
-        tv_listParticipant.setOnClickListener { openPopUp() }
+        tv_eventPlace.setOnClickListener{
+            val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
 
-        viewModel.participants.subscribe({
-            tv_listParticipant.text = getString(R.string.participants, it.size)
-            participants = it
-        }, {
-            Timber.e(it)
-        }).addTo(viewDisposable)
+        val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
+        startActivity(mapsIntent)
+        }
 
-
-        eventId?.let { notNullId ->
+        eventId?.let {notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
 
@@ -157,6 +160,15 @@ class DetailEventFragment : BaseFragment() {
                     Timber.e(it)
                 }
             ).addTo(viewDisposable)
+
+            tv_listParticipant.setOnClickListener { openPopUp() }
+
+            viewModel.participants.subscribe({
+                tv_listParticipant.text = getString(R.string.participants, it.size)
+                participants = it
+            }, {
+                Timber.e(it)
+            }).addTo(viewDisposable)
 
             adapter.submitList(imageIdList)
 
@@ -228,7 +240,7 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun requestPermissions() {
-        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION)
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
 
@@ -271,6 +283,7 @@ class DetailEventFragment : BaseFragment() {
             }
         }
     }
+
 
     override fun onDestroyView() {
         weakContext.clear()

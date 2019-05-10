@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.LoginViewModel
 import io.reactivex.rxkotlin.addTo
@@ -14,7 +15,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 import android.widget.LinearLayout
 import android.widget.EditText
-import com.example.event_app.R
+
 
 
 class LoginFragment: BaseFragment() {
@@ -72,7 +73,6 @@ class LoginFragment: BaseFragment() {
             alertDialog.show()
         }
     }
-
 
     private fun userLogin(email: String, password: String) {
         viewModel.logIn(email, password).subscribe(

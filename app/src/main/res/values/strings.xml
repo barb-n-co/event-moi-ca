@@ -86,6 +86,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="download_all_pictures_from_one_event">Tout télécharger</string>
+
+    <string name="b_cancel_dialog_logout">Non</string>
+    <string name="b_validate_dialog_logout">Oui</string>
+    <string name="t_sign_out">Sign Out</string>
     <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
     <string name="save_picture">Sauvegarder</string>
@@ -104,6 +108,9 @@
     <string name="ToastRemoveParticipant">Le participant a été supprimé de l\'évenement</string>
     <string name="participants">%s participants</string>
 
+    <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
+    <string name="tv_place_detail_event_fragment">Adresse :</string>
+    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement</string>
 
 
 </resources>

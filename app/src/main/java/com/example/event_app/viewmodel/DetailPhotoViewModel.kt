@@ -8,12 +8,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Commentaire
+import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
+import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.google.android.gms.tasks.Task
-import durdinapps.rxfirebase2.RxFirebaseStorage
+import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -23,11 +26,15 @@ import java.io.FileOutputStream
 class DetailPhotoViewModel(private val eventsRepository: EventRepository) : BaseViewModel() {
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+    val peopleWhoLike: BehaviorSubject<List<User>> = BehaviorSubject.create()
+
+    private val folderName = "Event-Moi-Ca"
 
 
     fun getPhotoDetail(eventId: String?, photoId: String?) {
         eventId?.let {eventId ->
             photoId?.let {photoId ->
+                getNumberOfLikes(photoId)
                 eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
                     { picture ->
                         Log.d("DetailEvent", "vm" + picture.url)
@@ -51,7 +58,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
     }
 
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
-        return RxFirebaseStorage.getBytes(EventRepository.ref.child(url), 2000*1000*4)
+        return eventsRepository.downloadImageFile(url)
     }
 
     fun saveImage(byteArray: ByteArray, eventName: String, photoId: String): String {
@@ -62,7 +69,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
 
         var imagePath = ""
         val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/Event-Moi-Ca/$eventName/")
+        val photoFolder = File("$root/$folderName/$eventName/")
         photoFolder.mkdirs()
         val outletFrame = "$photoId.jpg"
         val file = File(photoFolder, outletFrame)
@@ -80,12 +87,44 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository) : Base
     }
 
     fun deleteImageOrga(eventId: String,photoId: String): Task<Void> {
-        return eventsRepository.allPictures.child(eventId).child(photoId).removeValue()
+        return eventsRepository.deletePhotoOrga(eventId, photoId)
     }
 
     fun deleteRefFromFirestore(photoUrl: String): Completable {
-        return RxFirebaseStorage.delete(eventsRepository.ref.child(photoUrl))
+        return eventsRepository.deletePhotoFromFireStore(photoUrl)
+    }
 
+    fun reportPhoto(eventId: String, photo: Photo, reportValue: Int): Completable {
+        return eventsRepository.pushPictureReport(eventId, photo, reportValue)
+    }
+
+    fun getStorageRef(url: String): StorageReference {
+        return eventsRepository.ref.child(url)
+    }
+
+    fun getEvents(): Observable<List<Event>> {
+        return eventsRepository.fetchEvents()
+    }
+
+    fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
+        return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
+
+    }
+
+    fun getNumberOfLikes(photoId: String){
+        eventsRepository.getLikesFromPhoto(photoId).subscribe({
+            peopleWhoLike.onNext(it)
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
+    }
+    fun addLikes(photoId: String, user: User){
+        eventsRepository.addLikes(photoId, user).subscribe({
+            Log.d("DetailPhoto", "addLikes")
+        },{
+            Timber.e(it)
+        }).addTo(disposeBag)
+        getNumberOfLikes(photoId)
     }
 
     class Factory(private val eventsRepository: EventRepository) : ViewModelProvider.Factory {

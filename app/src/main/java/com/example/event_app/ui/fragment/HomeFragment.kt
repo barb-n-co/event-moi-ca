@@ -3,15 +3,25 @@ package com.example.event_app.ui.fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
-import com.example.event_app.adapter.HomeViewPagerAdapter
+import com.example.event_app.adapter.ListMyEventsAdapter
+import com.example.event_app.model.UserEventState
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
+import timber.log.Timber
+
+
 
 class HomeFragment : BaseFragment(), HomeInterface {
 
@@ -34,8 +44,63 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
-        setupViewPager()
+        setVisibilityNavBar(true)
         setFab()
+
+        val adapter = ListMyEventsAdapter(activity!!)
+        val mLayoutManager = LinearLayoutManager(this.context)
+        rv_event_home_fragment.layoutManager = mLayoutManager
+        rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
+        rv_event_home_fragment.adapter = adapter
+        swiperefresh_fragment_home.isRefreshing = false
+
+        adapter.acceptClickPublisher.subscribe(
+            {
+                viewModel.acceptInvitation(it)
+                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
+            },
+            { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        adapter.refuseClickPublisher.subscribe(
+            {
+                viewModel.refuseInvitation(it)
+                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
+            },
+            { Timber.e(it) }
+        ).addTo(viewDisposable)
+
+        adapter.eventClickPublisher.subscribe(
+            {
+
+                val action = HomeFragmentDirections.actionMyHomeFragmentToDetailEventFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
+
+        viewModel.myEventList.subscribe(
+            {eventList ->
+                if (eventList.isEmpty()) {
+                    rv_event_home_fragment.visibility = INVISIBLE
+                    g_no_item_home_fragment.visibility = VISIBLE
+                } else {
+                    rv_event_home_fragment.visibility = VISIBLE
+                    g_no_item_home_fragment.visibility = INVISIBLE
+                    adapter.submitList(eventList)
+                }
+                swiperefresh_fragment_home.isRefreshing = false
+            },
+            {
+                Timber.e(it)
+                swiperefresh_fragment_home.isRefreshing = false
+            })
+            .addTo(viewDisposable)
+
     }
 
     private fun setFab() {
@@ -52,19 +117,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         }
     }
 
-    private fun setupViewPager() {
-        val adapter = HomeViewPagerAdapter(childFragmentManager)
-        adapter.addFragment(InvitationFragment.newInstance(), getString(R.string.tb_invites))
-        adapter.addFragment(MyEventsFragment.newInstance(), getString(R.string.tb_myevents))
-        vp_saved_searches_history.adapter = adapter
-        tl_invites_events_home_fragment.setupWithViewPager(vp_saved_searches_history)
-    }
-
-    fun openQrCode(){
+    private fun openQrCode(){
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    fun requestCameraPermission(){
+    private fun requestCameraPermission(){
         if (permissionManager.requestCameraPermission(activity!!)) {
             openQrCode()
         }
@@ -78,8 +135,22 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun getInvitation(idEvent: String) {
         viewModel.addInvitation(idEvent)
     }
+
+    override fun openFilter() {
+        val bottomSheetDialog = FilterDialogFragment(stateSelectedListener = {
+            viewModel.stateUserEvent = it
+            viewModel.getMyEvents()
+        }, filterState = viewModel.stateUserEvent)
+        bottomSheetDialog.show(requireFragmentManager(), TAG)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.getMyEvents()
+    }
 }
 
 interface HomeInterface {
     fun getInvitation(idEvent: String)
+    fun openFilter()
 }

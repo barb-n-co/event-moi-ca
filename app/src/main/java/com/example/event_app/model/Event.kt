@@ -1,25 +1,17 @@
 package com.example.event_app.model
 
-class Event {
-        var idEvent: String = ""
-        var idOrganizer: String? = null
-        var organizer: String = ""
-        var name: String = ""
-        var place: String = ""
-        var description: String? = null
-        var dateStart: String = ""
-        var dateEnd: String = ""
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-    constructor() { }
-
-        constructor(idEvent: String, idOrganizer: String?, organizer: String, name: String, place : String, description: String?, dateStart: String, dateEnd: String) {
-                this.idEvent = idEvent
-                this.idOrganizer = idOrganizer
-                this.organizer = organizer
-                this.name = name
-                this.place = place
-                this.description = description
-                this.dateStart = dateStart
-                this.dateEnd = dateEnd
-        }
-}
+@Parcelize
+data class Event(
+        var idEvent: String = "",
+        var idOrganizer: String = "",
+        var organizer: String = "",
+        var name: String = "",
+        var place: String = "",
+        var description: String = "",
+        var dateStart: String = "",
+        var dateEnd: String = "",
+        var reportedPhotoCount: Int = 0
+) : Parcelable

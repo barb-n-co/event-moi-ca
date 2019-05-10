@@ -12,11 +12,6 @@ class MainActivityViewModel(private val userRepository: UserRepository,private v
 
     var user: BehaviorSubject<User> = BehaviorSubject.create()
 
-
-    fun logout() {
-        userRepository.fireBaseAuth.signOut()
-    }
-
     fun getCurrentUser() {
         userRepository.currentUser.subscribe(
             {

@@ -49,6 +49,9 @@ class AddEventFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setDisplayHomeAsUpEnabled(true)
+        setVisibilityNavBar(false)
+        setTitleToolbar(getString(R.string.toolbar_add_event_fragment_add_event))
 
 
         arguments?.let {

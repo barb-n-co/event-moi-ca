@@ -2,10 +2,8 @@ package com.example.event_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.model.User
 import com.example.event_app.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import io.reactivex.Flowable
 
@@ -17,6 +15,10 @@ class LoginViewModel(private val userRepository: UserRepository): BaseViewModel(
 
     fun register(email: String, password: String, name: String): Flowable<Boolean> {
         return userRepository.registerUser(email, password, name)
+    }
+
+    fun resetPassword(email: String){
+        userRepository.resetPassword(email)
     }
 
     fun getFirebaseAuth(): FirebaseAuth {

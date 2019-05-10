@@ -1,7 +1,9 @@
 package com.example.event_app.repository
 
 import com.example.event_app.model.User
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseAuth
@@ -23,6 +25,10 @@ object UserRepository {
     fun testUserConnected(): Observable<Boolean> {
         return RxFirebaseAuth.observeAuthState(fireBaseAuth)
             .map { authResult -> authResult.currentUser != null }
+    }
+
+    fun resetPassword(email: String) {
+        fireBaseAuth.sendPasswordResetEmail(email)
     }
 
     fun getUserNameFromFirebase() {
@@ -53,6 +59,12 @@ object UserRepository {
             .toFlowable()
     }
 
+    fun deleteAccount(idUser: String) {
+        fireBaseAuth.currentUser?.delete()?.addOnCompleteListener {
+            usersRef.child(idUser).removeValue()
+        }
+    }
+
     fun registerUser(email: String, password: String, name: String): Flowable<Boolean> {
 
         return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
@@ -63,6 +75,10 @@ object UserRepository {
                         name,
                         it.email
                     )
+                    val userAuth = fireBaseAuth.currentUser
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setDisplayName(name).build()
+                    userAuth?.updateProfile(profileUpdates)
                     currentUser.onNext(user)
                     setNameFirebase(it.uid, name, email)
                 }

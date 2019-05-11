@@ -112,7 +112,9 @@
 
     <!-- Other -->
     <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement.</string>
-    <string name="detail_photo_fragment_fab_autoriser">Autoriser</string>
+    <string name="detail_photo_fragment_authorize_photo">Autoriser la Photo</string>
     <string name="detail_photo_fragment_toast_commentaire_error">Veuillez saisir un commentaire.</string>
     <string name="detail_photo_fragment_comment_added">Commentaire publié</string>
+    <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
+
 </resources>

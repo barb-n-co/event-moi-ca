@@ -17,7 +17,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.list_pic_event.view.*
 
 
-class CustomAdapter(private val context: Context) :
+class CustomAdapter(private val context: Context, private val isOrganizer: Int) :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
     val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
@@ -43,12 +43,12 @@ class CustomAdapter(private val context: Context) :
 
     inner class ViewHolder(private var v: View, private val photosClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(v) {
-        internal var iv: ImageView? = v.findViewById(R.id.image_item)
+        private var iv: ImageView? = v.findViewById(R.id.image_item)
         private var photo: Photo? = null
 
         fun bindPhoto(photo: Photo) {
 
-            if (photo.isReported == 1) {
+            if (photo.isReported == 1 && isOrganizer == 1) {
                 v.report_tag.visibility = VISIBLE
             }
 

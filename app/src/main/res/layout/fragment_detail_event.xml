@@ -89,8 +89,6 @@
                     android:id="@+id/tv_eventPlace"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-
-
                     app:layout_constraintStart_toEndOf="@+id/tv_place_detail_event"
                     android:layout_marginStart="16dp"
                     android:linksClickable="true"

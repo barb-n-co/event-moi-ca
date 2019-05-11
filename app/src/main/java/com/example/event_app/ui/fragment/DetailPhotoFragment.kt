@@ -167,6 +167,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                         -1,
                         getString(R.string.picture_authorized_by_admin)
                     )
+                    displayDetailPhotoMenuActionValidatePhoto(false)
                 }
             }
         }

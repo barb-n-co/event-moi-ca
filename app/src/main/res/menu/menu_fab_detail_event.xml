@@ -18,4 +18,5 @@
         android:icon="@drawable/ic_file_download"
         android:orderInCategory="3"
         android:title="@string/download_all_pictures_from_one_event"/>
+
 </menu>

@@ -116,5 +116,7 @@
     <string name="detail_photo_fragment_toast_commentaire_error">Veuillez saisir un commentaire.</string>
     <string name="detail_photo_fragment_comment_added">Commentaire publié</string>
     <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
+    <string name="notification_channel_description">notification channel to report photos on events</string>
+    <string name="notification_message_title">Une photo a été signalée sur un évènement</string>
 
 </resources>

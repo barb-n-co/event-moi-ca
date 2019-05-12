@@ -26,25 +26,10 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 eventsRepository.fetchEvents(),
                 eventsRepository.fetchMyEvents(idUser),
                 BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
-                    Pair(
-                        t1,
-                        t2
-                    )
+                    Pair(t1, t2)
                 })
                 .map { response ->
-                    response.second.filter {
-                        if(stateUserEvent.equals(UserEventState.NOTHING)){
-                            true
-                        } else if(stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0){
-                            true
-                        } else if(stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1){
-                            true
-                        } else if(stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1){
-                            true
-                        } else {
-                            false
-                        }
-                    }.map {myEvents ->
+                    response.second.map {myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }

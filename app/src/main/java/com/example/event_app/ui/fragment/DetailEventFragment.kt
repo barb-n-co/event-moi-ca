@@ -5,20 +5,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,9 +26,6 @@ import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
-import com.example.event_app.model.Event
-import com.example.event_app.model.Photo
-import com.example.event_app.model.User
 import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
@@ -48,18 +43,14 @@ import java.lang.ref.WeakReference
 
 class DetailEventFragment : BaseFragment() {
 
-
-    private val viewModel: DetailEventViewModel by instance(arg = this)
-    private lateinit var adapter: CustomAdapter
-
-    val event: BehaviorSubject<Event> = BehaviorSubject.create()
-    lateinit var participants: List<User>
-    var popupWindow: PopupWindow? = null
-
-    private var eventId: String? = null
     private lateinit var weakContext: WeakReference<Context>
+    private lateinit var adapter : CustomAdapter
+    lateinit var participants: List<User>
+    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private var eventId: String? = null
+    val event: BehaviorSubject<Event> = BehaviorSubject.create()
+    var popupWindow: PopupWindow? = null
     var idOrganizer = ""
-
     var imageIdList = ArrayList<Photo>()
 
     companion object {
@@ -80,14 +71,13 @@ class DetailEventFragment : BaseFragment() {
         setVisibilityNavBar(false)
 
         weakContext = WeakReference<Context>(context)
-        adapter = CustomAdapter(weakContext.get()!!)
+        adapter = CustomAdapter(weakContext.get()!!, 0)
 
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
         requestPermissions()
-        setFab()
 
         viewModel.event.subscribe(
             {
@@ -100,6 +90,9 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
+
+                adapter = CustomAdapter(weakContext.get()!!, it.organizer)
+                initAdapter(it.idEvent)
 
                 if (it.organizer != 1) {
                     iv_generate_qrCode.visibility = GONE
@@ -152,53 +145,61 @@ class DetailEventFragment : BaseFragment() {
         }).addTo(viewDisposable)
 
         tv_eventPlace.setOnClickListener{
-            val adress = "http://maps.google.co.in/maps?q=" + tv_eventPlace.text
+            val query = tv_eventPlace.text.toString()
+            val address = getString(R.string.map_query, query)
+            if (query.isNotEmpty()) {
+                val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(address))
+                startActivity(mapsIntent)
+            }
 
-            val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(adress));
-            startActivity(mapsIntent)
         }
 
         eventId?.let { notNullId ->
             viewModel.getEventInfo(notNullId)
             viewModel.getParticipant(notNullId)
-            val mGrid = GridLayoutManager(context, 3)
-            rv_listImage.layoutManager = mGrid
-            rv_listImage.adapter = adapter
-            ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
-            adapter.photosClickPublisher.subscribe(
-                { photoId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
-                        notNullId,
-                        photoId,
-                        idOrganizer
-                    )
-                    NavHostFragment.findNavController(this).navigate(action)
-                },
-                {
-                    Timber.e(it)
-                }
-            ).addTo(viewDisposable)
-
-            tv_listParticipant.setOnClickListener { openPopUp() }
-
-            viewModel.participants.subscribe({
-                tv_listParticipant.text = getString(R.string.participants, it.size)
-                participants = it
-            }, {
-                Timber.e(it)
-            }).addTo(viewDisposable)
-
-            adapter.submitList(imageIdList)
-
-            viewModel.initPhotoEventListener(notNullId).subscribe(
-                { photoList ->
-                    adapter.submitList(photoList)
-                },
-                {
-                    Timber.e(it)
-                }
-            ).addTo(viewDisposable)
         }
+
+        tv_listParticipant.setOnClickListener { openPopUp() }
+
+        viewModel.participants.subscribe({
+            tv_listParticipant.text = getString(R.string.participants, it.size)
+            participants = it
+        }, {
+            Timber.e(it)
+        }).addTo(viewDisposable)
+
+    }
+
+    private fun initAdapter(eventId: String) {
+
+        val mGrid = GridLayoutManager(context, 3)
+        rv_listImage.layoutManager = mGrid
+        rv_listImage.adapter = adapter
+        ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
+        adapter.photosClickPublisher.subscribe(
+            { photoId ->
+                val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
+                    eventId,
+                    photoId,
+                    idOrganizer
+                )
+                NavHostFragment.findNavController(this).navigate(action)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        adapter.submitList(imageIdList)
+
+        viewModel.initPhotoEventListener(eventId).subscribe(
+            { photoList ->
+                adapter.submitList(photoList)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
     }
 
     private fun actionDeleteEvent() {
@@ -241,7 +242,7 @@ class DetailEventFragment : BaseFragment() {
 
     private fun openPopUp() {
 
-        var isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
+        val isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
         viewModel.getParticipant(eventId!!)
 
         fun removeUser(userId: String) {

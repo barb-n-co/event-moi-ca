@@ -9,6 +9,7 @@
             android:id="@+id/tv_commment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="italic"
             android:layout_margin="8dp"

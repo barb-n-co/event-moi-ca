@@ -26,6 +26,14 @@ abstract class BaseFragment: Fragment(), KodeinAware{
         (activity as MainActivity).supportActionBar?.title = title
     }
 
+    protected fun setVisibilityToolbar(value: Boolean) {
+        if(value) {
+            (activity as MainActivity).app_bar.visibility = View.VISIBLE
+        } else {
+            (activity as MainActivity).app_bar.visibility = View.GONE
+        }
+    }
+
     protected fun setDisplayHomeAsUpEnabled(value : Boolean) {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(value)
     }

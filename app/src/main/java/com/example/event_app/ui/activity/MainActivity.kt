@@ -33,7 +33,6 @@ class MainActivity : BaseActivity() {
     private var downloadActionMenu: MenuItem? = null
     private val photoDetailActionList = mutableListOf<MenuItem?>()
     private val viewModel: MainActivityViewModel by instance(arg = this)
-    private var searchBtn: MenuItem? = null
     private var filterButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
@@ -57,7 +56,6 @@ class MainActivity : BaseActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                 currentController = navControllerHome
-
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
@@ -85,8 +83,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-
+        setSupportActionBar(toolbar)
         initView()
 
         viewModel.user.subscribe(
@@ -121,8 +118,8 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_maps, menu)
         menuInflater.inflate(R.menu.action_bar_menu, menu)
+        filterButtonMenu = menu.findItem(R.id.action_filter)
 
         downloadActionMenu = menu.findItem(R.id.action_download_photo)
         deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
@@ -134,10 +131,7 @@ class MainActivity : BaseActivity() {
         photoDetailActionList.add(reportPhotoActionMenu)
         photoDetailActionList.add(authorizePhotoActionMenu)
 
-        filterButtonMenu = menu.findItem(R.id.action_filter)
-        searchBtn = menu.findItem(R.id.sv_search_map)
         setSearchView(menu)
-        displaySearchButton(false)
         displayDetailPhotoActions(false)
         return super.onCreateOptionsMenu(menu)
     }
@@ -232,10 +226,6 @@ class MainActivity : BaseActivity() {
 
     fun displayFilterMenu(value: Boolean) {
         filterButtonMenu?.isVisible = value
-    }
-
-    fun displaySearchButton(value: Boolean) {
-        searchBtn?.isVisible = value
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -6,18 +6,26 @@ import com.example.event_app.model.AddressMap
 import com.example.event_app.repository.MapsRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
 class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(){
     var mapAdress: BehaviorSubject<AddressMap> = BehaviorSubject.create()
+
     fun searchAdress() {
         mapsRepository.mapAdress.subscribe(
             {
                 mapAdress.onNext(it)
 
             },
-            {}
+            {
+                Timber.e(it)
+            }
         )
 
+    }
+
+    fun searchAdress (adr : String){
+        mapsRepository.getPositionWithAdress(adr)
     }
 
 

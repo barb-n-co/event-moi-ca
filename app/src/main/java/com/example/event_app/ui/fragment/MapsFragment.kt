@@ -17,6 +17,12 @@ import com.google.android.gms.maps.model.LatLng
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
+
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main
+.activity_main.*
 import timber.log.Timber
 
 
@@ -41,6 +47,15 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
         initMap()
         viewModel.searchAdress()
+        setVisibilityToolbar(false)
+
+        iv_back_menu_maps.setOnClickListener {
+            fragmentManager?.popBackStack()
+        }
+
+        iv_search_menu.setOnClickListener {
+            viewModel.searchAdress(et_search_menu.text.toString())
+        }
 
         viewModel.mapAdress.subscribe(
             {addressMap ->
@@ -63,7 +78,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         ).addTo(viewDisposable)
     }
 
-
     private fun initMap(){
         val mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -74,17 +88,10 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         mMap = googleMap
    }
 
-    override fun onStart() {
-        super.onStart()
-        displaySearchViewMenu(true)
-    }
-
     override fun onStop() {
         super.onStop()
-        displaySearchViewMenu(false)
+        setVisibilityToolbar(true)
     }
-
 }
-
 
 

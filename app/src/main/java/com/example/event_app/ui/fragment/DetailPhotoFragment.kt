@@ -57,6 +57,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.initMessageReceiving()
+
         adapter = CommentsAdapter()
         rv_comments.adapter = adapter
         rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -228,7 +230,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
         }
     }
 
-
     private fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String) {
         val reportValue = if (delta > 0) 1 else 0
         viewModel.reportPhoto(eventId, photo, reportValue)
@@ -236,6 +237,9 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                 {
                     Timber.d("photo unreported ")
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    if (reportValue == 1) {
+                        viewModel.sendReportMessageToEventOwner(idOrganizer ?: "")
+                    }
                 },
                 {
                     Timber.e(it)

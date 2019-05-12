@@ -85,7 +85,7 @@ class DetailEventFragment : BaseFragment() {
                 tv_eventDescription.text = it.description
                 tv_eventOrga.text = it.nameOrganizer
 
-                tv_eventPlace.text = spannable { url("",it.place) }
+                tv_eventPlace.text = spannable { url("", it.place) }
                 tv_eventDateStart.text = it.dateStart
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
@@ -134,6 +134,15 @@ class DetailEventFragment : BaseFragment() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+
+        tv_listParticipant.setOnClickListener { openPopUp() }
+
+        viewModel.participants.subscribe({
+            tv_listParticipant.text = "${it.size} participants"
+            participants = it
+        }, {
+            Timber.e(it)
+        }).addTo(viewDisposable)
 
         tv_eventPlace.setOnClickListener{
             val query = tv_eventPlace.text.toString()
@@ -236,13 +245,18 @@ class DetailEventFragment : BaseFragment() {
         val isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
         viewModel.getParticipant(eventId!!)
 
-        fun removeUser(userId :String){
+        fun removeUser(userId: String) {
             viewModel.removeParticipant(eventId!!, userId)
             Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
         }
 
 
-        val popup = ListParticipantFragment(deleteSelectedListener = {removeUser(it)},idOrganizer = idOrganizer, isNotAnOrga = isNotAnOrga, participants = participants)
+        val popup = ListParticipantFragment(
+            deleteSelectedListener = { removeUser(it) },
+            idOrganizer = idOrganizer,
+            isNotAnOrga = isNotAnOrga,
+            participants = participants
+        )
         popup.show(requireFragmentManager(), "listParticipant")
     }
 
@@ -288,7 +302,11 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun requestPermissions() {
-        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION)
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
         permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
     }
 

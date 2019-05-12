@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -131,27 +130,9 @@ class MainActivity : BaseActivity() {
         photoDetailActionList.add(reportPhotoActionMenu)
         photoDetailActionList.add(authorizePhotoActionMenu)
 
-        setSearchView(menu)
+
         displayDetailPhotoActions(false)
         return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun setSearchView(menu: Menu) {
-        val searchView = menu.findItem(R.id.sv_search_map).actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-
-                query?.let {
-                    viewModel.searchAdress(query)
-                }
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-
-                return false
-            }
-        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

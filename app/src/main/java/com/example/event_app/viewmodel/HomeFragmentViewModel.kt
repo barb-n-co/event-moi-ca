@@ -29,7 +29,15 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                     Pair(t1, t2)
                 })
                 .map { response ->
-                    response.second.map {myEvents ->
+                    response.second.filter {
+                        when {
+                            stateUserEvent.equals(UserEventState.NOTHING) -> true
+                            stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
+                            stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
+                            stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
+                            else -> false
+                        }
+                    }.map {myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }

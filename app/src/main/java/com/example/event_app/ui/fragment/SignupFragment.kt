@@ -51,7 +51,7 @@ class SignupFragment: BaseFragment() {
             },
             {
                 Timber.e(it)
-                Toast.makeText(context,"${it.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
             }
         ).addTo(viewDisposable)
     }

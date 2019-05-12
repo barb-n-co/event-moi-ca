@@ -31,7 +31,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-
             <View
                     android:id="@+id/hr1"
                     android:layout_width="match_parent"
@@ -199,10 +198,22 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_eventDescription"/>
 
+            <Button
+                    android:id="@+id/b_exit_detail_event_fragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/b_exit_detail_event_fragment"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_eventDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/rv_listImage"/>
+
             <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_listImage"
                     tools:listitem="@layout/list_pic_event"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     tools:visibility="visible"
@@ -254,6 +265,8 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+
 
 
     <io.github.kobakei.materialfabspeeddial.FabSpeedDial

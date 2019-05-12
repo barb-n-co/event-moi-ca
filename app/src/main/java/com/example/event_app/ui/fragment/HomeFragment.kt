@@ -1,32 +1,41 @@
 package com.example.event_app.ui.fragment
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat.getColor
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
-import com.example.event_app.model.UserEventState
+import com.example.event_app.model.EventItem
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
+import com.facebook.shimmer.ShimmerFrameLayout
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.lang.ref.WeakReference
+
 
 
 
 class HomeFragment : BaseFragment(), HomeInterface {
 
-
-    private val viewModel : HomeFragmentViewModel by instance(arg = this)
+    private val viewModel: HomeFragmentViewModel by instance(arg = this)
+    private lateinit var shimmer: ShimmerFrameLayout
+    private lateinit var weakContext: WeakReference<Context>
+    private val handler = Handler()
+    private val shimmerRunnable: Runnable = Runnable {
+        viewModel.getMyEvents()
+    }
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
@@ -43,21 +52,26 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setDisplayHomeAsUpEnabled(false)
         setVisibilityNavBar(true)
+
         setFab()
 
-        val adapter = ListMyEventsAdapter(activity!!)
-        val mLayoutManager = LinearLayoutManager(this.context)
+        shimmer = shimmer_view_container
+        weakContext = WeakReference(context!!)
+
+        val adapter = ListMyEventsAdapter(weakContext.get()!!)
+        val mLayoutManager = LinearLayoutManager(context)
         rv_event_home_fragment.layoutManager = mLayoutManager
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
         rv_event_home_fragment.adapter = adapter
+
         swiperefresh_fragment_home.isRefreshing = false
 
         adapter.acceptClickPublisher.subscribe(
             {
                 viewModel.acceptInvitation(it)
-                Toast.makeText(context, "invitation ACCEPTEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
@@ -65,14 +79,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
         adapter.refuseClickPublisher.subscribe(
             {
                 viewModel.refuseInvitation(it)
-                Toast.makeText(context, "invitation REFUSEE", Toast.LENGTH_SHORT).show()
             },
             { Timber.e(it) }
         ).addTo(viewDisposable)
 
         adapter.eventClickPublisher.subscribe(
             {
-
                 val action = HomeFragmentDirections.actionMyHomeFragmentToDetailEventFragment(it)
                 NavHostFragment.findNavController(this).navigate(action)
             },
@@ -81,17 +93,17 @@ class HomeFragment : BaseFragment(), HomeInterface {
             }
         ).addTo(viewDisposable)
 
-        swiperefresh_fragment_home.setOnRefreshListener { viewModel.getMyEvents() }
+        swiperefresh_fragment_home.setOnRefreshListener {
+            shimmer.startShimmer()
+            handler.postDelayed(shimmerRunnable, 1000L)
+        }
 
         viewModel.myEventList.subscribe(
-            {eventList ->
+            { eventList ->
                 if (eventList.isEmpty()) {
-                    rv_event_home_fragment.visibility = INVISIBLE
-                    g_no_item_home_fragment.visibility = VISIBLE
+                    showPlaceHolder()
                 } else {
-                    rv_event_home_fragment.visibility = VISIBLE
-                    g_no_item_home_fragment.visibility = INVISIBLE
-                    adapter.submitList(eventList)
+                    displayEvents(adapter, eventList)
                 }
                 swiperefresh_fragment_home.isRefreshing = false
             },
@@ -103,6 +115,20 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     }
 
+    private fun displayEvents(adapter: ListMyEventsAdapter, eventList: List<EventItem>?) {
+        rv_event_home_fragment.visibility = VISIBLE
+        g_no_item_home_fragment.visibility = View.GONE
+        adapter.submitList(eventList)
+        shimmer.stopShimmer()
+    }
+
+    private fun showPlaceHolder() {
+        tv_no_home_fragment.text = getString(R.string.tv_no_invitation_fragment)
+        tv_no_home_fragment.setTextColor(ColorStateList.valueOf(getColor(context!!, R.color.black)))
+        rv_event_home_fragment.visibility = View.GONE
+        g_no_item_home_fragment.visibility = VISIBLE
+    }
+
     private fun setFab() {
         fabmenu_home.addOnMenuItemClickListener { miniFab, label, itemId ->
             when (itemId) {
@@ -110,18 +136,19 @@ class HomeFragment : BaseFragment(), HomeInterface {
                     requestCameraPermission()
                 }
                 R.id.action_add_event -> {
-                    val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
+                    val action =
+                        HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
                     NavHostFragment.findNavController(this).navigate(action)
                 }
             }
         }
     }
 
-    private fun openQrCode(){
+    private fun openQrCode() {
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    private fun requestCameraPermission(){
+    private fun requestCameraPermission() {
         if (permissionManager.requestCameraPermission(activity!!)) {
             openQrCode()
         }
@@ -148,12 +175,22 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onStart() {
         super.onStart()
         viewModel.getMyEvents()
+        setTitleToolbar(getString(R.string.title_home))
+        shimmer.startShimmer()
+        handler.postDelayed(shimmerRunnable, 1000L)
+        //viewModel.getMyEvents()
     }
 
     override fun onPause() {
         super.onPause()
         displayFilterMenu(false)
     }
+
+    override fun onDestroyView() {
+        weakContext.clear()
+        super.onDestroyView()
+    }
+
 }
 
 interface HomeInterface {

@@ -8,22 +8,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.DetailPhotoViewModel
-import io.github.kobakei.materialfabspeeddial.FabSpeedDialMenu
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-class DetailPhotoFragment : BaseFragment() {
-
+class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
 
     private var eventId: String? = null
     private var photoId: String? = null
@@ -59,10 +57,11 @@ class DetailPhotoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.initMessageReceiving()
+
         adapter = CommentsAdapter()
         rv_comments.adapter = adapter
         rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        //ViewCompat.setNestedScrollingEnabled(rv_comments, false)
 
         btn_validate_comment.setOnClickListener {
             photoId?.let { photoId ->
@@ -71,15 +70,17 @@ class DetailPhotoFragment : BaseFragment() {
                     viewModel.addComment(comment, photoId)
                         .subscribe(
                             {
-                                Toast.makeText(context, "commentaire ajouté", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, getString(R.string.detail_photo_fragment_comment_added), Toast.LENGTH_SHORT).show()
                                 viewModel.getPhotoDetail(eventId, photoId)
+                                et_comments.text.clear()
+                                et_comments.hideKeyboard()
                             },
                             { error ->
                                 Timber.e(error)
                             }
                         )
                 } else {
-                    Toast.makeText(context, "Veuillez saisir un commentaire", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.detail_photo_fragment_toast_commentaire_error), Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -107,11 +108,11 @@ class DetailPhotoFragment : BaseFragment() {
                 photo.authorName?.let {
                     tv_auteur.text = it
                 }
-                setFab()
+                setMenu()
             },
             {
                 Timber.e(it)
-                setFab()
+                setMenu()
             })
             .addTo(viewDisposable)
 
@@ -143,102 +144,91 @@ class DetailPhotoFragment : BaseFragment() {
         ).addTo(viewDisposable)
     }
 
-    private fun setFab() {
+    private fun setMenu() {
         val userId = UserRepository.currentUser.value?.id
         val authorId = photoAuthorId
-        val menu = FabSpeedDialMenu(context!!)
 
         if (userId != null && (userId == authorId || userId == idOrganizer)) {
-            menu.add(0, 0, 0, getString(R.string.delete_picture_fab_title)).setIcon(R.drawable.ic_delete)
+            displayDetailPhotoMenuDeletePhoto(true)
         }
         photo.value?.let {
             if (userId != null && userId == idOrganizer && it.isReported == 1) {
-                menu.add(0, 3, 3, "Autoriser cette photo").setIcon(R.drawable.ic_validate)
+                displayDetailPhotoMenuActionValidatePhoto(true)
             }
         }
 
-        menu.add(0, 1, 1, getString(R.string.save_image_fab_title)).setIcon(R.drawable.ic_file_download)
-        menu.add(0, 2, 2, "signaler la photo").setIcon(R.drawable.ic_report_problem)
-        fab_detail_photo.setMenu(menu)
+    }
 
-        fab_detail_photo.addOnMenuItemClickListener { miniFab, label, itemId ->
-            when (itemId) {
-                0 -> {
-                    //delete picture
-                    eventId?.let { eventId ->
-                        viewModel.photo.value?.let { photo ->
-                            photo.id?.let { id ->
-                                photo.url?.let { url ->
-                                    deletePicture(eventId, id, url)
-                                }
-                            }
-                        }
-                    }
-                }
-                1 -> {
-                    //save image
-                    photoURL?.let {
-                        viewModel.downloadImageOnPhone(it)
-                            .subscribe(
-                                { byteArray ->
-                                    if (viewModel.saveImage(byteArray, eventId!!, photoId!!).isNotEmpty()) {
-                                        Toast.makeText(
-                                            context,
-                                            getString(R.string.picture_downloaded_toast),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            getString(R.string.error_on_download_toast),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                },
-                                { error ->
-                                    Timber.e(error)
-                                    Toast.makeText(
-                                        context,
-                                        getString(R.string.error_on_download_toast),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            )
-                    }
-                }
-                2 -> {
-                    //report image
-                    eventId?.let { eventId ->
-                        photo.value?.let { photo ->
-                            if (photo.isReported == 0) {
-                                reportOrValidateImage(eventId, photo, 1, getString(R.string.picture_reported_to_owner))
-                            } else {
-                                Toast.makeText(context, "photo déjà signalée", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                    }
-                }
-                3 -> {
-                    //unreport image
-                    eventId?.let { eventId ->
-                        photo.value?.let { photo ->
-                            if (photo.isReported == 1) {
-                                reportOrValidateImage(
-                                    eventId,
-                                    photo,
-                                    -1,
-                                    getString(R.string.picture_authorized_by_admin)
-                                )
-                            }
-                        }
-
-                    }
+    private fun authorizeImage() {
+        eventId?.let { eventId ->
+            photo.value?.let { photo ->
+                if (photo.isReported == 1) {
+                    reportOrValidateImage(
+                        eventId,
+                        photo,
+                        -1,
+                        getString(R.string.picture_authorized_by_admin)
+                    )
+                    displayDetailPhotoMenuActionValidatePhoto(false)
                 }
             }
         }
     }
 
+    private fun reportImage() {
+        eventId?.let { eventId ->
+            photo.value?.let { photo ->
+                if (photo.isReported == 0) {
+                    reportOrValidateImage(eventId, photo, 1, getString(R.string.picture_reported_to_owner))
+                } else {
+                    Toast.makeText(context, "photo déjà signalée", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun downloadImage() {
+        photoURL?.let {
+            viewModel.downloadImageOnPhone(it)
+                .subscribe(
+                    { byteArray ->
+                        if (viewModel.saveImage(byteArray, eventId!!, photoId!!).isNotEmpty()) {
+                            Toast.makeText(
+                                context,
+                                getString(R.string.picture_downloaded_toast),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                getString(R.string.error_on_download_toast),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    { error ->
+                        Timber.e(error)
+                        Toast.makeText(
+                            context,
+                            getString(R.string.error_on_download_toast),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+        }
+    }
+
+    private fun deleteImage() {
+        eventId?.let { eventId ->
+            viewModel.photo.value?.let { photo ->
+                photo.id?.let { id ->
+                    photo.url?.let { url ->
+                        deletePicture(eventId, id, url)
+                    }
+                }
+            }
+        }
+    }
 
     private fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String) {
         val reportValue = if (delta > 0) 1 else 0
@@ -247,6 +237,9 @@ class DetailPhotoFragment : BaseFragment() {
                 {
                     Timber.d("photo unreported ")
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    if (reportValue == 1) {
+                        viewModel.sendReportMessageToEventOwner(idOrganizer ?: "")
+                    }
                 },
                 {
                     Timber.e(it)
@@ -268,7 +261,7 @@ class DetailPhotoFragment : BaseFragment() {
                                 .subscribe(
                                     {
                                         Timber.e("event updated")
-                                        setFab()
+                                        setMenu()
                                     },
                                     {
                                         Timber.e("error for update event reported photo = $it")
@@ -315,4 +308,38 @@ class DetailPhotoFragment : BaseFragment() {
         }
     }
 
+
+    override fun deleteAction() {
+        deleteImage()
+    }
+
+    override fun authorizeAction() {
+        authorizeImage()
+    }
+
+    override fun downloadAction() {
+        downloadImage()
+    }
+
+    override fun reportAction() {
+        reportImage()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        displayDetailPhotoMenuRestricted(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        displayDetailPhotoMenu(false)
+    }
+
+}
+
+interface DetailPhotoActions {
+    fun deleteAction()
+    fun authorizeAction()
+    fun downloadAction()
+    fun reportAction()
 }

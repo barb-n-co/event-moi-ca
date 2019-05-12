@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
+import com.example.event_app.ui.fragment.DetailPhotoActions
 import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
@@ -26,17 +27,20 @@ import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
+    private var authorizePhotoActionMenu: MenuItem? = null
+    private var reportPhotoActionMenu: MenuItem? = null
+    private var deletePhotoActionMenu: MenuItem? = null
+    private var downloadActionMenu: MenuItem? = null
+    private val photoDetailActionList = mutableListOf<MenuItem?>()
     private val viewModel: MainActivityViewModel by instance(arg = this)
-
+    private var filterButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
     private lateinit var navControllerProfile: NavController
-
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
 
-    private var filterButtonMenu: MenuItem? = null
 
     companion object {
         fun start(fromActivity: FragmentActivity) {
@@ -116,7 +120,19 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu.findItem(R.id.action_filter)
+
+        downloadActionMenu = menu.findItem(R.id.action_download_photo)
+        deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
+        reportPhotoActionMenu = menu.findItem(R.id.action_report)
+        authorizePhotoActionMenu = menu.findItem(R.id.action_validate_photo)
+
+        photoDetailActionList.add(downloadActionMenu)
+        photoDetailActionList.add(deletePhotoActionMenu)
+        photoDetailActionList.add(reportPhotoActionMenu)
+        photoDetailActionList.add(authorizePhotoActionMenu)
+
         setSearchView(menu)
+        displayDetailPhotoActions(false)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -144,6 +160,38 @@ class MainActivity : BaseActivity() {
             val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
             if (frg is HomeInterface) {
                 frg.openFilter()
+            }
+            true
+        }
+        R.id.action_report -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailPhotoActions) {
+                frg.reportAction()
+            }
+            true
+        }
+        R.id.action_delete_photo -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailPhotoActions) {
+                frg.deleteAction()
+            }
+            true
+        }
+        R.id.action_download_photo -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailPhotoActions) {
+                frg.downloadAction()
+            }
+            true
+        }
+        R.id.action_validate_photo -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailPhotoActions) {
+                frg.authorizeAction()
             }
             true
         }
@@ -183,6 +231,25 @@ class MainActivity : BaseActivity() {
     override fun onSupportNavigateUp(): Boolean {
         currentController.navigateUp()
         return true
+    }
+
+    fun displayDetailPhotoActions(value: Boolean) {
+        photoDetailActionList.forEach {
+            it?.isVisible = value
+        }
+    }
+
+    fun displayDetailPhotoActionValidatePhoto(value: Boolean) {
+        authorizePhotoActionMenu?.isVisible = value
+    }
+
+    fun displayDetailPhotoActionDeletePhoto(value: Boolean) {
+        deletePhotoActionMenu?.isVisible = value
+    }
+
+    fun displayDetailPhotoMenuRestricted(value: Boolean) {
+        downloadActionMenu?.isVisible = value
+        reportPhotoActionMenu?.isVisible = value
     }
 
     override fun onBackPressed() {

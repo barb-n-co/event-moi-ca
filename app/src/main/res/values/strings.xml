@@ -2,57 +2,51 @@
     <string name="app_name">Event-App</string>
 
     <!-- Title -->
-    <string name="title_home">Evenements</string>
+    <string name="title_home">Évènements</string>
     <string name="title_profile">Profil</string>
     <string name="title_qr_code">QR CODE</string>
-    <string name="tb_invites">INVITATIONS</string>
-    <string name="tb_myevents">MES EVENEMENTS</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
 
     <!-- Activity Authentification -->
-    <string name="tv_description_authentification_activity">Veuillez vous inscrire ou vous connecter</string>
+    <string name="tv_description_authentification_activity">Se connecter ou s\'inscrire</string>
     <string name="ti_login_authentification_activity">Connexion</string>
     <string name="ti_signup_authentification_activity">Inscription</string>
-    <string name="tv_reset_password_authentification_activity">Mot de passe oublié ?</string>
-    <string name="t_empty_email_reset_password_dialog_fragment">Vous devez rentrer le mail de votre compte pour réinitialiser votre mot de passe</string>
-    <string name="tv_title_reset_password_fragment">Mot de passe oublié</string>
-    <string name="tv_message_reset_password_fragment">Veuillez rentrer votre mail lié à votre compte</string>
-
+    <string name="login_fragment_error_emplty">Vous devez compléter tous les champs.</string>
 
     <!-- Log In Fragment -->
-    <string name="tv_email_login_fragment">Email</string>
+    <string name="tv_email_login_fragment">E-mail</string>
     <string name="tv_password_login_fragment">Mot de passe</string>
     <string name="b_signin_login_fragment">Se connecter</string>
-    <string name="tv_login_success_login_fragment">Vous êtes connectés</string>
+    <string name="tv_reset_password_authentification_activity">Mot de passe oublié ?</string>
+    <string name="t_empty_email_reset_password_dialog_fragment">Saisissez l\'e-mail associé au compte pour réinitialiser le mot de passe.</string>
+    <string name="tv_title_reset_password_fragment">Mot de passe oublié</string>
+    <string name="tv_message_reset_password_fragment">Saisissez l\'e-mail associé au compte pour réinitialiser le mot de passe.</string>
 
     <!-- Sign Up Fragment -->
     <string name="tv_lastname_signup_fragment">Nom</string>
-    <string name="tv_firstname_signup_fragment">Prenom</string>
-    <string name="tv_email_signup_fragment">Email</string>
-    <string name="tv_password_signup_fragment">Mot de passe</string>
+    <string name="tv_firstname_signup_fragment">Prénom</string>
+    <string name="tv_email_signup_fragment">E-mail</string>
     <string name="tv_confirm_password_signup_fragment">Confirmation du mot de passe</string>
     <string name="b_signup_signup_fragment">S\'inscrire</string>
-    <string name="tv_signup_success_signup_fragment">Vous êtes bien inscrits</string>
 
     <!-- Home Fragment -->
     <string name="fab_qrcode_title">Scanner un QR Code</string>
     <string name="fab_add_event_title">Ajouter un évènement</string>
     <string name="filter">Filtre</string>
+    <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
 
     <!-- Filter Dialog Fragment -->
     <string name="cb_filter_invitation_dialog_fragment">Invitation</string>
     <string name="cb_filter_participate_dialog_fragment">Participation</string>
     <string name="cb_filter_organizer_dialog_fragment">Organisateur</string>
     <string name="tv_filter_dialog_fragment">Filtrer par …</string>
-    <string name="b_filter_dialog_fragment">Valider</string>
 
     <!-- Item My Events -->
-    <string name="tv_state_invited">Invited</string>
-    <string name="tv_state_participate">Participate</string>
-    <string name="tv_state_organizer">Organizer</string>
-
+    <string name="tv_state_invited">Je suis invité</string>
+    <string name="tv_state_participate">Je participe</string>
+    <string name="tv_state_organizer">j\'organise</string>
 
     <!-- Add Event Fragment -->
     <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>
@@ -62,55 +56,68 @@
     <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
     <string name="b_validate_add_event_fragment">Créer l\'évènement</string>
     <string name="error_empty_field_add_event_fragment">Vous n\'avez pas complété tous les champs</string>
+    <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
+    <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
 
     <!-- Detail Event Fragment -->
-    <string name="fab_generate_qrcode_detail_event_fragment">Générer un QR Code</string>
     <string name="fab_camera_detail_event_fragment">Prendre une photo</string>
     <string name="fab_gallery_detail_event_fragment">Choisir une photo</string>
+    <string name="download_all_pictures_from_one_event">Tout télécharger</string>
     <string name="detail_event_organisateur">Organisateur :</string>
-    <string name="detail_event_startDate">Date de debut :</string>
+    <string name="detail_event_startDate">Date de début :</string>
     <string name="detail_event_endDate">Date de fin :</string>
+    <string name="b_exit_detail_event_fragment">Quitter l\'évènement</string>
+    <string name="tv_dialogTitle_detail_event_fragment">Quitter l\'évènement</string>
+    <string name="tv_dialogMessage_detail_event_fragment">Voulez-vous vraiment quitter l\'évènement ?</string>
+    <string name="tv_dialogCancel_detail_event_fragment">Non</string>
+    <string name="tv_dialogValidate_detail_event_fragment">Oui</string>
+    <string name="exit_event_toast_detail_event_fragment">Vous avez quitté l\'évènement.</string>
+    <string name="b_delete_detail_event_fragment">Supprimer l\'évènement</string>
+    <string name="tv_delete_event_detail_event_fragment">Supprimer l\'évènement</string>
+    <string name="tv_delete_event_message_detail_event_fragment">Voulez-vous supprimer votre évènement ?</string>
+    <string name="tv_delete_event_cancel_detail_event_fragment">Non</string>
+    <string name="tv_delete_event_valider_detail_event_fragment">Oui</string>
+    <string name="tv_delete_event_toast_detail_event_fragment">L\'évènement a été supprimé avec succès.</string>
+    <string name="ToastRemoveParticipant">Le participant a été retiré</string>
+    <string name="participants">%s participant(s)</string>
+    <string name="tv_place_detail_event_fragment">Adresse :</string>
+    <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
+
+    <!-- Detail Photo Fragment -->
+    <string name="delete_picture_fab_title">Supprimer</string>
+    <string name="save_image_fab_title">Télécharger</string>
+    <string name="picture_downloaded_toast">Image téléchargée.</string>
+    <string name="error_on_download_toast">Une erreur est survenue lors du téléchargement.</string>
+    <string name="picture_deleted">Image supprimée.</string>
+    <string name="unable_to_delete_picture">Impossible de supprimer l\'image %s.</string>
+    <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur.</string>
+    <string name="add_comment_to_photo">Ajouter un commentaire…</string>
+    <string name="detail_photo_fragment_fab_signaler">Signaler</string>
 
     <!-- Profile Fragment -->
     <string name="tv_title_dialog_logout">Déconnexion</string>
     <string name="tv_message_dialog_logout">Voulez-vous vraiment vous déconnecter ?</string>
     <string name="tv_title_dialog_delete_account">Supprimer mon compte</string>
     <string name="tv_message_dialog_delete_account">Voulez-vous vraiment supprimer votre compte ?</string>
-    <string name="b_cancel_dialog">Non</string>
-    <string name="b_validate_dialog">Oui</string>
-    <string name="tv_number_invitation_profile_fragment">Invitation: %d</string>
-    <string name="tv_number_participate_profile_fragment">Participation: %d</string>
-    <string name="tv_number_organizer_profile_fragment">Organisateur %d</string>
-    <string name="disconnection">Déconnexion</string>
+    <string name="tv_number_invitation_profile_fragment">Invitation : %d</string>
+    <string name="tv_number_participate_profile_fragment">Participation : %d</string>
+    <string name="tv_number_organizer_profile_fragment">Organisateur : %d</string>
+    <string name="picture_reported_to_owner">La photo a été signalée à l\'organisateur.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="download_all_pictures_from_one_event">Tout télécharger</string>
+    <!-- Dialog Fragment -->
+    <string name="b_cancel_dialog">Annuler</string>
+    <string name="b_validate_dialog">Valider</string>
 
-    <string name="b_cancel_dialog_logout">Non</string>
-    <string name="b_validate_dialog_logout">Oui</string>
-    <string name="t_sign_out">Sign Out</string>
-    <string name="b_MyEventsFragment_orga">Vous êtes organisateur</string>
-    <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
-    <string name="save_picture">Sauvegarder</string>
-    <string name="delete_picture_fab_title">Supprimer l\'image</string>
-    <string name="save_image_fab_title">Sauvegarder l\'image</string>
-    <string name="picture_downloaded_toast">Image téléchargée</string>
-    <string name="error_on_download_toast">Une erreur est survenue lors du téléchargement</string>
-    <string name="picture_deleted">Image supprimée</string>
-    <string name="unable_to_delete_picture">Impossible de supprimer l\'image %s</string>
-    <string name="picture_reported_to_owner">image signalée à l\'organisateur</string>
-    <string name="delete_picture_orga">Supprimer</string>
-    <string name="selectEventToShare">Choisissez l\'évenement où envoyer la photo :</string>
-    <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur</string>
-    <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
-    <string name="add_comment_to_photo">Ajouter un commentaire</string>
-    <string name="ToastRemoveParticipant">Le participant a été supprimé de l\'évenement</string>
-    <string name="participants">%s participants</string>
+    <!-- Share Activity -->
+    <string name="selectEventToShare">Choisissez l\'évenement de publication :</string>
 
-    <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
-    <string name="tv_place_detail_event_fragment">Adresse :</string>
-    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement</string>
-
+    <!-- Other -->
+    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement.</string>
+    <string name="detail_photo_fragment_authorize_photo">Autoriser la Photo</string>
+    <string name="detail_photo_fragment_toast_commentaire_error">Veuillez saisir un commentaire.</string>
+    <string name="detail_photo_fragment_comment_added">Commentaire publié</string>
+    <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
+    <string name="notification_channel_description">notification channel to report photos on events</string>
+    <string name="notification_message_title">Une photo a été signalée sur un évènement</string>
 
 </resources>

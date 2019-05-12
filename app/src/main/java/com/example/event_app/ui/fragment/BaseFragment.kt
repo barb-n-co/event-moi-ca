@@ -51,4 +51,24 @@ abstract class BaseFragment: Fragment(), KodeinAware{
     protected fun displayFilterMenu(value: Boolean) {
         (activity as MainActivity).displayFilterMenu(value)
     }
+
+    protected fun displaySearchViewMenu(value: Boolean) {
+        (activity as MainActivity).displaySearchButton(value)
+    }
+
+    protected fun displayDetailPhotoMenu(value: Boolean) {
+        (activity as MainActivity).displayDetailPhotoActions(value)
+    }
+
+    protected fun displayDetailPhotoMenuRestricted(value: Boolean) {
+        (activity as MainActivity).displayDetailPhotoMenuRestricted(value)
+    }
+
+    protected fun displayDetailPhotoMenuActionValidatePhoto(value: Boolean) {
+        (activity as MainActivity).displayDetailPhotoActionValidatePhoto(value)
+    }
+
+    protected fun displayDetailPhotoMenuDeletePhoto(value: Boolean) {
+        (activity as MainActivity).displayDetailPhotoActionDeletePhoto(value)
+    }
 }

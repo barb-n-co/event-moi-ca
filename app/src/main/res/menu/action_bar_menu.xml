@@ -7,14 +7,35 @@
             android:id="@+id/action_filter"
             android:icon="@drawable/ic_filter"
             android:title="@string/filter"
+            android:menuCategory="alternative"
             app:showAsAction="always"/>
 
     <item
-            android:id="@+id/sv_search_map"
-            android:title="Search"
-            android:icon="@drawable/ic_search"
-            android:visible="false"
-            app:actionViewClass="androidx.appcompat.widget.SearchView"
-            app:showAsAction="ifRoom|collapseActionView"/>
+            android:id="@+id/action_delete_photo"
+            android:icon="@drawable/ic_delete"
+            android:menuCategory="alternative"
+            android:title="@string/delete_picture_fab_title"
+            app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/action_report"
+            android:icon="@drawable/ic_report_problem"
+            android:menuCategory="alternative"
+            android:title="@string/detail_photo_fragment_fab_signaler"
+            app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/action_download_photo"
+            android:icon="@drawable/ic_file_download"
+            android:menuCategory="alternative"
+            android:title="@string/save_image_fab_title"
+            app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/action_validate_photo"
+            android:icon="@drawable/ic_validate"
+            android:menuCategory="alternative"
+            android:title="@string/detail_photo_fragment_authorize_photo"
+            app:showAsAction="never"/>
 
 </menu>

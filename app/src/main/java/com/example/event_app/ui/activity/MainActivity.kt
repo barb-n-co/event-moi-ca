@@ -52,10 +52,10 @@ class MainActivity : BaseActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                 currentController = navControllerHome
-
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
 
                 returnValue = true
@@ -67,6 +67,7 @@ class MainActivity : BaseActivity() {
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
                 app_bar.visibility = View.VISIBLE
+                displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true

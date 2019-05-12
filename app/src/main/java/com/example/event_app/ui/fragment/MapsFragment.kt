@@ -62,6 +62,10 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         viewModel.searchAdress()
         setVisibilityToolbar(false)
 
+        iv_back_menu_maps.setOnClickListener {
+            fragmentManager?.popBackStack()
+        }
+
         iv_search_menu.setOnClickListener {
             viewModel.searchAdress(et_search_menu.text.toString())
         }
@@ -91,9 +95,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
         ).addTo(viewDisposable)
     }
 
-
-
-
     private fun initMap(){
 
         var mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -104,6 +105,11 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback{
     override fun onMapReady(p0: GoogleMap) {
         mMap = p0
    }
+
+    override fun onStop() {
+        super.onStop()
+        setVisibilityToolbar(true)
+    }
 }
 
 

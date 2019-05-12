@@ -17,13 +17,25 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <EditText
+    <ImageView
+            android:id="@+id/iv_back_menu_maps"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/app_bar"
+            app:layout_constraintBottom_toBottomOf="@id/app_bar"/>
+
+
+    <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search_menu"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:backgroundTint="@color/black"
+            app:layout_constraintStart_toEndOf="@id/iv_back_menu_maps"
             app:layout_constraintEnd_toStartOf="@id/iv_search_menu"
             app:layout_constraintTop_toTopOf="@id/app_bar"
             app:layout_constraintBottom_toBottomOf="@id/app_bar"/>

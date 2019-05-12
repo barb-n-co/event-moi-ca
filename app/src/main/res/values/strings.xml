@@ -81,6 +81,7 @@
     <string name="ToastRemoveParticipant">Le participant a été retiré</string>
     <string name="participants">%s participant(s)</string>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
+    <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
 
     <!-- Detail Photo Fragment -->
     <string name="delete_picture_fab_title">Supprimer</string>

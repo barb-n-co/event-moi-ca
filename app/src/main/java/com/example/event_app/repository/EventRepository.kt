@@ -171,7 +171,7 @@ object EventRepository {
     }
 
     fun downloadImageFile(url: String): Maybe<ByteArray> {
-        return RxFirebaseStorage.getBytes(ref.child(url), 2000 * 1000 * 4)
+        return RxFirebaseStorage.getBytes(ref.child(url), 2000 * 1000 * 360)
     }
 
     fun deletePhotoOrga(eventId: String, photoId: String): Task<Void> {

@@ -37,8 +37,8 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
         return MediaStore.Images.Media.getBitmap(resolver, uri)
     }
 
-    fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
-        DetailEventViewModel.putImageWithBitmap(bitmap, eventId)
+    fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
+        DetailEventViewModel.putImageWithBitmap(bitmap, eventId, fromGallery)
     }
 
     class Factory(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :

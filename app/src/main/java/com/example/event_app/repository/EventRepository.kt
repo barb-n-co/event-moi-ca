@@ -205,4 +205,8 @@ object EventRepository {
         val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
+
+    fun removeUserEvent(userId: String, idEvent: String) {
+        myEventsRef.child(userId).child(idEvent).removeValue()
+    }
 }

@@ -119,5 +119,8 @@
     <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
     <string name="notification_channel_description">notification channel to report photos on events</string>
     <string name="notification_message_title">Une photo a été signalée sur un évènement</string>
+    <string name="picture_already_reported">photo déjà signalée</string>
+    <string name="problem_occured_during_download">Un problème a eut lieu lors du signalement. Merci de réessayer.
+    </string>
 
 </resources>

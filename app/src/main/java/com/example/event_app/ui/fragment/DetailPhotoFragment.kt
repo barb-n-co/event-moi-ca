@@ -78,7 +78,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                             { error ->
                                 Timber.e(error)
                             }
-                        )
+                        ).addTo(viewDisposable)
                 } else {
                     Toast.makeText(context, getString(R.string.detail_photo_fragment_toast_commentaire_error), Toast.LENGTH_SHORT).show()
                 }
@@ -156,7 +156,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                 displayDetailPhotoMenuActionValidatePhoto(true)
             }
         }
-
     }
 
     private fun authorizeImage() {
@@ -181,7 +180,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                 if (photo.isReported == 0) {
                     reportOrValidateImage(eventId, photo, 1, getString(R.string.picture_reported_to_owner))
                 } else {
-                    Toast.makeText(context, "photo déjà signalée", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.picture_already_reported), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -214,7 +213,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                )
+                ).addTo(viewDisposable)
         }
     }
 
@@ -245,11 +244,12 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
                     Timber.e(it)
                     Toast.makeText(
                         context,
-                        "Un problème a eut lieu lors du signalement. Merci de réessayer.",
+                        getString(R.string.problem_occured_during_download),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             ).addTo(viewDisposable)
+
         viewModel.getEvents()
             .subscribe(
                 {

@@ -24,9 +24,6 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-
-
-
 class HomeFragment : BaseFragment(), HomeInterface {
 
     private val viewModel: HomeFragmentViewModel by instance(arg = this)

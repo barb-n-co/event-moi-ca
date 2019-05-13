@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.AddressMap
 import com.example.event_app.repository.MapsRepository
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -20,7 +19,7 @@ class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(
             {
                 Timber.e(it)
             }
-        ).addTo(CompositeDisposable())
+        ).addTo(disposeBag)
 
     }
 

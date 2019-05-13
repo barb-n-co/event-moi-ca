@@ -2,15 +2,13 @@ package com.example.event_app.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
-import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
-import com.example.event_app.viewmodel.MainActivityViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
 import org.kodein.di.generic.instance
 import java.text.DateFormat
@@ -72,10 +70,6 @@ class AddEventFragment : BaseFragment() {
             date.setTargetFragment(this, endDateCode)
             date.show(fragmentManager!!, tag)
         }
-
-
-
-
 
         b_validate_add_event_fragment.setOnClickListener {
             val id = java.util.UUID.randomUUID().toString()

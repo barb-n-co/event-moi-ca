@@ -32,7 +32,7 @@ class ShareGalleryActivity : BaseActivity() {
         val type = intent.type
         val action = intent.action
 
-        viewModel.eventList.subscribe(
+        val disposeEventList = viewModel.eventList.subscribe(
             {
                 initAdapter(it)
             },
@@ -40,6 +40,8 @@ class ShareGalleryActivity : BaseActivity() {
                 Timber.e(it)
             })
             .addTo(viewDisposable)
+        viewDisposable.add(disposeEventList)
+
         viewModel.getEvents()
 
         val user = viewModel.getCurrentUser()
@@ -47,7 +49,7 @@ class ShareGalleryActivity : BaseActivity() {
                 if (Intent.ACTION_SEND == action && type != null) {
                     if (type.startsWith("image/")) {
                         imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
-                        if (imageUri != null) {
+                        if (imageUri.toString().isNotEmpty()) {
                             GlideApp.with(this).load(imageUri).into(iv_imageToShare)
                         } else {
                             Toast.makeText(
@@ -80,7 +82,7 @@ class ShareGalleryActivity : BaseActivity() {
         rv_shareEvent.adapter = adapter
         adapter.submitList(eventList)
 
-        adapter.eventsClickPublisher.subscribe(
+        val disposeEventCLick = adapter.eventsClickPublisher.subscribe(
             {
                     viewModel.putImageWithBitmap(galeryBitmap, it, true)
                 Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
@@ -93,6 +95,8 @@ class ShareGalleryActivity : BaseActivity() {
                     .show()
                 finish()
             }
-        ).addTo(viewDisposable)
+        )
+
+        viewDisposable.add(disposeEventCLick)
     }
 }

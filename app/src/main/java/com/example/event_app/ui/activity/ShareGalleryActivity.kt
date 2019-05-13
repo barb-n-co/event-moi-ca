@@ -3,12 +3,9 @@ package com.example.event_app.ui.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.ListEventAdapter
 import com.example.event_app.model.Event
@@ -85,7 +82,7 @@ class ShareGalleryActivity : BaseActivity() {
 
         adapter.eventsClickPublisher.subscribe(
             {
-                    viewModel.putImageWithBitmap(galeryBitmap, it)
+                    viewModel.putImageWithBitmap(galeryBitmap, it, true)
                 Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
                     .show()
                 finish()

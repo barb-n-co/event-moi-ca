@@ -10,21 +10,15 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import io.reactivex.subjects.BehaviorSubject
-
-
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
-
 import java.util.*
-import com.google.android.gms.location.places.AutocompleteFilter
-import com.google.android.gms.location.places.AutocompleteFilter.TYPE_FILTER_ADDRESS
-import com.google.android.gms.location.places.AutocompleteFilter.TYPE_FILTER_CITIES
 
 
 class MapsRepository(private val context: Context) {
     var placesClient: PlacesClient
-    var i : Int = 0
-    var mapAdress: BehaviorSubject<AddressMap> = BehaviorSubject.create()
+    var i: Int = 0
+    var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     init {
         Places.initialize(context, "AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w");
@@ -51,26 +45,25 @@ class MapsRepository(private val context: Context) {
 
         placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
             val placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-            if (placeFields.isEmpty()){
+            if (response.autocompletePredictions.isNotEmpty()) {
 
-            }
+                val request = FetchPlaceRequest.builder(
+                    response.autocompletePredictions.first().placeId,
+                    placeFields
+                )
+                    .build()
+                placesClient.fetchPlace(request).addOnSuccessListener { response ->
+                    response.place.let { place ->
 
-            val request = FetchPlaceRequest.builder(
-                response.autocompletePredictions.first().placeId,
-                placeFields
-            )
-                .build()
-            placesClient.fetchPlace(request).addOnSuccessListener { response ->
-                response.place?.let { place ->
-
-                    val addressmap = AddressMap(
-                        place.id,
-                        place.name,
-                        place.address,
-                        place.latLng?.latitude,
-                        place.latLng?.longitude
-                    )
-                    mapAdress.onNext(addressmap)
+                        val addressmap = AddressMap(
+                            place.id,
+                            place.name,
+                            place.address,
+                            place.latLng?.latitude,
+                            place.latLng?.longitude
+                        )
+                        mapAdress.onNext(addressmap)
+                    }
                 }
             }
 

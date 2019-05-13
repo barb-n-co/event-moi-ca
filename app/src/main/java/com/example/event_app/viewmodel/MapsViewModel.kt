@@ -4,23 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.AddressMap
 import com.example.event_app.repository.MapsRepository
-import com.example.event_app.repository.UserRepository
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(){
-    var mapAdress: BehaviorSubject<AddressMap> = BehaviorSubject.create()
+    var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     fun searchAdress() {
         mapsRepository.mapAdress.subscribe(
             {
                 mapAdress.onNext(it)
-
             },
             {
                 Timber.e(it)
             }
-        )
+        ).addTo(CompositeDisposable())
 
     }
 

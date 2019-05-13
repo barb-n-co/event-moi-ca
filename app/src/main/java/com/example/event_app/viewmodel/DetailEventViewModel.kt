@@ -14,9 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.model.*
-import com.example.event_app.model.Event
-import com.example.event_app.model.Photo
-import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -36,7 +33,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
-const val COMPRESSION_QUALITY = 20
+const val COMPRESSION_QUALITY = 100
+const val HIGH_COMPRESSION_QUALITY = 15
 
 class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
     BaseViewModel() {
@@ -69,14 +67,22 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 ).addTo(CompositeDisposable())
         }
 
-        fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
+        fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
 
+            val data : ByteArray
             val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
-            val data = baos.toByteArray()
+            data = if (fromGallery) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, HIGH_COMPRESSION_QUALITY, baos)
+                baos.toByteArray()
+            } else {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
+                baos.toByteArray()
+            }
+
+
 
             RxFirebaseStorage.putBytes(
-                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.png"), data
+                eventsRepository.ref.child("$eventId/${randomPhotoNameGenerator(eventId)}.jpeg"), data
             )
                 .toFlowable()
                 .subscribe(
@@ -166,8 +172,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return intent
     }
 
-    fun putImageWithBitmap(bitmap: Bitmap, eventId: String) {
-        DetailEventViewModel.putImageWithBitmap(bitmap, eventId)
+    fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
+        DetailEventViewModel.putImageWithBitmap(bitmap, eventId, fromGallery)
     }
 
     fun getBitmapWithResolver(resolver: ContentResolver, uri: Uri): Bitmap {

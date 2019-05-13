@@ -52,10 +52,6 @@ abstract class BaseFragment: Fragment(), KodeinAware{
         (activity as MainActivity).displayFilterMenu(value)
     }
 
-    protected fun displaySearchViewMenu(value: Boolean) {
-        (activity as MainActivity).displaySearchButton(value)
-    }
-
     protected fun displayDetailPhotoMenu(value: Boolean) {
         (activity as MainActivity).displayDetailPhotoActions(value)
     }

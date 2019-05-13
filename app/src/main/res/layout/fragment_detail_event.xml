@@ -156,8 +156,7 @@
                     android:layout_margin="24dp"
                     android:src="@drawable/ic_load_qrcode"
                     android:visibility="invisible"
-                    app:layout_constraintTop_toBottomOf="@+id/hr1"
-                    app:layout_constraintBottom_toTopOf="@+id/hr2"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_listParticipant"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
             <View

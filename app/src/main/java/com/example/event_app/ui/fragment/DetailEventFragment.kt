@@ -334,7 +334,7 @@ class DetailEventFragment : BaseFragment() {
                 CAPTURE_PHOTO -> {
                     val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
                     eventId?.let { eventId ->
-                        viewModel.putImageWithBitmap(capturedBitmap, eventId)
+                        viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
                     }
                 }
 
@@ -343,7 +343,7 @@ class DetailEventFragment : BaseFragment() {
                     val galleryUri = returnIntent?.data!!
                     val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
                     eventId?.let { eventId ->
-                        viewModel.putImageWithBitmap(galeryBitmap, eventId)
+                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
                     }
                 }
             }

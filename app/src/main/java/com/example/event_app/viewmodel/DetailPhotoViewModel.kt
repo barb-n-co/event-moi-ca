@@ -126,7 +126,7 @@ class DetailPhotoViewModel(
     }
 
     fun getStorageRef(url: String): StorageReference {
-        return eventsRepository.ref.child(url)
+        return eventsRepository.getStorageReferenceForUrl(url)
     }
 
     fun getEvents(): Observable<List<Event>> {

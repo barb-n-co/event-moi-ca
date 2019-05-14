@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
+import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -29,7 +30,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private var photoAuthorId: String? = null
     private var photoURL: String? = null
     private var adapter: CommentsAdapter? = null
-    val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
+    private val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
     companion object {
@@ -131,7 +132,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     }
                 }
                 tv_like.text = number.toString()
-                //tv_like.text = it.size.toString()
             },
             {
                 Timber.e(it)
@@ -244,6 +244,21 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     private fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String) {
         val reportValue = if (delta > 0) 1 else 0
+
+        handleReportPhoto(eventId, photo, reportValue, message)
+
+        viewModel.getEvents()
+            .subscribe(
+                {
+                    handleEventUpdate(it, eventId, delta)
+                },
+                {
+                    Timber.e("error getting event for update reported photo = $it")
+                }
+            ).addTo(viewDisposable)
+    }
+
+    private fun handleReportPhoto(eventId: String, photo: Photo, reportValue: Int, message: String) {
         viewModel.reportPhoto(eventId, photo, reportValue)
             .subscribe(
                 {
@@ -262,57 +277,41 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     ).show()
                 }
             ).addTo(viewDisposable)
+    }
 
-        viewModel.getEvents()
-            .subscribe(
-                {
-                    it.forEach {
-                        if (it.idEvent == eventId) {
-                            val updateEvent = it
-                            updateEvent.reportedPhotoCount = it.reportedPhotoCount + delta
-                            viewModel.updateEventReportedPhotoCount(eventId, updateEvent)
-                                .subscribe(
-                                    {
-                                        Timber.e("event updated")
-                                        setMenu()
-                                    },
-                                    {
-                                        Timber.e("error for update event reported photo = $it")
-                                    }
-                                )
+    private fun handleEventUpdate(list: List<Event>, eventId: String, delta: Int) {
+        list.forEach {
+            if (it.idEvent == eventId) {
+                val updateEvent = it
+                updateEvent.reportedPhotoCount = it.reportedPhotoCount + delta
+                viewModel.updateEventReportedPhotoCount(eventId, updateEvent)
+                    .subscribe(
+                        {
+                            Timber.e("event updated")
+                            setMenu()
+                        },
+                        {
+                            Timber.e("error for update event reported photo = $it")
                         }
-                    }
-
-                },
-                {
-                    Timber.e("error getting event for update reported photo = $it")
-                }
-            ).addTo(viewDisposable)
+                    )
+            }
+        }
     }
 
     private fun deletePicture(eventId: String, id: String, url: String) {
+        /** delete reference */
         viewModel.deleteImageOrga(eventId, id).addOnCompleteListener {
             if (it.isSuccessful) {
-                viewModel.deleteRefFromFirestore(url)
-                    .subscribe(
-                        {
-                            Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT)
-                                .show()
-                            activity?.onBackPressed()
-                        },
-                        { error ->
-                            Timber.e(error)
-                            Toast.makeText(
-                                context!!,
-                                String.format(getString(R.string.unable_to_delete_picture, error)),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    ).addTo(viewDisposable)
+                /** delete file */
+                deleteFireStoreReference(url)
+                /** delete likes */
+                deleteLikes()
+                /** delete comments */
+                deleteComments()
             } else {
                 Toast.makeText(
                     context!!,
-                    String.format(getString(R.string.unable_to_delete_picture, "")),
+                    getString(R.string.unable_to_delete_picture, ""),
                     Toast.LENGTH_SHORT
                 )
                     .show()
@@ -321,6 +320,50 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
     }
 
+    private fun deleteComments() {
+        photoId?.let { photoId ->
+            viewModel.deleteComments(photoId)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Timber.d("comments successfully deleted")
+                    } else {
+                        Timber.e("a problem occurred in deleting comments for the photo: ${task.exception}")
+                    }
+                }
+        }
+    }
+
+    private fun deleteFireStoreReference(url: String) {
+        viewModel.deleteRefFromFirestore(url)
+            .subscribe(
+                {
+                    Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT)
+                        .show()
+                    activity?.onBackPressed()
+                },
+                { error ->
+                    Timber.e(error)
+                    Toast.makeText(
+                        context!!,
+                        String.format(getString(R.string.unable_to_delete_picture, error)),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            ).addTo(viewDisposable)
+    }
+
+    private fun deleteLikes() {
+        photoId?.let { pictureId ->
+            viewModel.deleteLikesForPhoto(pictureId)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Timber.d("photo likes deleted")
+                    } else {
+                        Timber.e("a problem occurred in deleting likes for the photo: ${task.exception}")
+                    }
+                }
+        }
+    }
 
     override fun deleteAction() {
         deleteImage()

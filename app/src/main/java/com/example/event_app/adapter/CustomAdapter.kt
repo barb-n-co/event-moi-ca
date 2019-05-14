@@ -1,6 +1,5 @@
 package com.example.event_app.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
@@ -17,7 +16,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.list_pic_event.view.*
 
 
-class CustomAdapter(private val context: Context, private val isOrganizer: Int) :
+class CustomAdapter(private val isOrganizer: Int) :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
     val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
@@ -60,7 +59,7 @@ class CustomAdapter(private val context: Context, private val isOrganizer: Int) 
             photo.url?.let { path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
-                GlideApp.with(context).load(storageReference).override(300, 300).centerCrop().into(iv!!)
+                GlideApp.with(v.context).load(storageReference).override(300, 300).centerCrop().into(iv!!)
             }
         }
     }

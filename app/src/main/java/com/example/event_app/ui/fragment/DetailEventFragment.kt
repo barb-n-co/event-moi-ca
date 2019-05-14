@@ -71,7 +71,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         setVisibilityNavBar(false)
 
         weakContext = WeakReference<Context>(context)
-        adapter = CustomAdapter(weakContext.get()!!, 0)
+        adapter = CustomAdapter(0)
 
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
@@ -91,7 +91,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
 
-                adapter = CustomAdapter(weakContext.get()!!, it.organizer)
+                adapter = CustomAdapter(it.organizer)
                 initAdapter(it.idEvent)
 
                 if (it.organizer != 1) {
@@ -153,13 +153,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
 
         tv_listParticipant.setOnClickListener { openPopUp() }
-
-//        viewModel.participants.subscribe({
-//            tv_listParticipant.text = getString(R.string.participants, it.size)
-//            participants = it
-//        }, {
-//            Timber.e(it)
-//        }).addTo(viewDisposable)
 
     }
 

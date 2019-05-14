@@ -80,6 +80,10 @@ class DetailPhotoViewModel(
         }
     }
 
+    fun deleteComments(photoId: String): Task<Void> {
+        return eventsRepository.deleteCommentsForDeletedPhoto(photoId)
+    }
+
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
         return eventsRepository.downloadImageFile(url)
     }
@@ -177,6 +181,10 @@ class DetailPhotoViewModel(
 
     }
 
+    fun deleteLikesForPhoto(photoId: String): Task<Void> {
+        return eventsRepository.removeLikes(photoId)
+    }
+
     fun sendReportMessageToEventOwner(eventOwner: String) {
         notificationRepository.sendMessageToSpecificChannel(eventOwner)
     }
@@ -209,6 +217,7 @@ class DetailPhotoViewModel(
         }
 
     }
+
 
     class Factory(
         private val eventsRepository: EventRepository,

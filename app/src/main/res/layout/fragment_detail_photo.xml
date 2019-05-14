@@ -49,7 +49,7 @@
                     app:layout_constraintTop_toBottomOf="@id/iv_photo"
                     app:layout_constraintStart_toEndOf="@id/iv_icon_author_detail_photo_fragment"
                     app:layout_constraintEnd_toStartOf="@id/tv_like"
-            />
+                    />
 
             <View
                     android:id="@+id/view1_detail_photo_fragment"
@@ -59,34 +59,38 @@
                     android:layout_marginTop="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/iv_icon_author_detail_photo_fragment"/>
+                    app:layout_constraintTop_toBottomOf="@id/iv_icon_author_detail_photo_fragment"
+                    />
 
             <TextView
                     android:id="@+id/tv_like"
-                    tools:text="100"
-                    android:textColor="@android:color/white"
                     android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:drawableStart="@drawable/ic_thumb_up"
                     android:drawablePadding="2dp"
+                    tools:text="100"
+                    android:textColor="@android:color/white"
                     android:textAlignment="center"
                     android:gravity="center_vertical"
                     app:layout_constraintStart_toEndOf="@id/tv_auteur"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_auteur"
-            />
+                    />
 
             <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_comments"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_auteur" android:layout_marginTop="24dp"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="16dp"
                     tools:listitem="@layout/comment_item"
-            />
+                    android:layout_marginTop="24dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_auteur"
+                    />
 
             <View
                     android:id="@+id/view2_detail_photo_fragment"
@@ -114,7 +118,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btn_validate_comment"
                     app:layout_constraintTop_toBottomOf="@+id/view2_detail_photo_fragment"
-            />
+                    />
 
             <ImageView
                     android:id="@+id/btn_validate_comment"
@@ -128,7 +132,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="@id/et_comments"
                     app:layout_constraintTop_toTopOf="@id/et_comments"
-            />
+                    />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

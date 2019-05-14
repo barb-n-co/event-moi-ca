@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
             android:id="@+id/action_camera"
@@ -14,9 +15,9 @@
             android:title="@string/fab_gallery_detail_event_fragment"/>
 
     <item
-        android:id="@+id/action_download_every_photos"
-        android:icon="@drawable/ic_file_download"
-        android:orderInCategory="3"
-        android:title="@string/download_all_pictures_from_one_event"/>
+            android:id="@+id/action_download_every_photos"
+            android:icon="@drawable/ic_file_download"
+            android:orderInCategory="3"
+            android:title="@string/download_all_pictures_from_one_event"/>
 
 </menu>

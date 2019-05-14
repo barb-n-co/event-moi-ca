@@ -13,30 +13,29 @@
             app:shimmer_auto_start="true"
             app:shimmer_duration="2000"
             app:shimmer_base_alpha="0.9"
-    >
+            >
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swiperefresh_fragment_home"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_event_home_fragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scrollbars="vertical"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_event"/>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swiperefresh_fragment_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_event_home_fragment"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scrollbars="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    tools:listitem="@layout/item_event"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 

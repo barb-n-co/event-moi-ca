@@ -214,7 +214,11 @@ object EventRepository {
     }
 
     fun deleteCommentOfPhoto(photoId: String, commentId: String): Task<Void> {
-        return return commentsRef.child(photoId).child(commentId).removeValue()
+        return commentsRef.child(photoId).child(commentId).removeValue()
+    }
+
+    fun deleteCommentsForDeletedPhoto(photoId: String): Task<Void> {
+        return commentsRef.child(photoId).removeValue()
     }
 
     fun removeUserEvent(userId: String, idEvent: String) {

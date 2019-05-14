@@ -41,7 +41,7 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 
-class DetailEventFragment : BaseFragment() {
+class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     private lateinit var weakContext: WeakReference<Context>
     private lateinit var adapter : CustomAdapter
@@ -95,7 +95,6 @@ class DetailEventFragment : BaseFragment() {
                 initAdapter(it.idEvent)
 
                 if (it.organizer != 1) {
-                    iv_generate_qrCode.visibility = GONE
                     if (it.accepted != 1) {
                         rv_listImage.visibility = GONE
                         fabmenu_detail_event.visibility = GONE
@@ -122,12 +121,6 @@ class DetailEventFragment : BaseFragment() {
                     }
                     fabmenu_detail_event.visibility = VISIBLE
                     rv_listImage.visibility = VISIBLE
-                    iv_generate_qrCode.visibility = VISIBLE
-                    iv_generate_qrCode.setOnClickListener {
-                        eventId?.let {
-                            GenerationQrCodeActivity.start(activity as MainActivity, it)
-                        }
-                    }
                 }
             },
             {
@@ -138,7 +131,7 @@ class DetailEventFragment : BaseFragment() {
         tv_listParticipant.setOnClickListener { openPopUp() }
 
         viewModel.participants.subscribe({
-            tv_listParticipant.text = "${it.size} participant(s)"
+            tv_listParticipant.text = resources.getQuantityString(R.plurals.participants, it.size, it.size)
             participants = it
         }, {
             Timber.e(it)
@@ -252,7 +245,12 @@ class DetailEventFragment : BaseFragment() {
 
 
         val popup = ListParticipantFragment(
-            deleteSelectedListener = { removeUser(it) },
+            deleteSelectedListener = {
+                removeUser(it)
+                eventId?.let { notNullId ->
+                    viewModel.getParticipant(notNullId)
+                }
+            },
             idOrganizer = idOrganizer,
             isNotAnOrga = isNotAnOrga,
             participants = participants
@@ -350,10 +348,33 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
+    override fun loadQrCode() {
+        eventId?.let {
+            GenerationQrCodeActivity.start(activity as MainActivity, it)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        displayQrCodeMenu(true)
+        eventId?.let { notNullId ->
+            viewModel.getParticipant(notNullId)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        displayQrCodeMenu(false)
+    }
+
     override fun onDestroyView() {
         weakContext.clear()
         popupWindow?.dismiss()
         super.onDestroyView()
 
     }
+}
+
+interface DetailEventInterface {
+    fun loadQrCode()
 }

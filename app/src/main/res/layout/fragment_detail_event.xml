@@ -140,23 +140,12 @@
                     android:id="@+id/tv_listParticipant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="participant"
                     app:chipBackgroundColor="@color/colorPrimary"
                     app:chipStrokeWidth="1dp"
                     app:chipStrokeColor="@color/black"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_eventName"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-            <ImageView
-                    android:id="@+id/iv_generate_qrCode"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_margin="24dp"
-                    android:src="@drawable/ic_load_qrcode"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv_listParticipant"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
             <View
@@ -176,8 +165,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginStart="48dp"
-                    android:layout_marginEnd="48dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
                     android:padding="4dp"
                     android:justificationMode="inter_word"
                     tools:text="Ceci est une description..."
@@ -191,11 +180,11 @@
                     android:id="@+id/hr3"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/colorPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_eventDescription"/>
+                    app:layout_constraintTop_toBottomOf="@+id/b_exit_detail_event_fragment"/>
 
             <Button
                     android:id="@+id/b_exit_detail_event_fragment"
@@ -204,19 +193,19 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/b_exit_detail_event_fragment"
+                    android:textColor="@color/black"
                     app:layout_constraintTop_toBottomOf="@+id/tv_eventDescription"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/rv_listImage"/>
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_listImage"
                     tools:listitem="@layout/list_pic_event"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     tools:visibility="visible"
-                    android:layout_marginBottom="16dp"
+                    android:paddingBottom="96dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/hr3"

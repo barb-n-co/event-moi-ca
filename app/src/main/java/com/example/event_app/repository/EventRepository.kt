@@ -210,6 +210,10 @@ object EventRepository {
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 
+    fun deleteCommentOfPhoto(photoId: String, commentId: String): Task<Void> {
+        return return commentsRef.child(photoId).child(commentId).removeValue()
+    }
+
     fun removeUserEvent(userId: String, idEvent: String) {
         myEventsRef.child(userId).child(idEvent).removeValue()
     }

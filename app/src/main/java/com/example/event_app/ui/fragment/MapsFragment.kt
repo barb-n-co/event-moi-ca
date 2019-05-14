@@ -1,6 +1,8 @@
 package com.example.event_app.ui.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.view.ViewGroup
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
+import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -33,6 +36,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
     companion object {
         const val TAG = "MAPSFRAGMENT"
+        const val requestCodeMapFragment = 201
         fun newInstance(): MapsFragment = MapsFragment()
     }
 
@@ -55,6 +59,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
         iv_search_menu.setOnClickListener {
             viewModel.searchAdress(et_search_menu.text.toString())
+            view.hideKeyboard()
         }
 
         viewModel.mapAdress.subscribe(
@@ -66,9 +71,9 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
-                 val action = MapsFragmentDirections.actionMapsFragmentToAddEventFragment(addressMap.address ?: getString(R.string.chip_adresse))
-                    val options = NavOptions.Builder().setPopUpTo(R.id.add_event_fragment, true).build()
-                    NavHostFragment.findNavController(this).navigate(action,options)
+                    val intent = Intent().putExtra(AddEventFragment.TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
+                    fragmentManager?.popBackStack()
                 }
             },
             { error ->

@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
+class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     private var eventId: String? = null
     private var photoId: String? = null
@@ -58,10 +58,15 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initMessageReceiving()
-
-        adapter = CommentsAdapter()
-        rv_comments.adapter = adapter
-        rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        UserRepository.currentUser.value?.id?.let {
+            adapter = CommentsAdapter(it, idOrganizer, commentSelectedListener = {commentId ->
+                photoId?.let {
+                    viewModel.deleteComment(it, commentId)
+                }
+            })
+            rv_comments.adapter = adapter
+            rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
 
         btn_validate_comment.setOnClickListener {
             photoId?.let { photoId ->
@@ -337,7 +342,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
 
 }
 
-interface DetailPhotoActions {
+interface DetailPhotoInterface {
     fun deleteAction()
     fun authorizeAction()
     fun downloadAction()

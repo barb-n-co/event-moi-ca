@@ -14,6 +14,8 @@ import org.kodein.di.generic.instance
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Calendar.HOUR_OF_DAY
+import java.util.Calendar.MINUTE
 
 
 class AddEventFragment : BaseFragment() {
@@ -49,15 +51,17 @@ class AddEventFragment : BaseFragment() {
         setVisibilityNavBar(false)
         setTitleToolbar(getString(R.string.toolbar_add_event_fragment_add_event))
 
-
-        arguments?.let {
-          chip_place_add_event_fragment.text =  AddEventFragmentArgs.fromBundle(it).address
-        }
         chip_place_add_event_fragment.setOnClickListener {
-
-            val action = AddEventFragmentDirections.actionAddEventFragmentToMapsFragment()
-            NavHostFragment.findNavController(this).navigate(action)
-
+            val fragment = MapsFragment.newInstance()
+            fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
+            fragmentManager?.beginTransaction()
+                ?.setCustomAnimations(
+                    R.anim.transition_bottom_to_top,
+                    R.anim.fade_out,
+                    R.anim.fade_in,
+                    R.anim.transition_top_to_bottom_exit
+                )
+                ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
         }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
@@ -102,8 +106,8 @@ class AddEventFragment : BaseFragment() {
             }
             startTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar
-                startDateTimePicker.set(Calendar.HOUR, calendar.time.hours)
-                startDateTimePicker.set(Calendar.MINUTE, calendar.time.minutes)
+                startDateTimePicker.set(HOUR_OF_DAY, calendar.get(HOUR_OF_DAY))
+                startDateTimePicker.set(Calendar.MINUTE, calendar.get(MINUTE))
                 dateStart = startDateTimePicker.time
                 chip_date_start_add_event_fragment.text = getDateToString(startDateTimePicker.time)
             }
@@ -115,10 +119,15 @@ class AddEventFragment : BaseFragment() {
             }
             endTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar
-                endDateTimePicker.set(Calendar.HOUR, calendar.time.hours)
-                endDateTimePicker.set(Calendar.MINUTE, calendar.time.minutes)
+                endDateTimePicker.set(HOUR_OF_DAY, calendar.get(HOUR_OF_DAY))
+                endDateTimePicker.set(MINUTE, calendar.get(MINUTE))
                 dateEnd = endDateTimePicker.time
                 chip_date_end_add_event_fragment.text = getDateToString(endDateTimePicker.time)
+            }
+            MapsFragment.requestCodeMapFragment -> {
+                data?.getStringExtra(TAG)?.let {
+                    chip_place_add_event_fragment.text = it
+                }
             }
         }
     }

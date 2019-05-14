@@ -53,22 +53,31 @@ class DetailPhotoViewModel(
                         Timber.e(error)
                     }).addTo(disposeBag)
 
-                eventsRepository.fetchCommentaires(photoId).subscribe(
-                    {
-                        Timber.d("getCommentaires ${it[0]}")
-                        commentaires.onNext(it)
-                    },
-                    {
-                        Timber.e(it)
-                    }).addTo(disposeBag)
+                fetchCommentaires(photoId)
             }
         }
+    }
 
+    fun fetchCommentaires(photoId: String){
+        eventsRepository.fetchCommentaires(photoId).subscribe(
+            {
+                Timber.d( "getCommentaires ${it[0]}")
+                commentaires.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }).addTo(disposeBag)
     }
 
     fun addComment(comment: String, photoId: String): Completable {
         val user = userRepository.currentUser.value!!
         return eventsRepository.addCommentToPhoto(comment, photoId, user)
+    }
+
+    fun deleteComment(photoId: String, commentId: String){
+        eventsRepository.deleteCommentOfPhoto(photoId, commentId).addOnSuccessListener {
+            fetchCommentaires(photoId)
+        }
     }
 
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
@@ -190,7 +199,8 @@ class DetailPhotoViewModel(
                 Timber.d(msg)
             })
 
-        FirebaseMessaging.getInstance().subscribeToTopic("notif_event_moi_ca").addOnCompleteListener { task ->
+        FirebaseMessaging.getInstance().subscribeToTopic("notif_event_moi_ca")
+            .addOnCompleteListener { task ->
             var msg = "subscribed !!!"
             if (!task.isSuccessful) {
                 msg = "failed to subscribed"

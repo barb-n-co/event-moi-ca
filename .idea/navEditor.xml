@@ -13,18 +13,9 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="256" />
-                            <option name="y" value="12" />
+                            <option name="x" value="751" />
+                            <option name="y" value="29" />
                           </Point>
-                        </option>
-                        <option name="myPositions">
-                          <map>
-                            <entry key="action_MapsFragment_to_add_event_fragment">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -37,15 +28,6 @@
                             <option name="x" value="500" />
                             <option name="y" value="33" />
                           </Point>
-                        </option>
-                        <option name="myPositions">
-                          <map>
-                            <entry key="action_add_event_fragment_to_MapsFragment">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -100,11 +82,6 @@
                               </value>
                             </entry>
                             <entry key="action_my_home_fragment_to_detail_event_fragment">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                            <entry key="action_my_home_fragment_to_reportedPhotoFragment">
                               <value>
                                 <LayoutPositions />
                               </value>

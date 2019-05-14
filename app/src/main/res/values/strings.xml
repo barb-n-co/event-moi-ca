@@ -79,7 +79,10 @@
     <string name="tv_delete_event_valider_detail_event_fragment">Oui</string>
     <string name="tv_delete_event_toast_detail_event_fragment">L\'évènement a été supprimé avec succès.</string>
     <string name="ToastRemoveParticipant">Le participant a été retiré</string>
-    <string name="participants">%s participant(s)</string>
+    <plurals name="participants">
+        <item quantity="one">%1$d participant</item>
+        <item quantity="other">%1$d participants</item>
+    </plurals>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
     <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
 
@@ -112,7 +115,7 @@
     <string name="selectEventToShare">Choisissez l\'évenement de publication :</string>
 
     <!-- Other -->
-    <string name="chip_adresse">Veuillez entrer l\'adresse de l\'événement.</string>
+    <string name="chip_adresse">Veuillez choisir une adresse</string>
     <string name="detail_photo_fragment_authorize_photo">Autoriser la Photo</string>
     <string name="detail_photo_fragment_toast_commentaire_error">Veuillez saisir un commentaire.</string>
     <string name="detail_photo_fragment_comment_added">Commentaire publié</string>

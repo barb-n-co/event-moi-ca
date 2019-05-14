@@ -52,9 +52,9 @@
 
     <com.google.android.material.chip.Chip
             android:id="@+id/chip_place_add_event_fragment"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_place_add_event_fragment"
+            android:text="@string/chip_adresse"
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"

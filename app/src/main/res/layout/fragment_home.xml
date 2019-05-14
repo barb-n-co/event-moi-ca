@@ -12,7 +12,7 @@
             android:layout_height="match_parent"
             app:shimmer_auto_start="true"
             app:shimmer_duration="2000"
-            app:shimmer_base_alpha="0.8"
+            app:shimmer_base_alpha="0.9"
     >
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -45,6 +45,7 @@
             android:id="@+id/g_no_item_home_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="tv_no_home_fragment, iv_no_list_home_fragment"/>
 
 
@@ -63,9 +64,9 @@
             android:id="@+id/tv_no_home_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chargement en cours"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:layout_margin="16dp"
+            android:text="@string/tv_no_invitation_fragment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

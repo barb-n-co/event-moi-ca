@@ -12,5 +12,6 @@ class EventItem(
     val organizer: Int = 0,
     val description: String,
     val idOrganizer: String,
-    val reportedPhotoCount: Int = 0
+    val reportedPhotoCount: Int = 0,
+    val isEmptyEvent: Int = 0
 )

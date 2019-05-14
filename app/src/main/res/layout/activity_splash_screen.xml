@@ -10,6 +10,6 @@
 
     <ImageView android:layout_width="match_parent"
                android:layout_height="match_parent"
-    android:src="@drawable/logo_emc"/>
+    android:src="@drawable/logo_event_moi_ca"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

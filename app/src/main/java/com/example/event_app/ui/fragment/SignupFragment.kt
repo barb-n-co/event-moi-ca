@@ -48,6 +48,7 @@ class SignupFragment: BaseFragment() {
         viewModel.register(email, password, name).subscribe(
             {
                 if(it) MainActivity.start(activity!!)
+                viewModel.setEmptyEvent()
             },
             {
                 Timber.e(it)

@@ -22,7 +22,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
-            eventsRepository.fetchMyEvents(idUser)
+            //eventsRepository.fetchMyEvents(idUser)
             Observable.combineLatest(
                 eventsRepository.fetchEvents(),
                 eventsRepository.fetchMyEvents(idUser),
@@ -55,7 +55,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 myEvents.organizer,
                                 it.description,
                                 it.idOrganizer,
-                                it.reportedPhotoCount
+                                it.reportedPhotoCount,
+                                it.isEmptyEvent
                             )
                         }
                     }.filterNotNull()

@@ -32,7 +32,9 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                 {
                     val numberEvent = NumberEvent(0,0,0)
                     it.forEach {
-                        if(it.accepted == 0 && it.organizer == 0){
+                        if(it.isEmtyEvent == 1) {
+                            // do nothing -> don't count this event
+                        } else if(it.accepted == 0 && it.organizer == 0){
                             numberEvent.invitation += 1
                         } else if(it.accepted == 1 && it.organizer == 0){
                             numberEvent.participate += 1

@@ -186,17 +186,20 @@ object EventRepository {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
-    fun getLikesFromPhoto(photoId: String) : Flowable<List<User>>{
-        return RxFirebaseDatabase.observeSingleValueEvent(
-            likesRef.child(photoId), DataSnapshotMapper.listOf(User::class.java)
-        ).toFlowable()
+    fun getLikesFromPhoto(photoId: String) : Flowable<List<LikeItem>> {
+        return RxFirebaseDatabase.observeValueEvent(
+            likesRef.child(photoId), DataSnapshotMapper.listOf(LikeItem::class.java)
+        )
     }
-    fun addLikes(photoId: String, user:User): Completable {
-        return if (user.id != null) {
-            RxFirebaseDatabase.setValue(likesRef.child(photoId).child(user.id!!), Pair("name", user.name))
-        } else {
-            Completable.error(Throwable("error: user id is null"))
-        }
+
+    fun setNewLike(userId: String, photoId: String): Completable {
+        val item = LikeItem(userId, photoId)
+        return RxFirebaseDatabase.setValue(likesRef.child(photoId).child(userId), item)
+    }
+
+
+    fun deleteLike(userId: String, photoId: String): Task<Void> {
+        return likesRef.child(photoId).child(userId).removeValue()
     }
 
     fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {

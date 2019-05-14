@@ -116,18 +116,26 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoActions {
             })
             .addTo(viewDisposable)
 
-        viewModel.peopleWhoLike.subscribe {
-            tv_like.text = it.size.toString()
-        }.addTo(viewDisposable)
-
-        if (UserRepository.currentUser.value?.id != null && UserRepository.currentUser.value?.name != null) {
-            tv_like.setOnClickListener {
-                photoId?.let { it1 ->
-                    viewModel.addLikes(
-                        it1,
-                        UserRepository.currentUser.value!!
-                    )
+        viewModel.peopleWhoLike.subscribe(
+            { list ->
+                var number = 0
+                list.forEach { item ->
+                    number++
+                    if (item.userId == UserRepository.currentUser.value?.id) {
+                        viewModel.isPhotoAlreadyLiked = true
+                    }
                 }
+                tv_like.text = number.toString()
+                //tv_like.text = it.size.toString()
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        tv_like.setOnClickListener {
+            photoId?.let { photoId ->
+                viewModel.addLikes(photoId)
             }
         }
 

@@ -1,14 +1,12 @@
 package com.example.event_app.ui.fragment
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getColor
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -120,8 +118,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
     }
 
     private fun showPlaceHolder() {
-        tv_no_home_fragment.text = getString(R.string.tv_no_invitation_fragment)
-        tv_no_home_fragment.setTextColor(ColorStateList.valueOf(getColor(context!!, R.color.black)))
         rv_event_home_fragment.visibility = View.GONE
         g_no_item_home_fragment.visibility = VISIBLE
     }
@@ -134,7 +130,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 }
                 R.id.action_add_event -> {
                     val action =
-                        HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment(getString(R.string.chip_adresse))
+                        HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
                     NavHostFragment.findNavController(this).navigate(action)
                 }
             }

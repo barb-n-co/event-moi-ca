@@ -14,7 +14,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
-import com.example.event_app.ui.fragment.DetailPhotoActions
+import com.example.event_app.ui.fragment.DetailEventInterface
+import com.example.event_app.ui.fragment.DetailPhotoInterface
+import com.example.event_app.ui.fragment.HomeFragment
 import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
@@ -34,6 +36,7 @@ class MainActivity : BaseActivity() {
     private val photoDetailActionList = mutableListOf<MenuItem?>()
     private val viewModel: MainActivityViewModel by instance(arg = this)
     private var filterButtonMenu: MenuItem? = null
+    private var qrCodeButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -125,7 +128,7 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu.findItem(R.id.action_filter)
-
+        qrCodeButtonMenu = menu.findItem(R.id.action_qr_code)
         downloadActionMenu = menu.findItem(R.id.action_download_photo)
         deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
         reportPhotoActionMenu = menu.findItem(R.id.action_report)
@@ -136,7 +139,14 @@ class MainActivity : BaseActivity() {
         photoDetailActionList.add(reportPhotoActionMenu)
         photoDetailActionList.add(authorizePhotoActionMenu)
 
-
+        val container = supportFragmentManager.findFragmentById(R.id.content_home)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        if(frg is HomeFragment){
+            displayFilterMenu(true)
+        } else {
+            displayFilterMenu(false)
+        }
+        displayQrCodeMenu(false)
         displayDetailPhotoActions(false)
         return super.onCreateOptionsMenu(menu)
     }
@@ -153,7 +163,7 @@ class MainActivity : BaseActivity() {
         R.id.action_report -> {
             val container = supportFragmentManager.findFragmentById(R.id.content_home)
             val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoActions) {
+            if (frg is DetailPhotoInterface) {
                 frg.reportAction()
             }
             true
@@ -161,7 +171,7 @@ class MainActivity : BaseActivity() {
         R.id.action_delete_photo -> {
             val container = supportFragmentManager.findFragmentById(R.id.content_home)
             val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoActions) {
+            if (frg is DetailPhotoInterface) {
                 frg.deleteAction()
             }
             true
@@ -169,7 +179,7 @@ class MainActivity : BaseActivity() {
         R.id.action_download_photo -> {
             val container = supportFragmentManager.findFragmentById(R.id.content_home)
             val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoActions) {
+            if (frg is DetailPhotoInterface) {
                 frg.downloadAction()
             }
             true
@@ -177,8 +187,16 @@ class MainActivity : BaseActivity() {
         R.id.action_validate_photo -> {
             val container = supportFragmentManager.findFragmentById(R.id.content_home)
             val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoActions) {
+            if (frg is DetailPhotoInterface) {
                 frg.authorizeAction()
+            }
+            true
+        }
+        R.id.action_qr_code -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailEventInterface) {
+                frg.loadQrCode()
             }
             true
         }
@@ -213,6 +231,10 @@ class MainActivity : BaseActivity() {
 
     fun displayFilterMenu(value: Boolean) {
         filterButtonMenu?.isVisible = value
+    }
+
+    fun displayQrCodeMenu(value: Boolean) {
+        qrCodeButtonMenu?.isVisible = value
     }
 
     override fun onSupportNavigateUp(): Boolean {

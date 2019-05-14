@@ -10,6 +10,7 @@ import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
@@ -21,7 +22,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
-            eventsRepository.fetchMyEvents(idUser)
+            //eventsRepository.fetchMyEvents(idUser)
             Observable.combineLatest(
                 eventsRepository.fetchEvents(),
                 eventsRepository.fetchMyEvents(idUser),
@@ -54,7 +55,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                                 myEvents.organizer,
                                 it.description,
                                 it.idOrganizer,
-                                it.reportedPhotoCount
+                                it.reportedPhotoCount,
+                                it.isEmptyEvent
                             )
                         }
                     }.filterNotNull()
@@ -63,7 +65,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 },
                     {
                         Timber.e(it)
-                    })
+                    }).addTo(disposeBag)
         }
     }
 

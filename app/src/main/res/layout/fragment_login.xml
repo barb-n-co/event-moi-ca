@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tv_reset_password_authentification_activity"
                     android:padding="16dp"
-                    style="@style/bodyBlack"
+                    style="@style/body"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/b_signin_fragment"/>

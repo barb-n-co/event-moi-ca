@@ -2,22 +2,14 @@ package com.example.event_app.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.adapter.AuthentificationViewPagerAdapter
 import com.example.event_app.ui.fragment.LoginFragment
 import com.example.event_app.ui.fragment.SignupFragment
-import com.example.event_app.viewmodel.LoginViewModel
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_authentification.*
-import org.kodein.di.generic.instance
-import timber.log.Timber
 
 class LoginActivity : BaseActivity() {
-
-    private lateinit var mAuth: FirebaseAuth
-    private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
         fun start(fromActivity: FragmentActivity) {

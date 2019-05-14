@@ -6,10 +6,6 @@ import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
-import com.example.event_app.utils.or
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import io.reactivex.Flowable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -36,12 +32,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                 {
                     val numberEvent = NumberEvent(0,0,0)
                     it.forEach {
-                        if(it.accepted == 0 && it.organizer == 0){
-                            numberEvent.invitation = numberEvent.invitation + 1
+                        if(it.isEmtyEvent == 1) {
+                            // do nothing -> don't count this event
+                        } else if(it.accepted == 0 && it.organizer == 0){
+                            numberEvent.invitation += 1
                         } else if(it.accepted == 1 && it.organizer == 0){
-                            numberEvent.participate = numberEvent.participate + 1
+                            numberEvent.participate += 1
                         } else if(it.organizer == 1){
-                            numberEvent.organizer = numberEvent.organizer + 1
+                            numberEvent.organizer += 1
                         }
                     }
                     eventCount.onNext(numberEvent)
@@ -49,7 +47,7 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                 {
                     Timber.e(it)
                 }
-            )
+            ).addTo(disposeBag)
         }
     }
 

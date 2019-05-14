@@ -42,8 +42,13 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
 
+    init {
+        DetailEventViewModel.disposeBag = disposeBag
+    }
+
     companion object {
 
+        lateinit var disposeBag : CompositeDisposable
         var eventsRepository = EventRepository
         var userRepository = UserRepository
 
@@ -64,7 +69,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     {
                         Timber.e("setValue error :  $it")
                     }
-                ).addTo(CompositeDisposable())
+                ).addTo(disposeBag)
         }
 
         fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
@@ -103,7 +108,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     {
                         Timber.e(it)
                     }
-                ).addTo(CompositeDisposable())
+                ).addTo(disposeBag)
 
         }
 
@@ -215,7 +220,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 {
 
                 }
-            ).addTo(CompositeDisposable())
+            ).addTo(disposeBag)
 
     }
 
@@ -252,29 +257,34 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun deleteEvent(idEvent: String): Task<Void> {
+
         eventsRepository.fetchPictures(idEvent).subscribe(
             {
                 it.forEach { picture ->
                     picture.id?.let { pictureId ->
-                        eventsRepository.removeLikes(pictureId).addOnCompleteListener {
-                            picture.url?.let { url ->
-                                eventsRepository.deletePhotoFromFireStore(url).subscribe(
-                                    {
-                                        eventsRepository.removePictureReference(idEvent)
-                                    },
-                                    {
-                                        Timber.e(it)
-                                    }
-                                )
-                            }
+                        eventsRepository.removeLikes(pictureId).addOnCompleteListener {task ->
+                            Timber.d("task is succesful ? : ${task.isSuccessful}")
+                        }
+
+                        picture.url?.let { url ->
+                            eventsRepository.deletePhotoFromFireStore(url).subscribe(
+                                {
+                                    Timber.d("photo deleted from fireStore")
+                                },
+                                {
+                                    Timber.e(it)
+                                }
+                            ).addTo(disposeBag)
                         }
                     }
                 }
+                eventsRepository.removePictureReference(idEvent)
             },
             {
                 Timber.e(it)
             }
         ).addTo(disposeBag)
+
         eventsRepository.getAllUsers().subscribe(
             {
                 it.forEach { user ->
@@ -289,6 +299,12 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 Timber.e(it)
             }
         ).addTo(disposeBag)
+
+        val currentUserId = userRepository.currentUser.value?.id
+        currentUserId?.let {
+            eventsRepository.removeUserEvent(it, idEvent)
+        }
+
         return eventsRepository.removePaticipant(idEvent)
     }
 

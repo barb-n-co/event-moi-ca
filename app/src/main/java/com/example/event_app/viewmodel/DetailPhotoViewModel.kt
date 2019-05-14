@@ -27,7 +27,10 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 
-class DetailPhotoViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository, private val notificationRepository: NotificationRepository) : BaseViewModel() {
+class DetailPhotoViewModel(
+    private val eventsRepository: EventRepository,
+    private val userRepository: UserRepository,
+    private val notificationRepository: NotificationRepository) : BaseViewModel() {
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
@@ -73,7 +76,7 @@ class DetailPhotoViewModel(private val eventsRepository: EventRepository, privat
     fun saveImage(byteArray: ByteArray, eventName: String, photoId: String): String {
 
         val options = BitmapFactory.Options()
-        options.inTargetDensity = PixelFormat.RGBA_F16
+        options.inTargetDensity = PixelFormat.RGBA_8888
         val finalBitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.size - 1, options)
 
         var imagePath = ""

@@ -45,7 +45,7 @@ object EventRepository {
         ).map {
             myEvents.onNext(it)
             it.filter {
-                it.idEvent?.isNotEmpty() ?: false
+                it.idEvent?.isNotEmpty() ?: false && it.isEmtyEvent == 0
             }
         }.toObservable()
     }
@@ -79,7 +79,11 @@ object EventRepository {
     }
 
     fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
-        myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
+        if (event.isEmptyEvent == 0) {
+            myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
+        } else {
+            myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1, 1))
+        }
         eventParticipantsRef.child(event.idEvent).child(idOrganizer)
             .setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
@@ -204,5 +208,9 @@ object EventRepository {
         val userId = user.id!!
         val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
+    }
+
+    fun removeUserEvent(userId: String, idEvent: String) {
+        myEventsRef.child(userId).child(idEvent).removeValue()
     }
 }

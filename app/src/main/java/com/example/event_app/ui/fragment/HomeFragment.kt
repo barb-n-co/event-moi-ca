@@ -24,9 +24,6 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-
-
-
 class HomeFragment : BaseFragment(), HomeInterface {
 
     private val viewModel: HomeFragmentViewModel by instance(arg = this)
@@ -174,7 +171,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getMyEvents()
+        //viewModel.getMyEvents()
         setTitleToolbar(getString(R.string.title_home))
         shimmer.startShimmer()
         handler.postDelayed(shimmerRunnable, 1000L)
@@ -188,6 +185,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onDestroyView() {
         weakContext.clear()
+        handler.removeCallbacks(shimmerRunnable)
         super.onDestroyView()
     }
 

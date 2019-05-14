@@ -20,8 +20,8 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
     val eventList: BehaviorSubject<List<Event>> = BehaviorSubject.create()
 
 
-    fun getCurrentUser(): User {
-        return userRepository.currentUser.value!!
+    fun getCurrentUser(): User? {
+        return userRepository.currentUser.value
     }
     fun getEvents() {
         eventsRepository.fetchEvents().subscribe(

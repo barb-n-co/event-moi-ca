@@ -2,12 +2,14 @@ package com.example.event_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.model.Event
+import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import io.reactivex.Flowable
 
-class LoginViewModel(private val userRepository: UserRepository): BaseViewModel() {
+class LoginViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository): BaseViewModel() {
 
     fun logIn(email: String, password: String): Flowable<Boolean> {
         return userRepository.logUser(email, password)
@@ -29,10 +31,18 @@ class LoginViewModel(private val userRepository: UserRepository): BaseViewModel(
         return userRepository.usersRef
     }
 
-    class Factory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+    fun setEmptyEvent() {
+        userRepository.currentUser.value?.id?.let {
+            val event = Event(isEmptyEvent = 1, idEvent = "empty")
+            eventRepository.addEvent(it, "",event)
+        }
+
+    }
+
+    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(userRepository) as T
+            return LoginViewModel(userRepository, eventRepository) as T
         }
     }
 }

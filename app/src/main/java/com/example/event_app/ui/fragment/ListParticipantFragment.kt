@@ -6,12 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListParticipantsAdapter
 import com.example.event_app.model.User
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.list_participants_popup.*
 import timber.log.Timber
 
@@ -24,6 +25,7 @@ class ListParticipantFragment(
 ) : DialogFragment() {
 
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
+    private var viewDisposable : CompositeDisposable = CompositeDisposable()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -46,8 +48,14 @@ class ListParticipantFragment(
             dismiss()
         }, {
             Timber.e(it)
-        })
+        }).addTo(viewDisposable)
+
         iv_closeDialog.setOnClickListener { dismiss() }
+    }
+
+    override fun onDestroyView() {
+        viewDisposable.dispose()
+        super.onDestroyView()
     }
 
 }

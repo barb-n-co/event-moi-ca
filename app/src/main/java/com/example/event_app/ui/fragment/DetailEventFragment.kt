@@ -138,7 +138,7 @@ class DetailEventFragment : BaseFragment() {
         tv_listParticipant.setOnClickListener { openPopUp() }
 
         viewModel.participants.subscribe({
-            tv_listParticipant.text = "${it.size} participants"
+            tv_listParticipant.text = "${it.size} participant(s)"
             participants = it
         }, {
             Timber.e(it)
@@ -161,12 +161,12 @@ class DetailEventFragment : BaseFragment() {
 
         tv_listParticipant.setOnClickListener { openPopUp() }
 
-        viewModel.participants.subscribe({
-            tv_listParticipant.text = getString(R.string.participants, it.size)
-            participants = it
-        }, {
-            Timber.e(it)
-        }).addTo(viewDisposable)
+//        viewModel.participants.subscribe({
+//            tv_listParticipant.text = getString(R.string.participants, it.size)
+//            participants = it
+//        }, {
+//            Timber.e(it)
+//        }).addTo(viewDisposable)
 
     }
 

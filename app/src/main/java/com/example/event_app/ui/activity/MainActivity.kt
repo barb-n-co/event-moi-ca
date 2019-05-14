@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -20,6 +19,8 @@ import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -87,13 +88,18 @@ class MainActivity : BaseActivity() {
 
         viewModel.user.subscribe(
             {
-                Toast.makeText(this, getString(R.string.toast_welcome_user_main_activity, it.name), Toast.LENGTH_LONG)
+                Snackbar
+                    .make(main_constraint_layout,
+                        getString(R.string.toast_welcome_user_main_activity, it.name),
+                        Snackbar.LENGTH_SHORT)
                     .show()
             },
             {
                 Timber.e(it)
             }
-        ).dispose()
+        ).addTo(viewDisposable)
+
+        viewModel.getCurrentUser()
 
         currentController = navControllerHome
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)

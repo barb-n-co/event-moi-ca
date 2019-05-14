@@ -1,7 +1,6 @@
 package com.example.event_app.repository
 
 import com.example.event_app.model.User
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
@@ -9,7 +8,8 @@ import com.google.firebase.database.FirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Flowable
-import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
@@ -20,12 +20,6 @@ object UserRepository {
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     val usersRef: DatabaseReference = database.getReference("users")
-
-
-    fun testUserConnected(): Observable<Boolean> {
-        return RxFirebaseAuth.observeAuthState(fireBaseAuth)
-            .map { authResult -> authResult.currentUser != null }
-    }
 
     fun resetPassword(email: String) {
         fireBaseAuth.sendPasswordResetEmail(email)
@@ -69,18 +63,20 @@ object UserRepository {
 
         return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult ->
-                authResult.user?.let {
+                authResult.user?.let {firebaseUser ->
                     val user = User(
-                        it.uid,
+                        firebaseUser.uid,
                         name,
-                        it.email
+                        firebaseUser.email
                     )
                     val userAuth = fireBaseAuth.currentUser
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(name).build()
-                    userAuth?.updateProfile(profileUpdates)
+                    userAuth?.updateProfile(profileUpdates)?.addOnCompleteListener {
+                        setNameFirebase(firebaseUser.uid, name, email)
+                    }
                     currentUser.onNext(user)
-                    setNameFirebase(it.uid, name, email)
+
                 }
                 authResult.user!= null
             }
@@ -89,6 +85,19 @@ object UserRepository {
 
     private fun setNameFirebase(uid: String, name: String, email: String){
         val user = User(uid, name, email)
-        usersRef.child(uid).setValue(user)
+        val disposeBag = CompositeDisposable()
+        RxFirebaseDatabase.setValue(usersRef.child(uid), user)
+            .subscribe(
+                {
+                    Timber.d("user successfully added to database")
+                    disposeBag.dispose()
+                },
+                {
+                    Timber.e(it)
+                    disposeBag.dispose()
+                }
+            ).addTo(disposeBag)
     }
+
+
 }

@@ -89,6 +89,8 @@
     <string name="tv_delete_comment_choice">Supprimer</string>
     <string name="tv_report_comment_choice">Signaler</string>
     <string name="tv_edit_comment_choice">Editer</string>
+    <string name="tv_like_comment_choice">J\'aime</string>
+
 
     <!-- Detail Photo Fragment -->
     <string name="delete_picture_fab_title">Supprimer</string>

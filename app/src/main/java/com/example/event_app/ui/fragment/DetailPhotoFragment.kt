@@ -76,23 +76,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         ).addTo(viewDisposable)
 
         UserRepository.currentUser.value?.id?.let {
-            adapter = CommentsAdapter(it, idOrganizer, commentSelectedListener = {commentId ->
-                val dialogFragment = CommentChoiceDialogFragment(commentChoiceListener = {
-                    when(it){
-                        CommentChoice.DELETE -> {
-                            photoId?.let {
-                                viewModel.deleteComment(it, commentId)
-                            }
-                        }
-                        CommentChoice.REPORT -> {
-
-                        }
-                        CommentChoice.EDIT -> {
-
+            adapter = CommentsAdapter(requireFragmentManager(), it, idOrganizer, commentSelectedListener = {commentId, commentChoice ->
+                when(commentChoice){
+                    CommentChoice.DELETE -> {
+                        photoId?.let {
+                            viewModel.deleteComment(it, commentId)
                         }
                     }
-                })
-                dialogFragment.show(requireFragmentManager(), HomeFragment.TAG)
+                    CommentChoice.REPORT -> {
+
+                    } else -> {}
+                }
+            }, editCommentListener = {
+                viewModel.editComment(it)
             })
             rv_comments.adapter = adapter
             rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

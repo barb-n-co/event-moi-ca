@@ -7,8 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.MapsViewModel
@@ -17,16 +16,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
-
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.MarkerOptions
-import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main
-.activity_main.*
 import timber.log.Timber
 
 
@@ -38,7 +31,13 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
     companion object {
         const val TAG = "MAPSFRAGMENT"
         const val requestCodeMapFragment = 201
+
         fun newInstance(): MapsFragment = MapsFragment()
+
+        var fragmentManager: FragmentManager? = null
+        fun popBack() {
+            fragmentManager?.popBackStack()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +48,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        MapsFragment.fragmentManager = fragmentManager
 
         initMap()
         viewModel.searchAdress()
@@ -103,6 +104,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         super.onStop()
         setVisibilityToolbar(true)
     }
+
+
 }
 
 

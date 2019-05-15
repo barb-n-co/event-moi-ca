@@ -47,7 +47,7 @@
     <!-- Item My Events -->
     <string name="tv_state_invited">Je suis invité</string>
     <string name="tv_state_participate">Je participe</string>
-    <string name="tv_state_organizer">j\'organise</string>
+    <string name="tv_state_organizer">J\'organise</string>
 
     <!-- Add Event Fragment -->
     <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>

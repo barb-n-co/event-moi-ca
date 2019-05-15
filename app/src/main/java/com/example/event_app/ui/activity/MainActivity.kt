@@ -14,10 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
-import com.example.event_app.ui.fragment.DetailEventInterface
-import com.example.event_app.ui.fragment.DetailPhotoInterface
-import com.example.event_app.ui.fragment.HomeFragment
-import com.example.event_app.ui.fragment.HomeInterface
+import com.example.event_app.ui.fragment.*
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -43,6 +40,7 @@ class MainActivity : BaseActivity() {
     private lateinit var navControllerProfile: NavController
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
+    private var isMapOpenned = false
 
 
     companion object {
@@ -262,13 +260,23 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        currentController
-            .let { if (it.popBackStack().not()) finish() }
-            .or { finish() }
+        if (!isMapOpenned) {
+            currentController
+                .let { if (it.popBackStack().not()) finish() }
+                .or { finish() }
+        } else {
+            MapsFragment.popBack()
+            isMapOpenned = false
+        }
+
     }
 
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
+    }
+
+    fun isMapOpen(value: Boolean) {
+        isMapOpenned = value
     }
 
 

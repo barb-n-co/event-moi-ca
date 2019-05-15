@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:textCursorDrawable="@drawable/cursor"
             android:backgroundTint="@color/black"
             app:layout_constraintStart_toEndOf="@id/iv_back_menu_maps"
             app:layout_constraintEnd_toStartOf="@id/iv_search_menu"

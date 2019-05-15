@@ -231,7 +231,7 @@ object EventRepository {
     }
 
     fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {
-        val date = Calendar.getInstance().get(Calendar.DATE)
+        val date = Calendar.getInstance().time
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
         val newDate = df.format(date)
         val pushPath = commentsRef.child(photoId).push().key!!
@@ -243,6 +243,10 @@ object EventRepository {
 
     fun deleteCommentOfPhoto(photoId: String, commentId: String): Task<Void> {
         return commentsRef.child(photoId).child(commentId).removeValue()
+    }
+
+    fun editCommentOfPhoto(comment: Commentaire): Task<Void> {
+        return commentsRef.child(comment.photoId).child(comment.commentId).setValue(comment)
     }
 
     fun deleteCommentsForDeletedPhoto(photoId: String): Task<Void> {

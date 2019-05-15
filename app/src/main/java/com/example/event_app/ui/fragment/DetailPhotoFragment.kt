@@ -1,6 +1,7 @@
 package com.example.event_app.ui.fragment
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -57,6 +58,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.userLike.subscribe(
+            {liked ->
+                if(liked) {
+                    iv_like.setColorFilter(Color.RED)
+                } else {
+                    iv_like.setColorFilter(Color.WHITE)
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        )
 
         viewModel.initMessageReceiving()
         UserRepository.currentUser.value?.id?.let {
@@ -129,6 +143,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     number++
                     if (item.userId == UserRepository.currentUser.value?.id) {
                         viewModel.isPhotoAlreadyLiked = true
+                        viewModel.userLike.onNext(true)
                     }
                 }
                 tv_like.text = number.toString()
@@ -138,7 +153,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             }
         ).addTo(viewDisposable)
 
-        tv_like.setOnClickListener {
+        iv_like.setOnClickListener {
             photoId?.let { photoId ->
                 viewModel.addLikes(photoId)
             }

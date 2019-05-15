@@ -36,6 +36,7 @@ class DetailPhotoViewModel(
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
+    val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
@@ -159,6 +160,7 @@ class DetailPhotoViewModel(
                             if (it.isSuccessful) {
                                 Timber.d("like deleted")
                                 isPhotoAlreadyLiked = false
+                                userLike.onNext(isPhotoAlreadyLiked)
                             } else {
                                 Timber.e(it.exception)
                             }
@@ -169,6 +171,7 @@ class DetailPhotoViewModel(
                             {
                                 Timber.d("new like added")
                                 isPhotoAlreadyLiked = true
+                                userLike.onNext(isPhotoAlreadyLiked)
                             },
                             {
                                 Timber.e(it)

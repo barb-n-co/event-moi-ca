@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import io.reactivex.Flowable
 
 class LoginViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository): BaseViewModel() {
@@ -23,12 +21,8 @@ class LoginViewModel(private val userRepository: UserRepository, private val eve
         userRepository.resetPassword(email)
     }
 
-    fun getFirebaseAuth(): FirebaseAuth {
-        return userRepository.fireBaseAuth
-    }
-
-    fun getUsersRef(): DatabaseReference {
-        return userRepository.usersRef
+    fun checkIfFieldsAreEmpty(email: String, password: String): Boolean {
+        return email.isEmpty() || password.isEmpty()
     }
 
     fun setEmptyEvent() {

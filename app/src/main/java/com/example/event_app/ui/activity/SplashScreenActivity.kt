@@ -3,7 +3,6 @@ package com.example.event_app.ui.activity
 import android.os.Bundle
 import android.os.Handler
 import com.example.event_app.R
-import com.example.event_app.model.User
 import com.example.event_app.viewmodel.SplashScreenViewModel
 import org.kodein.di.generic.instance
 
@@ -23,6 +22,8 @@ class SplashScreenActivity : BaseActivity() {
                 LoginActivity.start(this)
             }
         }, 2000L)
+
+        viewModel.initMessageReceiving()
     }
 
     override fun onStop() {

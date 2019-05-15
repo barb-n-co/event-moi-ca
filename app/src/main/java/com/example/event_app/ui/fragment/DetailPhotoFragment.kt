@@ -74,7 +74,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             }
         ).addTo(viewDisposable)
 
-        viewModel.initMessageReceiving()
         UserRepository.currentUser.value?.id?.let {
             adapter = CommentsAdapter(it, idOrganizer, commentSelectedListener = {commentId ->
                 photoId?.let {

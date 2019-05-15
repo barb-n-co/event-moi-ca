@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
+import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
@@ -61,9 +62,22 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         viewModel.initMessageReceiving()
         UserRepository.currentUser.value?.id?.let {
             adapter = CommentsAdapter(it, idOrganizer, commentSelectedListener = {commentId ->
-                photoId?.let {
-                    viewModel.deleteComment(it, commentId)
-                }
+                val dialogFragment = CommentChoiceDialogFragment(commentChoiceListener = {
+                    when(it){
+                        CommentChoice.DELETE -> {
+                            photoId?.let {
+                                viewModel.deleteComment(it, commentId)
+                            }
+                        }
+                        CommentChoice.REPORT -> {
+
+                        }
+                        CommentChoice.EDIT -> {
+
+                        }
+                    }
+                })
+                dialogFragment.show(requireFragmentManager(), HomeFragment.TAG)
             })
             rv_comments.adapter = adapter
             rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

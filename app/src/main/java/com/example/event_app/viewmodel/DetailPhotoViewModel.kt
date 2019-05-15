@@ -23,6 +23,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -34,7 +35,7 @@ class DetailPhotoViewModel(
 ) : BaseViewModel() {
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
-    val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+    val commentaires: PublishSubject<List<Commentaire>> = PublishSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false

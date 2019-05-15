@@ -11,6 +11,10 @@ import com.google.zxing.WriterException
 import androidx.core.content.ContextCompat
 import com.example.event_app.R
 import kotlinx.android.synthetic.main.activity_generation_qrcode.*
+import android.net.Uri
+import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuItem
 
 
 class GenerationQrCodeActivity: BaseActivity() {
@@ -37,8 +41,28 @@ class GenerationQrCodeActivity: BaseActivity() {
         try {
             bitmap = encodeAsBitmap(idCard)
             iv_qr_code.setImageBitmap(bitmap)
+
         } catch (e: WriterException) {
             e.printStackTrace()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_qr_code, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_share -> {
+            val bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap,"Invitation", null);
+            val bitmapUri = Uri.parse(bitmapPath);
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "image/png"
+            intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
+            startActivity(Intent.createChooser(intent, "Share"))
+            true
+        } else -> {
+            super.onOptionsItemSelected(item)
         }
     }
 

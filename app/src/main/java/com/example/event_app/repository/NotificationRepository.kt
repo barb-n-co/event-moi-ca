@@ -10,7 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.event_app.R
 import com.example.event_app.model.Message
-import com.example.event_app.ui.activity.LoginActivity
+import com.example.event_app.ui.activity.SplashScreenActivity
 import com.google.firebase.database.FirebaseDatabase
 import timber.log.Timber
 
@@ -51,7 +51,7 @@ class NotificationRepository(private val context: Context) {
         context: Context) {
 
         if (currentUserId == dataMessage) {
-            val intent = Intent(context, LoginActivity::class.java)
+            val intent = Intent(context, SplashScreenActivity::class.java)
             intent.putExtra("title", dataTitle)
             intent.putExtra("message", dataMessage)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -65,6 +65,7 @@ class NotificationRepository(private val context: Context) {
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationBody)
                 .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
 
             with(NotificationManagerCompat.from(context)) {

@@ -5,6 +5,7 @@
     <string name="title_home">Évènements</string>
     <string name="title_profile">Profil</string>
     <string name="title_qr_code">QR CODE</string>
+    <string name="title_share">Share</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
@@ -85,6 +86,9 @@
     </plurals>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
     <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
+    <string name="tv_delete_comment_choice">Supprimer</string>
+    <string name="tv_report_comment_choice">Signaler</string>
+    <string name="tv_edit_comment_choice">Editer</string>
 
     <!-- Detail Photo Fragment -->
     <string name="delete_picture_fab_title">Supprimer</string>

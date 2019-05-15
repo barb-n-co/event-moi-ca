@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
@@ -112,13 +113,13 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     private fun displayEvents(adapter: ListMyEventsAdapter, eventList: List<EventItem>?) {
         rv_event_home_fragment.visibility = VISIBLE
-        g_no_item_home_fragment.visibility = View.GONE
+        g_no_item_home_fragment.visibility = GONE
         adapter.submitList(eventList)
         shimmer.stopShimmer()
     }
 
     private fun showPlaceHolder() {
-        rv_event_home_fragment.visibility = View.GONE
+        rv_event_home_fragment.visibility = GONE
         g_no_item_home_fragment.visibility = VISIBLE
     }
 

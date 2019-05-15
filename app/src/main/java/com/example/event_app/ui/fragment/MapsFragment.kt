@@ -23,6 +23,7 @@ import org.kodein.di.generic.instance
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main
 .activity_main.*
@@ -65,9 +66,14 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         viewModel.mapAdress.subscribe(
             {addressMap ->
                 btn_maps.visibility = View.VISIBLE
-                val sydney = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
+                val address = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
                   AddEventFragment.lieu=  addressMap.address
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,16.0f))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address,12.0f))
+                address?.let {
+                    mMap.clear()
+                    val marker = MarkerOptions().position(address)
+                    mMap.addMarker(marker)
+                }
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE

@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.model.Commentaire
+import com.example.event_app.ui.fragment.CommentChoiceDialogFragment
+import com.example.event_app.ui.fragment.FilterDialogFragment
+import com.example.event_app.ui.fragment.HomeFragment
 import kotlinx.android.synthetic.main.comment_item.view.*
 import java.net.URLDecoder
 
@@ -47,7 +50,7 @@ class CommentsAdapter(private val idUser: String, private val idOrganizer: Strin
                 itemView.tv_name_comment_item.text = comment.author
             }
 
-            if(idUser.equals(idOrganizer)){
+            if(idUser.equals(idOrganizer) || idUser.equals(comment.authorId)){
                 itemView.setOnLongClickListener {
                     commentSelectedListener(comment.commentId)
                     true

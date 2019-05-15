@@ -144,7 +144,7 @@ object EventRepository {
     }
 
     fun getParticipants(idEvent: String): Observable<List<User>> {
-        return RxFirebaseDatabase.observeSingleValueEvent(
+        return RxFirebaseDatabase.observeValueEvent(
             eventParticipantsRef.child(idEvent), DataSnapshotMapper.listOf(User::class.java)
         ).toObservable()
     }
@@ -183,9 +183,9 @@ object EventRepository {
     }
 
     fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
-        return RxFirebaseDatabase.observeSingleValueEvent(
+        return RxFirebaseDatabase.observeValueEvent(
             commentsRef.child(photoId), DataSnapshotMapper.listOf(Commentaire::class.java)
-        ).toFlowable()
+        )
     }
 
     fun pushPictureReport(eventId: String, photo: Photo, reportValue: Int): Completable {

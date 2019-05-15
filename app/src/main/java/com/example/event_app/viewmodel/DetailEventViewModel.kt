@@ -247,6 +247,13 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
     }
 
+    fun exitMyEvent(idEvent: String): Task<Void>? {
+        return userRepository.currentUser.value?.id?.let { idUser ->
+            eventsRepository.exitMyEvent(idEvent, idUser)
+        }
+    }
+
+
     fun deleteEvent(idEvent: String): Task<Void> {
 
         /** delete pictures */

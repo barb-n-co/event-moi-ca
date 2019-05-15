@@ -78,6 +78,12 @@ class DetailPhotoViewModel(
         }
     }
 
+    fun editComment(comment: Commentaire){
+        eventsRepository.editCommentOfPhoto(comment).addOnSuccessListener {
+            fetchComments(comment.photoId)
+        }
+    }
+
     fun deleteComments(photoId: String): Task<Void> {
         return eventsRepository.deleteCommentsForDeletedPhoto(photoId)
     }

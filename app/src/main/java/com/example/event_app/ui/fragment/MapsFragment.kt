@@ -99,6 +99,11 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         mMap = googleMap
    }
 
+    override fun onResume() {
+        super.onResume()
+        setVisibilityToolbar(false)
+    }
+
     override fun onStop() {
         super.onStop()
         setVisibilityToolbar(true)

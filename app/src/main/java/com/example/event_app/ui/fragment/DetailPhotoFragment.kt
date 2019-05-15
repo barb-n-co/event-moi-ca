@@ -23,6 +23,8 @@ import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
+private const val COLOR_PRIMARY = "#00e68a"
+
 class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     private var eventId: String? = null
@@ -62,7 +64,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         viewModel.userLike.subscribe(
             {liked ->
                 if(liked) {
-                    iv_like.setColorFilter(Color.RED)
+                    iv_like.setColorFilter(Color.parseColor(COLOR_PRIMARY))
                 } else {
                     iv_like.setColorFilter(Color.WHITE)
                 }
@@ -70,7 +72,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             {
                 Timber.e(it)
             }
-        )
+        ).addTo(viewDisposable)
 
         viewModel.initMessageReceiving()
         UserRepository.currentUser.value?.id?.let {

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
@@ -29,7 +28,7 @@ class AddEventFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ADDEVENTFRAGMENT"
-        public var lieu : String ?=""
+        var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -54,6 +53,7 @@ class AddEventFragment : BaseFragment() {
         chip_place_add_event_fragment.setOnClickListener {
             val fragment = MapsFragment.newInstance()
             fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
+
             fragmentManager?.beginTransaction()
                 ?.setCustomAnimations(
                     R.anim.transition_bottom_to_top,
@@ -62,6 +62,7 @@ class AddEventFragment : BaseFragment() {
                     R.anim.transition_top_to_bottom_exit
                 )
                 ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
+            fragmentMapIsOpen(true)
         }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
@@ -84,7 +85,10 @@ class AddEventFragment : BaseFragment() {
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
 
-            if(dateEnd != null && dateStart != null && organizer.isNotEmpty() && name.isNotEmpty()){
+            if(dateEnd != null && dateStart != null
+                && organizer.isNotEmpty() && name.isNotEmpty()
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
+            {
                 viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString)
                 fragmentManager?.popBackStack()
             } else {

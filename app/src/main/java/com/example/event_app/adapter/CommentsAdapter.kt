@@ -14,8 +14,10 @@ import com.example.event_app.model.Commentaire
 import com.example.event_app.ui.fragment.CommentChoiceDialogFragment
 import com.example.event_app.ui.fragment.HomeFragment
 import kotlinx.android.synthetic.main.comment_item.view.*
-import org.w3c.dom.Comment
 import java.net.URLDecoder
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CommentsAdapter(
     private val fragmentManager: FragmentManager,
@@ -50,9 +52,8 @@ class CommentsAdapter(
                 itemView.iv_edit_comment_item.setOnClickListener {
                     itemView.group_edit_comment_item.visibility = GONE
                     itemView.tv_message_user_comment_item.visibility = VISIBLE
-                    var commentEdited = comment
-                    commentEdited.comment = itemView.et_message_user_comment_item.text.toString()
-                    editCommentListener(commentEdited)
+
+                    editCommentListener(makeEditedCommentFrom(comment))
                 }
             } else {
                 itemView.iv_user_comment_item.visibility = VISIBLE
@@ -82,15 +83,34 @@ class CommentsAdapter(
                 }
             }
         }
+
+        private fun makeEditedCommentFrom(comment: Commentaire): Commentaire {
+            /** making a new object reference */
+            val newComment = Commentaire(
+                comment.commentId,
+                comment.author,
+                comment.authorId,
+                "",
+                comment.photoId,
+                "")
+            /** modify this reference */
+            val date = Calendar.getInstance().time
+            val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
+            val newDate = df.format(date)
+            newComment.date = newDate
+            newComment.comment = itemView.et_message_user_comment_item.text.toString()
+            return newComment
+        }
     }
 
     class DiffCardCallback : DiffUtil.ItemCallback<Commentaire>() {
         override fun areItemsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
-            return oldItem.commentId == newItem.commentId && oldItem.comment.equals(newItem.comment)
+            return oldItem.commentId == newItem.commentId
+                    && oldItem.comment == newItem.comment
         }
 
         override fun areContentsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
-            return oldItem.comment.equals(newItem.comment)
+            return oldItem.comment == newItem.comment
         }
     }
 }

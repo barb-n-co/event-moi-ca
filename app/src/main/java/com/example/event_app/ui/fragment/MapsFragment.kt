@@ -29,7 +29,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     companion object {
-        const val TAG = "MAPSFRAGMENT"
         const val requestCodeMapFragment = 201
 
         fun newInstance(): MapsFragment = MapsFragment()

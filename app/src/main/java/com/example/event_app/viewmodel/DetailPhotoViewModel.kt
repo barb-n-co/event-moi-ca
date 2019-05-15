@@ -79,7 +79,7 @@ class DetailPhotoViewModel(
     }
 
     fun editComment(comment: Commentaire){
-        eventsRepository.editCommentOfPhoto(comment).addOnSuccessListener {
+        eventsRepository.editCommentOfPhoto(comment).addOnCompleteListener {
             fetchComments(comment.photoId)
         }
     }

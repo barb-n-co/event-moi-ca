@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.dialog_fragment_comment_choice.*
 
 class CommentChoiceDialogFragment(private val commentChoiceListener: (CommentChoice) -> Unit): DialogFragment() {
 
-    private val listChoices = listOf(CommentChoice.DELETE, CommentChoice.REPORT, CommentChoice.EDIT)
+    private val listChoices = listOf(CommentChoice.DELETE, CommentChoice.REPORT, CommentChoice.EDIT, CommentChoice.LIKE)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_fragment_comment_choice, container, false)

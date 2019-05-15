@@ -86,11 +86,11 @@ class CommentsAdapter(
 
     class DiffCardCallback : DiffUtil.ItemCallback<Commentaire>() {
         override fun areItemsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
-            return oldItem.comment == newItem.comment
+            return oldItem.commentId == newItem.commentId && oldItem.comment.equals(newItem.comment)
         }
 
         override fun areContentsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
-            return oldItem == newItem
+            return oldItem.comment.equals(newItem.comment)
         }
     }
 }

@@ -85,10 +85,15 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     }
                     CommentChoice.REPORT -> {
 
-                    } else -> {}
+                    }
+                    CommentChoice.LIKE -> {
+
+                    }
+                    else -> {}
                 }
             }, editCommentListener = {
                 viewModel.editComment(it)
+                view.hideKeyboard()
             })
             rv_comments.adapter = adapter
             rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)

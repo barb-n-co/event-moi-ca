@@ -113,6 +113,10 @@ object EventRepository {
         return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
     }
 
+    fun exitMyEvent(idEvent: String, idUser: String): Task<Void> {
+        return myEventsRef.child(idUser).child(idEvent).removeValue()
+    }
+
     fun getEventDetail(eventId: String): Observable<Event> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             eventsRef.child(eventId), Event::class.java

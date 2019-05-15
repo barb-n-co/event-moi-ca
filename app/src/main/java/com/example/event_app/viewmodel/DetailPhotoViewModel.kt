@@ -13,10 +13,7 @@ import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -37,15 +34,16 @@ class DetailPhotoViewModel(
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: PublishSubject<List<Commentaire>> = PublishSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
+    val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
 
     fun getPhotoDetail(eventId: String?, photoId: String?) {
-        eventId?.let { eventId ->
+        eventId?.let { eventIdNotNull ->
             photoId?.let { photoId ->
                 getNumberOfLikes(photoId)
-                eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
+                eventsRepository.getPhotoDetail(eventIdNotNull, photoId).subscribe(
                     { picture ->
                         Timber.d("vm: ${picture.url}")
                         photo.onNext(picture)
@@ -54,15 +52,14 @@ class DetailPhotoViewModel(
                         Timber.e(error)
                     }).addTo(disposeBag)
 
-                fetchCommentaires(photoId)
+                fetchComments(photoId)
             }
         }
     }
 
-    fun fetchCommentaires(photoId: String){
+    private fun fetchComments(photoId: String){
         eventsRepository.fetchCommentaires(photoId).subscribe(
             {
-                Timber.d( "getCommentaires ${it[0]}")
                 commentaires.onNext(it)
             },
             {
@@ -77,7 +74,7 @@ class DetailPhotoViewModel(
 
     fun deleteComment(photoId: String, commentId: String){
         eventsRepository.deleteCommentOfPhoto(photoId, commentId).addOnSuccessListener {
-            fetchCommentaires(photoId)
+            fetchComments(photoId)
         }
     }
 
@@ -127,7 +124,7 @@ class DetailPhotoViewModel(
     }
 
     fun getStorageRef(url: String): StorageReference {
-        return eventsRepository.ref.child(url)
+        return eventsRepository.getStorageReferenceForUrl(url)
     }
 
     fun getEvents(): Observable<List<Event>> {
@@ -139,7 +136,7 @@ class DetailPhotoViewModel(
 
     }
 
-    fun getNumberOfLikes(photoId: String) {
+    private fun getNumberOfLikes(photoId: String) {
         eventsRepository.getLikesFromPhoto(photoId).subscribe(
             {
                 peopleWhoLike.onNext(it)
@@ -160,6 +157,7 @@ class DetailPhotoViewModel(
                             if (it.isSuccessful) {
                                 Timber.d("like deleted")
                                 isPhotoAlreadyLiked = false
+                                userLike.onNext(isPhotoAlreadyLiked)
                             } else {
                                 Timber.e(it.exception)
                             }
@@ -170,6 +168,7 @@ class DetailPhotoViewModel(
                             {
                                 Timber.d("new like added")
                                 isPhotoAlreadyLiked = true
+                                userLike.onNext(isPhotoAlreadyLiked)
                             },
                             {
                                 Timber.e(it)
@@ -189,36 +188,6 @@ class DetailPhotoViewModel(
     fun sendReportMessageToEventOwner(eventOwner: String) {
         notificationRepository.sendMessageToSpecificChannel(eventOwner)
     }
-
-
-    fun initMessageReceiving() {
-
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Timber.w(task.exception, "getInstanceId failed")
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                val token = task.result?.token
-
-                // Log and toast
-                val msg = "message with token = $token"
-                Timber.d(msg)
-            })
-
-        FirebaseMessaging.getInstance().subscribeToTopic("notif_event_moi_ca")
-            .addOnCompleteListener { task ->
-            var msg = "subscribed !!!"
-            if (!task.isSuccessful) {
-                msg = "failed to subscribed"
-            }
-            Timber.d("message for subscribing: $msg")
-        }
-
-    }
-
 
     class Factory(
         private val eventsRepository: EventRepository,

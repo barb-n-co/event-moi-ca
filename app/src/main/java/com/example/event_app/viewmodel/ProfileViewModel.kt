@@ -23,6 +23,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         userRepository.currentUser.value?.id?.let { idUser ->
             userRepository.deleteAccount(idUser)
             eventRepository.deleteAllEventOfUser(idUser)
+                .subscribe(
+                    {
+                        eventRepository.deleteParticipantWithId(it, idUser)
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                ).addTo(disposeBag)
         }
     }
 

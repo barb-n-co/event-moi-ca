@@ -214,8 +214,24 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
             .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
                 eventId?.let {
-                    viewModel.exitEvent(it)?.addOnCompleteListener {
-                        fragmentManager?.popBackStack()
+                    viewModel.exitEvent(it)?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            viewModel.exitMyEvent(it)?.addOnCompleteListener { task2 ->
+                                if (task2.isSuccessful) {
+                                    fragmentManager?.popBackStack()
+                                } else {
+                                    Toast.makeText(context, "erreur de traitement pour quitter l'évènement", Toast.LENGTH_SHORT)
+                                        .show()
+                                    Timber.e(task2.exception?.localizedMessage)
+                                }
+                            }
+
+                        } else {
+                            Toast.makeText(context, "erreur de traitement pour quitter l'évènement", Toast.LENGTH_SHORT)
+                                .show()
+                            Timber.e(task.exception?.localizedMessage)
+                        }
+
                     }
                     Toast.makeText(
                         activity!!,

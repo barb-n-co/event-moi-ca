@@ -245,8 +245,8 @@ object EventRepository {
         return commentsRef.child(photoId).child(commentId).removeValue()
     }
 
-    fun editCommentOfPhoto(comment: Commentaire): Task<Void> {
-        return commentsRef.child(comment.photoId).child(comment.commentId).setValue(comment)
+    fun editCommentOfPhoto(comment: Commentaire): Completable {
+        return RxFirebaseDatabase.setValue(commentsRef.child(comment.photoId).child(comment.commentId), comment)
     }
 
     fun deleteCommentsForDeletedPhoto(photoId: String): Task<Void> {

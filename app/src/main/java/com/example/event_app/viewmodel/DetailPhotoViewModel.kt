@@ -79,9 +79,15 @@ class DetailPhotoViewModel(
     }
 
     fun editComment(comment: Commentaire){
-        eventsRepository.editCommentOfPhoto(comment).addOnCompleteListener {
-            fetchComments(comment.photoId)
-        }
+        eventsRepository.editCommentOfPhoto(comment)
+            .subscribe(
+                {
+                    Timber.d("comment edited")
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(disposeBag)
     }
 
     fun deleteComments(photoId: String): Task<Void> {

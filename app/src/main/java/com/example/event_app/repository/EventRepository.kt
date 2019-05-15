@@ -2,8 +2,11 @@ package com.example.event_app.repository
 
 import com.example.event_app.model.*
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import durdinapps.rxfirebase2.RxFirebaseStorage
@@ -12,7 +15,6 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,7 +25,7 @@ object EventRepository {
     val ref = db.reference
     private val database = FirebaseDatabase.getInstance()
 
-    val allPictures = database.reference.child("photos")
+    private val allPictures = database.reference.child("photos")
     private val eventsRef = database.reference.child("events")
     private val myEventsRef = database.reference.child("user-events")
     private val eventParticipantsRef = database.reference.child("event-participants")
@@ -32,6 +34,10 @@ object EventRepository {
     private val userRef = database.reference.child("users")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
+
+    fun getStorageReferenceForUrl(url: String): StorageReference {
+        return ref.child(url)
+    }
 
     fun fetchEvents(): Observable<List<Event>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -62,21 +68,19 @@ object EventRepository {
         ).toObservable()
     }
 
-    fun deleteAllEventOfUser(idUser: String) {
+    fun deleteAllEventOfUser(idUser: String): Observable<List<MyEvents>> {
         myEventsRef.child(idUser).removeValue()
-        fetchMyEvents(idUser).subscribe(
-            {
-                it.forEach { event ->
-                    event.idEvent?.let { idEvent ->
-                        eventParticipantsRef.child(idEvent).child(idUser).removeValue()
-                    }
-                }
-            },
-            {
-                Timber.e(it)
-            }
-        )
+        return fetchMyEvents(idUser)
     }
+
+    fun deleteParticipantWithId(list: List<MyEvents>, idUser: String) {
+        list.forEach { event ->
+            event.idEvent?.let { idEvent ->
+                eventParticipantsRef.child(idEvent).child(idUser).removeValue()
+            }
+        }
+    }
+
 
     fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
         if (event.isEmptyEvent == 0) {
@@ -146,6 +150,26 @@ object EventRepository {
             allPictures.child(eventId),
             DataSnapshotMapper.listOf(Photo::class.java)
         ).toObservable()
+    }
+
+    fun getAllPicturesStream(eventId: String): Observable<List<Photo>> {
+        return RxFirebaseDatabase.observeValueEvent(
+            allPictures.child(eventId),
+            DataSnapshotMapper.listOf(Photo::class.java)
+        ).toObservable()
+    }
+
+    fun createPicturePath(eventId: String): DatabaseReference {
+        return allPictures.child(eventId).push()
+    }
+
+    fun pushImageToDatabase(id: String, pushPath: DatabaseReference, value: Photo): Completable {
+        return RxFirebaseDatabase.setValue(allPictures.child(id), pushPath.setValue(value))
+    }
+
+    fun putBytesToFireStore(eventId: String, data: ByteArray, photoName: String): Flowable<UploadTask.TaskSnapshot> {
+        return RxFirebaseStorage.putBytes(ref.child("$eventId/$photoName.jpeg"), data)
+            .toFlowable()
     }
 
     fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {

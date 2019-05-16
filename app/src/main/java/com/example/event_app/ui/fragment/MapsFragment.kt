@@ -25,7 +25,7 @@ import timber.log.Timber
 
 class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
-    private val viewModel : MapsViewModel by instance(arg = this)
+    private val viewModel: MapsViewModel by instance(arg = this)
     private lateinit var mMap: GoogleMap
 
     companion object {
@@ -39,8 +39,10 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
@@ -64,11 +66,11 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         viewModel.mapAdress.subscribe(
-            {addressMap ->
+            { addressMap ->
                 btn_maps.visibility = View.VISIBLE
                 val address = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
-                  AddEventFragment.lieu=  addressMap.address
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address,12.0f))
+                AddEventFragment.lieu = addressMap.address
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address, 12.0f))
                 address?.let {
                     mMap.clear()
                     val marker = MarkerOptions().position(address)
@@ -77,7 +79,8 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
-                    val intent = Intent().putExtra(AddEventFragment.TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    val intent =
+                        Intent().putExtra(AddEventFragment.TAG, addressMap.address ?: getString(R.string.chip_adresse))
                     targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }
@@ -89,15 +92,15 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         ).addTo(viewDisposable)
     }
 
-    private fun initMap(){
-        val mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    private fun initMap() {
+        val mapFragment: SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setHasOptionsMenu(true)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-   }
+    }
 
     override fun onResume() {
         super.onResume()

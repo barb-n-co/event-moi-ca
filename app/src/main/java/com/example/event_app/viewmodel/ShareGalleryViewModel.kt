@@ -23,6 +23,7 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
     fun getCurrentUser(): User? {
         return userRepository.currentUser.value
     }
+
     fun getEvents() {
         eventsRepository.fetchEvents().subscribe(
             {

@@ -18,7 +18,7 @@ class NotificationRepository(private val context: Context) {
 
     private val CHANNEL_ID = "notif_event_moi_ca"
     private val messageRef = FirebaseDatabase.getInstance().getReference("messages")
-    private var currentUserId : String = UserRepository.currentUser.value?.id ?: ""
+    private var currentUserId: String = UserRepository.currentUser.value?.id ?: ""
 
     fun sendMessageToSpecificChannel(eventOwner: String) {
         createNotificationChannel()
@@ -48,7 +48,8 @@ class NotificationRepository(private val context: Context) {
         notificationBody: String,
         dataTitle: String,
         dataMessage: String,
-        context: Context) {
+        context: Context
+    ) {
 
         if (currentUserId == dataMessage) {
             val intent = Intent(context, SplashScreenActivity::class.java)

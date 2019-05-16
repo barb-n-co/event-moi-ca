@@ -14,7 +14,7 @@ import com.example.event_app.model.Commentaire
 import com.example.event_app.model.CommentaireItem
 import com.example.event_app.ui.fragment.CommentChoiceDialogFragment
 import com.example.event_app.ui.fragment.HomeFragment
-import kotlinx.android.synthetic.main.comment_item.view.*
+import kotlinx.android.synthetic.main.item_comment.view.*
 import java.net.URLDecoder
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -29,7 +29,7 @@ class CommentsAdapter(
 ) : ListAdapter<CommentaireItem, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.comment_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
         return CommentsViewHolder(view)
     }
 

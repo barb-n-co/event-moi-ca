@@ -64,7 +64,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
         viewModel.loading.subscribe(
             {
-                pb_home_fragment.visibility = if(it) VISIBLE else GONE
+                pb_home_fragment.visibility = if (it) VISIBLE else GONE
             },
             {
                 Timber.e(it)

@@ -4,6 +4,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.*
+
 fun spannable(func: () -> SpannableString) = func()
 private fun span(s: CharSequence, o: Any) = (if (s is String) SpannableString(s) else s as? SpannableString
     ?: SpannableString("")).apply { setSpan(o, 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE) }

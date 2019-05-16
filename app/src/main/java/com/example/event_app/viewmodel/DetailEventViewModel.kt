@@ -47,7 +47,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     companion object {
 
-        lateinit var disposeBag : CompositeDisposable
+        lateinit var disposeBag: CompositeDisposable
         var eventsRepository = EventRepository
         var userRepository = UserRepository
 
@@ -73,7 +73,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
 
-            val data : ByteArray
+            val data: ByteArray
             val baos = ByteArrayOutputStream()
             data = if (fromGallery) {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, HIGH_COMPRESSION_QUALITY, baos)
@@ -244,7 +244,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun removeParticipant(idEvent: String, userId: String) {
-        eventsRepository.refuseInvitation(idEvent, userId)
+        eventsRepository.exitEvent(idEvent, userId)
         getParticipant(idEvent)
     }
 

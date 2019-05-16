@@ -16,7 +16,7 @@ class App : Application(), KodeinAware {
 
     override val kodein = Kodein.lazy {
 
-        bind<Application>() with singleton { this@App}
+        bind<Application>() with singleton { this@App }
         bind<Context>() with singleton { instance<Application>() }
 
         import(repoModule)
@@ -27,7 +27,7 @@ class App : Application(), KodeinAware {
     override fun onCreate() {
         super.onCreate()
 
-            Timber.plant(Timber.DebugTree())
+        Timber.plant(Timber.DebugTree())
 
     }
 

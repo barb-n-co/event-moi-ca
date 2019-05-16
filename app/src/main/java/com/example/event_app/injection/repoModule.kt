@@ -10,8 +10,8 @@ import org.kodein.di.generic.instance
 import org.kodein.di.generic.singleton
 
 val repoModule = Kodein.Module("RepoModule") {
-    bind<UserRepository>()  with singleton { UserRepository }
+    bind<UserRepository>() with singleton { UserRepository }
     bind<EventRepository>() with singleton { EventRepository }
-    bind<MapsRepository>()  with singleton { MapsRepository(instance()) }
-    bind<NotificationRepository>()  with singleton { NotificationRepository(instance()) }
+    bind<MapsRepository>() with singleton { MapsRepository(instance()) }
+    bind<NotificationRepository>() with singleton { NotificationRepository(instance()) }
 }

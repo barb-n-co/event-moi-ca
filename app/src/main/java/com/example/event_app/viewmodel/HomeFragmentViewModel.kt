@@ -99,7 +99,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun refuseInvitation(idEvent: String) {
         userRepository.currentUser.value?.id?.let { userId ->
-            eventsRepository.refuseInvitation(idEvent, userId).addOnCompleteListener {
+            eventsRepository.exitEvent(idEvent, userId).addOnCompleteListener {
                 getMyEvents()
             }
         }

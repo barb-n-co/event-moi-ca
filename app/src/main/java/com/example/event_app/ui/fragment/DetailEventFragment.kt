@@ -44,9 +44,9 @@ import java.lang.ref.WeakReference
 class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     private lateinit var weakContext: WeakReference<Context>
-    private lateinit var adapter : CustomAdapter
+    private lateinit var adapter: CustomAdapter
     lateinit var participants: List<User>
-    private val viewModel : DetailEventViewModel by instance(arg = this)
+    private val viewModel: DetailEventViewModel by instance(arg = this)
     private var eventId: String? = null
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     var popupWindow: PopupWindow? = null
@@ -81,7 +81,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         viewModel.loading.subscribe(
             {
-                pb_detail_event_fragment.visibility = if(it) VISIBLE else GONE
+                pb_detail_event_fragment.visibility = if (it) VISIBLE else GONE
             },
             {
                 Timber.e(it)
@@ -148,11 +148,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             Timber.e(it)
         }).addTo(viewDisposable)
 
-        tv_eventPlace.setOnClickListener{
+        tv_eventPlace.setOnClickListener {
             val query = tv_eventPlace.text.toString()
             val address = getString(R.string.map_query, query)
             if (query.isNotEmpty()) {
-                val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(address))
+                val mapsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(address))
                 startActivity(mapsIntent)
             }
 
@@ -231,7 +231,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                                 if (task2.isSuccessful) {
                                     fragmentManager?.popBackStack()
                                 } else {
-                                    Toast.makeText(context, "erreur de traitement pour quitter l'évènement", Toast.LENGTH_SHORT)
+                                    Toast.makeText(
+                                        context,
+                                        "erreur de traitement pour quitter l'évènement",
+                                        Toast.LENGTH_SHORT
+                                    )
                                         .show()
                                     Timber.e(task2.exception?.localizedMessage)
                                 }
@@ -254,28 +258,23 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     }
 
     private fun openPopUp() {
-
-        val isNotAnOrga = !(idOrganizer == UserRepository.currentUser.value?.id)
-        viewModel.getParticipant(eventId!!)
-
-        fun removeUser(userId: String) {
-            viewModel.removeParticipant(eventId!!, userId)
-            Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
+        eventId?.let {
+            viewModel.getParticipant(it)
         }
-
-
         val popup = ListParticipantFragment(
             deleteSelectedListener = {
                 removeUser(it)
-                eventId?.let { notNullId ->
-                    viewModel.getParticipant(notNullId)
-                }
             },
             idOrganizer = idOrganizer,
-            isNotAnOrga = isNotAnOrga,
+            isNotAnOrga = idOrganizer == UserRepository.currentUser.value?.id,
             participants = participants
         )
         popup.show(requireFragmentManager(), "listParticipant")
+    }
+
+    private fun removeUser(userId: String) {
+        viewModel.removeParticipant(eventId!!, userId)
+        Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
     }
 
     private fun setFab() {

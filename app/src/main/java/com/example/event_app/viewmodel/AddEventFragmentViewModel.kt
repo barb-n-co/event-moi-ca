@@ -6,19 +6,35 @@ import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 
-class AddEventFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) : BaseViewModel() {
+class AddEventFragmentViewModel(
+    private val userRepository: UserRepository,
+    private val eventsRepository: EventRepository
+) : BaseViewModel() {
 
-    fun addEventFragment(idEvent: String, organizer: String, name: String,place : String, description: String, startDateString: String, endDateString: String){
-        userRepository.currentUser.value?.let {user ->
+    fun addEventFragment(
+        idEvent: String,
+        organizer: String,
+        name: String,
+        place: String,
+        description: String,
+        startDateString: String,
+        endDateString: String
+    ) {
+        userRepository.currentUser.value?.let { user ->
             user.id?.let { id ->
                 user.name?.let { userName ->
-                    eventsRepository.addEvent(id, userName, Event(idEvent, id, organizer, name, place, description, startDateString, endDateString))
+                    eventsRepository.addEvent(
+                        id,
+                        userName,
+                        Event(idEvent, id, organizer, name, place, description, startDateString, endDateString)
+                    )
                 }
             }
         }
     }
 
-    class Factory(private val userRepository: UserRepository, private val eventsRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return AddEventFragmentViewModel(userRepository, eventsRepository) as T

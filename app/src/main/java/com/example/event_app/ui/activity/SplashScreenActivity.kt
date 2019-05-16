@@ -9,7 +9,7 @@ import org.kodein.di.generic.instance
 
 class SplashScreenActivity : BaseActivity() {
 
-    private val viewModel : SplashScreenViewModel by instance(arg = this)
+    private val viewModel: SplashScreenViewModel by instance(arg = this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

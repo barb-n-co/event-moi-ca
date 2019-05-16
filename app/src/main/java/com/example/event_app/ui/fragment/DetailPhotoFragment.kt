@@ -75,8 +75,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             }
         ).addTo(viewDisposable)
 
-        UserRepository.currentUser.value?.id?.let {
-            adapter = CommentsAdapter(requireFragmentManager(), it, idOrganizer, commentSelectedListener = {commentId, commentChoice ->
+        UserRepository.currentUser.value?.id?.let {userId ->
+            adapter = CommentsAdapter(requireFragmentManager(), userId, idOrganizer, commentSelectedListener = {commentId, commentChoice, likeId ->
                 when(commentChoice){
                     CommentChoice.DELETE -> {
                         photoId?.let {
@@ -87,7 +87,16 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                     }
                     CommentChoice.LIKE -> {
-
+                        photoId?.let {
+                            viewModel.addCommentLike(userId, commentId, it)
+                        }
+                    }
+                    CommentChoice.DISLIKE -> {
+                        photoId?.let {
+                            likeId?.let {id ->
+                                viewModel.removeCommentLike(likeId, it)
+                            }
+                        }
                     }
                     else -> {}
                 }

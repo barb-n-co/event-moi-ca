@@ -90,6 +90,7 @@
     <string name="tv_report_comment_choice">Signaler</string>
     <string name="tv_edit_comment_choice">Editer</string>
     <string name="tv_like_comment_choice">J\'aime</string>
+    <string name="tv_dislike_comment_choice">Je n\'aime plus</string>
 
 
     <!-- Detail Photo Fragment -->

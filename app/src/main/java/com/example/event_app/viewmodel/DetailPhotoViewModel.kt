@@ -6,18 +6,14 @@ import android.graphics.PixelFormat
 import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.model.Commentaire
-import com.example.event_app.model.Event
-import com.example.event_app.model.LikeItem
-import com.example.event_app.model.Photo
+import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
+import io.reactivex.*
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -32,7 +28,7 @@ class DetailPhotoViewModel(
 ) : BaseViewModel() {
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
-    val commentaires: PublishSubject<List<Commentaire>> = PublishSubject.create()
+    val commentaires: PublishSubject<List<CommentaireItem>> = PublishSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
@@ -57,14 +53,52 @@ class DetailPhotoViewModel(
         }
     }
 
-    private fun fetchComments(photoId: String){
-        eventsRepository.fetchCommentaires(photoId).subscribe(
+    private fun fetchComments(photoId: String) {
+        Flowable.zip(
+            eventsRepository.fetchCommentaires(photoId),
+            eventsRepository.getCommentLikes(photoId),
+            BiFunction { t1: List<Commentaire>, t2: List<LikeComment> ->
+                Pair(t1,t2)
+            }
+        ).map { result ->
+            result.first.map {
+                CommentaireItem(
+                    it.commentId,
+                    it.author,
+                    it.authorId,
+                    it.comment,
+                    it.photoId,
+                    it.date,
+                    result.second.filter {like ->
+                        like.commentId == it.commentId
+                    }
+                )
+            }
+        }.subscribe(
             {
                 commentaires.onNext(it)
             },
             {
                 Timber.e(it)
-            }).addTo(disposeBag)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun addCommentLike(userId: String, commentId: String, photoId: String) {
+        eventsRepository.addNewCommentLike(userId, commentId, photoId).subscribe(
+            {
+                fetchComments(photoId)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun removeCommentLike(likeId: String, photoId: String) {
+        eventsRepository.removeCommentLike(likeId, photoId).addOnSuccessListener {
+            fetchComments(photoId)
+        }
     }
 
     fun addComment(comment: String, photoId: String): Completable {
@@ -72,17 +106,18 @@ class DetailPhotoViewModel(
         return eventsRepository.addCommentToPhoto(comment, photoId, user)
     }
 
-    fun deleteComment(photoId: String, commentId: String){
+    fun deleteComment(photoId: String, commentId: String) {
         eventsRepository.deleteCommentOfPhoto(photoId, commentId).addOnSuccessListener {
             fetchComments(photoId)
         }
     }
 
-    fun editComment(comment: Commentaire){
+    fun editComment(comment: Commentaire) {
         eventsRepository.editCommentOfPhoto(comment)
             .subscribe(
                 {
                     Timber.d("comment edited")
+                    fetchComments(comment.photoId)
                 },
                 {
                     Timber.e(it)

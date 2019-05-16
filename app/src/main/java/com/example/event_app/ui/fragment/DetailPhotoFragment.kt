@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
@@ -75,8 +76,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             }
         ).addTo(viewDisposable)
 
-        UserRepository.currentUser.value?.id?.let {
-            adapter = CommentsAdapter(requireFragmentManager(), it, idOrganizer, commentSelectedListener = {commentId, commentChoice ->
+        UserRepository.currentUser.value?.id?.let {userId ->
+            adapter = CommentsAdapter(requireFragmentManager(), userId, idOrganizer, commentSelectedListener = {commentId, commentChoice, likeId ->
                 when(commentChoice){
                     CommentChoice.DELETE -> {
                         photoId?.let {
@@ -87,7 +88,16 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                     }
                     CommentChoice.LIKE -> {
-
+                        photoId?.let {
+                            viewModel.addCommentLike(userId, commentId, it)
+                        }
+                    }
+                    CommentChoice.DISLIKE -> {
+                        photoId?.let {
+                            likeId?.let {id ->
+                                viewModel.removeCommentLike(likeId, it)
+                            }
+                        }
                     }
                     else -> {}
                 }
@@ -95,6 +105,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 viewModel.editComment(it)
                 view.hideKeyboard()
             })
+            rv_comments.setItemAnimator(DefaultItemAnimator())
             rv_comments.adapter = adapter
             rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
@@ -106,7 +117,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     viewModel.addComment(comment, photoId)
                         .subscribe(
                             {
-                                Toast.makeText(context, getString(R.string.detail_photo_fragment_comment_added), Toast.LENGTH_SHORT).show()
                                 viewModel.getPhotoDetail(eventId, photoId)
                                 et_comments.text.clear()
                                 et_comments.hideKeyboard()
@@ -181,6 +191,10 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             { commentList ->
                 Timber.tag("comments -- ").d(commentList.toString())
                 adapter?.submitList(commentList)
+                if(commentList.size > 0){
+                    rv_comments.visibility = View.VISIBLE
+                } else rv_comments.visibility = View.GONE
+
             },
             { error ->
                 Timber.e(error)

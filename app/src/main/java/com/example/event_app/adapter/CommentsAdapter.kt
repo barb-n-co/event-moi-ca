@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Commentaire
+import com.example.event_app.model.CommentaireItem
 import com.example.event_app.ui.fragment.CommentChoiceDialogFragment
 import com.example.event_app.ui.fragment.HomeFragment
 import kotlinx.android.synthetic.main.comment_item.view.*
@@ -23,9 +24,9 @@ class CommentsAdapter(
     private val fragmentManager: FragmentManager,
     private val idUser: String,
     private val idOrganizer: String?,
-    private val commentSelectedListener: (String, CommentChoice) -> Unit,
+    private val commentSelectedListener: (String, CommentChoice, String?) -> Unit,
     private val editCommentListener: (Commentaire) -> Unit
-) : ListAdapter<Commentaire, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
+) : ListAdapter<CommentaireItem, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.comment_item, parent, false)
@@ -38,7 +39,7 @@ class CommentsAdapter(
 
     inner class CommentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(comment: Commentaire) {
+        fun bind(comment: CommentaireItem) {
             if (comment.authorId.equals(idUser)) {
                 itemView.iv_user_comment_item.visibility = GONE
                 itemView.tv_name_comment_item.visibility = GONE
@@ -55,6 +56,11 @@ class CommentsAdapter(
 
                     editCommentListener(makeEditedCommentFrom(comment))
                 }
+                itemView.chip_like_user_comment_item.text = comment.likes.size.toString()
+                itemView.chip_like_other_comment_item.visibility = GONE
+                if (comment.likes.size > 0) {
+                    itemView.chip_like_user_comment_item.visibility = VISIBLE
+                } else itemView.chip_like_user_comment_item.visibility = GONE
             } else {
                 itemView.iv_user_comment_item.visibility = VISIBLE
                 itemView.tv_name_comment_item.visibility = VISIBLE
@@ -65,26 +71,39 @@ class CommentsAdapter(
                 itemView.tv_message_other_user_comment_item.text = URLDecoder.decode(comment.comment, "utf-8")
                 itemView.tv_date_other_user_comment_item.text = comment.date
                 itemView.tv_name_comment_item.text = comment.author
+                itemView.chip_like_other_comment_item.text = comment.likes.size.toString()
+                itemView.chip_like_user_comment_item.visibility = GONE
+                if (comment.likes.size > 0) {
+                    itemView.chip_like_other_comment_item.visibility = VISIBLE
+                } else itemView.chip_like_other_comment_item.visibility = GONE
             }
 
-            if (idUser.equals(idOrganizer) || idUser.equals(comment.authorId)) {
-                itemView.setOnLongClickListener {
-                    val dialogFragment = CommentChoiceDialogFragment(commentChoiceListener = {
+            itemView.setOnClickListener {
+                val alreadyLike = comment.likes.find { it.userId == idUser }
+                val dialogFragment = CommentChoiceDialogFragment(
+                    organizer = idUser.equals(idOrganizer),
+                    commentAuthor = idUser.equals(comment.authorId),
+                    alreadyLike = alreadyLike != null,
+                    commentChoiceListener = {
                         when (it) {
                             CommentChoice.EDIT -> {
                                 itemView.group_edit_comment_item.visibility = VISIBLE
                                 itemView.tv_message_user_comment_item.visibility = GONE
                             }
-                            else -> commentSelectedListener(comment.commentId, it)
+                            CommentChoice.DISLIKE -> {
+                                commentSelectedListener(comment.commentId, it, comment.likes.find {
+                                    it.userId == idUser
+                                }?.likeId)
+                            }
+                            else -> commentSelectedListener(comment.commentId, it, null)
                         }
                     })
-                    dialogFragment.show(fragmentManager, HomeFragment.TAG)
-                    true
-                }
+                dialogFragment.show(fragmentManager, HomeFragment.TAG)
+                true
             }
         }
 
-        private fun makeEditedCommentFrom(comment: Commentaire): Commentaire {
+        private fun makeEditedCommentFrom(comment: CommentaireItem): Commentaire {
             /** making a new object reference */
             val newComment = Commentaire(
                 comment.commentId,
@@ -92,7 +111,8 @@ class CommentsAdapter(
                 comment.authorId,
                 "",
                 comment.photoId,
-                "")
+                ""
+            )
             /** modify this reference */
             val date = Calendar.getInstance().time
             val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
@@ -103,14 +123,15 @@ class CommentsAdapter(
         }
     }
 
-    class DiffCardCallback : DiffUtil.ItemCallback<Commentaire>() {
-        override fun areItemsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
+    class DiffCardCallback : DiffUtil.ItemCallback<CommentaireItem>() {
+        override fun areItemsTheSame(oldItem: CommentaireItem, newItem: CommentaireItem): Boolean {
             return oldItem.commentId == newItem.commentId
                     && oldItem.comment == newItem.comment
+                    && oldItem.likes == newItem.likes
         }
 
-        override fun areContentsTheSame(oldItem: Commentaire, newItem: Commentaire): Boolean {
-            return oldItem.comment == newItem.comment
+        override fun areContentsTheSame(oldItem: CommentaireItem, newItem: CommentaireItem): Boolean {
+            return oldItem.comment == newItem.comment && oldItem.likes == newItem.likes
         }
     }
 }

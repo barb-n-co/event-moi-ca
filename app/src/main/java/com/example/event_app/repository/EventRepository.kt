@@ -31,6 +31,7 @@ object EventRepository {
     private val eventParticipantsRef = database.reference.child("event-participants")
     private val commentsRef = database.reference.child("commentaires")
     private val likesRef = database.reference.child("likes")
+    private val commentLikesRef = database.reference.child("comment-likes")
     private val userRef = database.reference.child("users")
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
@@ -228,6 +229,27 @@ object EventRepository {
 
     fun deleteLike(userId: String, photoId: String): Task<Void> {
         return likesRef.child(photoId).child(userId).removeValue()
+    }
+
+    fun addNewCommentLike(userId: String, commentId: String, photoId: String): Completable {
+        commentLikesRef.push().key?.let {
+            val item = LikeComment(userId, commentId, it)
+            return RxFirebaseDatabase.setValue(commentLikesRef.child(photoId).child(it), item)
+        } ?: return Completable.complete()
+    }
+
+    fun removeCommentLike(likeId: String, photoId: String): Task<Void> {
+        return commentLikesRef.child(photoId).child(likeId).removeValue()
+    }
+
+    fun getCommentLikes(photoId: String): Flowable<List<LikeComment>> {
+        return RxFirebaseDatabase.observeValueEvent(
+            commentLikesRef.child(photoId), DataSnapshotMapper.listOf(LikeComment::class.java)
+        ).map {
+            it.filter {
+                it.userId.isNotEmpty()
+            }
+        }
     }
 
     fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {

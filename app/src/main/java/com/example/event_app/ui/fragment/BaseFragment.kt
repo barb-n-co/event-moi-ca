@@ -75,4 +75,5 @@ abstract class BaseFragment: Fragment(), KodeinAware{
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
     }
+
 }

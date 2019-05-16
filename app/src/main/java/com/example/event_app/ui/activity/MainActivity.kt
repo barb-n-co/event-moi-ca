@@ -38,8 +38,10 @@ class MainActivity : BaseActivity() {
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
     private lateinit var navControllerProfile: NavController
+    private lateinit var navControllerEventMap: NavController
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
+    private lateinit var eventMapWrapper: FrameLayout
     private var isMapOpenned = false
 
 
@@ -59,6 +61,7 @@ class MainActivity : BaseActivity() {
                 currentController = navControllerHome
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
+                eventMapWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
                 displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
@@ -71,11 +74,25 @@ class MainActivity : BaseActivity() {
 
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
+                eventMapWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
                 displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true
+            }
+            R.id.navigation_event_map -> {
+
+                currentController = navControllerEventMap
+
+                eventMapWrapper.visibility = View.VISIBLE
+                homeWrapper.visibility = View.INVISIBLE
+                profileWrapper.visibility = View.INVISIBLE
+                app_bar.visibility = View.VISIBLE
+                displayFilterMenu(false)
+                supportActionBar?.setTitle(R.string.title_event_map)
+
+                EventMapFragment.displayEventOnMap.onNext(true)
             }
         }
         return@OnNavigationItemSelectedListener returnValue
@@ -115,8 +132,13 @@ class MainActivity : BaseActivity() {
             .findFragmentById(R.id.content_profile) as NavHostFragment)
             .navController
 
+        navControllerEventMap = (supportFragmentManager
+            .findFragmentById(R.id.content_event_map) as NavHostFragment)
+            .navController
+
         homeWrapper = content_home_wrapper
         profileWrapper = content_profile_wrapper
+        eventMapWrapper = content_event_map_wrapper
     }
 
     override fun supportNavigateUpTo(upIntent: Intent) {
@@ -225,6 +247,7 @@ class MainActivity : BaseActivity() {
         if (requestCode == PermissionManager.REQUEST_PERMISSION_CAMERA && grantResults[permissions.indexOf(Manifest.permission.CAMERA)] == PackageManager.PERMISSION_GRANTED) {
             openQrCode()
         }
+
     }
 
     fun displayFilterMenu(value: Boolean) {

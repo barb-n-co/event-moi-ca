@@ -10,7 +10,8 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
-class ProfileViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository): BaseViewModel() {
+class ProfileViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
+    BaseViewModel() {
 
     var user: BehaviorSubject<User> = BehaviorSubject.create()
     var eventCount: BehaviorSubject<NumberEvent> = BehaviorSubject.create()
@@ -34,19 +35,19 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         }
     }
 
-    fun getNumberEventUser(){
+    fun getNumberEventUser() {
         userRepository.currentUser.value?.id?.let { idUser ->
             eventRepository.myEvents.subscribe(
                 {
-                    val numberEvent = NumberEvent(0,0,0)
+                    val numberEvent = NumberEvent(0, 0, 0)
                     it.forEach {
-                        if(it.isEmtyEvent == 1) {
+                        if (it.isEmtyEvent == 1) {
                             // do nothing -> don't count this event
-                        } else if(it.accepted == 0 && it.organizer == 0){
+                        } else if (it.accepted == 0 && it.organizer == 0) {
                             numberEvent.invitation += 1
-                        } else if(it.accepted == 1 && it.organizer == 0){
+                        } else if (it.accepted == 1 && it.organizer == 0) {
                             numberEvent.participate += 1
-                        } else if(it.organizer == 1){
+                        } else if (it.organizer == 1) {
                             numberEvent.organizer += 1
                         }
                     }
@@ -70,7 +71,8 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         ).addTo(disposeBag)
     }
 
-    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return ProfileViewModel(userRepository, eventRepository) as T

@@ -7,7 +7,8 @@ import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Flowable
 
-class LoginViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository): BaseViewModel() {
+class LoginViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
+    BaseViewModel() {
 
     fun logIn(email: String, password: String): Flowable<Boolean> {
         return userRepository.logUser(email, password)
@@ -17,7 +18,7 @@ class LoginViewModel(private val userRepository: UserRepository, private val eve
         return userRepository.registerUser(email, password, name)
     }
 
-    fun resetPassword(email: String){
+    fun resetPassword(email: String) {
         userRepository.resetPassword(email)
     }
 
@@ -28,12 +29,13 @@ class LoginViewModel(private val userRepository: UserRepository, private val eve
     fun setEmptyEvent() {
         userRepository.currentUser.value?.id?.let {
             val event = Event(isEmptyEvent = 1, idEvent = "empty")
-            eventRepository.addEvent(it, "",event)
+            eventRepository.addEvent(it, "", event)
         }
 
     }
 
-    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) : ViewModelProvider.Factory {
+    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return LoginViewModel(userRepository, eventRepository) as T

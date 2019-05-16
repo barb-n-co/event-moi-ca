@@ -1,12 +1,7 @@
 package com.example.event_app.model
 
-import android.content.ContentProvider
 import android.content.Context
-import android.provider.Settings.Global.getString
-import androidx.core.content.ContextCompat
 import com.example.event_app.R
-import com.example.event_app.App
-
 
 
 enum class CommentChoice(val id: Int) {

@@ -45,30 +45,30 @@ class ShareGalleryActivity : BaseActivity() {
         viewModel.getEvents()
 
         val user = viewModel.getCurrentUser()
-            if (user != null) {
-                if (Intent.ACTION_SEND == action && type != null) {
-                    if (type.startsWith("image/")) {
-                        imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
-                        if (imageUri.toString().isNotEmpty()) {
-                            GlideApp.with(this).load(imageUri).into(iv_imageToShare)
-                        } else {
-                            Toast.makeText(
-                                this,
-                                "Une erreur est survenue, merci de ressayer plus tard",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            finish()
-                        }
+        if (user != null) {
+            if (Intent.ACTION_SEND == action && type != null) {
+                if (type.startsWith("image/")) {
+                    imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+                    if (imageUri.toString().isNotEmpty()) {
+                        GlideApp.with(this).load(imageUri).into(iv_imageToShare)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Une erreur est survenue, merci de ressayer plus tard",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
                     }
-                } else {
-                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
-                        .show()
-                    finish()
                 }
-
             } else {
-                LoginActivity.start(this)
+                Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
+                    .show()
+                finish()
             }
+
+        } else {
+            LoginActivity.start(this)
+        }
     }
 
     private fun initAdapter(eventList: List<Event>) {
@@ -84,7 +84,7 @@ class ShareGalleryActivity : BaseActivity() {
 
         val disposeEventCLick = adapter.eventsClickPublisher.subscribe(
             {
-                    viewModel.putImageWithBitmap(galeryBitmap, it, true)
+                viewModel.putImageWithBitmap(galeryBitmap, it, true)
                 Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
                     .show()
                 finish()

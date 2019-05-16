@@ -4,15 +4,20 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Environment
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.R
 import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
-import io.reactivex.*
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
@@ -58,7 +63,7 @@ class DetailPhotoViewModel(
             eventsRepository.fetchCommentaires(photoId),
             eventsRepository.getCommentLikes(photoId),
             BiFunction { t1: List<Commentaire>, t2: List<LikeComment> ->
-                Pair(t1,t2)
+                Pair(t1, t2)
             }
         ).map { result ->
             result.first.map {
@@ -69,7 +74,7 @@ class DetailPhotoViewModel(
                     it.comment,
                     it.photoId,
                     it.date,
-                    result.second.filter {like ->
+                    result.second.filter { like ->
                         like.commentId == it.commentId
                     }
                 )
@@ -125,8 +130,14 @@ class DetailPhotoViewModel(
             ).addTo(disposeBag)
     }
 
-    fun deleteComments(photoId: String): Task<Void> {
-        return eventsRepository.deleteCommentsForDeletedPhoto(photoId)
+    fun deleteComments(photoId: String) {
+        eventsRepository.deleteCommentsForDeletedPhoto(photoId).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.d("comments successfully deleted")
+            } else {
+                Timber.e("a problem occurred in deleting comments for the photo: ${task.exception}")
+            }
+        }
     }
 
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
@@ -159,7 +170,16 @@ class DetailPhotoViewModel(
     }
 
     fun deleteImageOrga(eventId: String, photoId: String): Task<Void> {
-        return eventsRepository.deletePhotoOrga(eventId, photoId)
+        return eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
+            if (it.isSuccessful) {
+                /** delete likes */
+                deleteLikesForPhoto(photoId)
+                /** delete comments */
+                deleteComments(photoId)
+            } else {
+                Timber.e("an error occurred : ${it.exception}")
+            }
+        }
     }
 
     fun deleteRefFromFirestore(photoUrl: String): Completable {
@@ -228,8 +248,14 @@ class DetailPhotoViewModel(
 
     }
 
-    fun deleteLikesForPhoto(photoId: String): Task<Void> {
-        return eventsRepository.removeLikes(photoId)
+    fun deleteLikesForPhoto(photoId: String) {
+        eventsRepository.removeLikes(photoId).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.d("photo likes deleted")
+            } else {
+                Timber.e("a problem occurred in deleting likes for the photo: ${task.exception}")
+            }
+        }
     }
 
     fun sendReportMessageToEventOwner(eventOwner: String) {

@@ -107,9 +107,11 @@ class MainActivity : BaseActivity() {
         viewModel.user.subscribe(
             {
                 Snackbar
-                    .make(main_constraint_layout,
+                    .make(
+                        main_constraint_layout,
                         getString(R.string.toast_welcome_user_main_activity, it.name),
-                        Snackbar.LENGTH_SHORT)
+                        Snackbar.LENGTH_SHORT
+                    )
                     .show()
             },
             {
@@ -161,7 +163,7 @@ class MainActivity : BaseActivity() {
 
         val container = supportFragmentManager.findFragmentById(R.id.content_home)
         val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-        if(frg is HomeFragment){
+        if (frg is HomeFragment) {
             displayFilterMenu(true)
         } else {
             displayFilterMenu(false)

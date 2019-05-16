@@ -10,7 +10,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
-class SplashScreenViewModel(private val userRepository: UserRepository): BaseViewModel() {
+class SplashScreenViewModel(private val userRepository: UserRepository) : BaseViewModel() {
 
     fun getCurrentUser(): FirebaseUser? {
         val user = userRepository.fireBaseAuth.currentUser

@@ -21,7 +21,7 @@ class MapsRepository(private val context: Context) {
     var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     init {
-        Places.initialize(context, "AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w");
+        Places.initialize(context, "AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w")
         placesClient = Places.createClient(context)
     }
 

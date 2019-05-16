@@ -24,7 +24,7 @@ class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(
 
     }
 
-    fun searchAdress (adr : String){
+    fun searchAdress(adr : String){
         mapsRepository.getPositionWithAdress(adr)
     }
 

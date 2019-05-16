@@ -52,85 +52,27 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
         photoId = arguments?.let {
             DetailPhotoFragmentArgs.fromBundle(it).photoURL
-        }!!
+        }
         idOrganizer = arguments?.let {
             DetailPhotoFragmentArgs.fromBundle(it).idOrganizer
         }
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_detail_photo, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initAdapter(view)
+        setActions()
 
         viewModel.userLike.subscribe(
-            {liked ->
-                if(liked) {
-                    iv_like.setColorFilter(Color.parseColor(COLOR_PRIMARY))
-                } else {
-                    iv_like.setColorFilter(Color.WHITE)
-                }
+            { liked ->
+                if (liked) iv_like.setColorFilter(Color.parseColor(COLOR_PRIMARY))
+                else iv_like.setColorFilter(Color.WHITE)
             },
             {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
-
-        UserRepository.currentUser.value?.id?.let {userId ->
-            adapter = CommentsAdapter(requireFragmentManager(), userId, idOrganizer, commentSelectedListener = {commentId, commentChoice, likeId ->
-                when(commentChoice){
-                    CommentChoice.DELETE -> {
-                        photoId?.let {
-                            viewModel.deleteComment(it, commentId)
-                        }
-                    }
-                    CommentChoice.REPORT -> {
-
-                    }
-                    CommentChoice.LIKE -> {
-                        photoId?.let {
-                            viewModel.addCommentLike(userId, commentId, it)
-                        }
-                    }
-                    CommentChoice.DISLIKE -> {
-                        photoId?.let {
-                            likeId?.let {id ->
-                                viewModel.removeCommentLike(likeId, it)
-                            }
-                        }
-                    }
-                    else -> {}
-                }
-            }, editCommentListener = {
-                viewModel.editComment(it)
-                view.hideKeyboard()
-            })
-            rv_comments.setItemAnimator(DefaultItemAnimator())
-            rv_comments.adapter = adapter
-            rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        }
-
-        btn_validate_comment.setOnClickListener {
-            photoId?.let { photoId ->
-                if (et_comments.text.isNotEmpty()) {
-                    val comment = et_comments.text.toString()
-                    viewModel.addComment(comment, photoId)
-                        .subscribe(
-                            {
-                                viewModel.getPhotoDetail(eventId, photoId)
-                                et_comments.text.clear()
-                                et_comments.hideKeyboard()
-                            },
-                            { error ->
-                                Timber.e(error)
-                            }
-                        ).addTo(viewDisposable)
-                } else {
-                    Toast.makeText(context, getString(R.string.detail_photo_fragment_toast_commentaire_error), Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        }
 
         viewModel.photo.subscribe(
             { photo ->
@@ -154,10 +96,10 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 photo.authorName?.let {
                     tv_auteur.text = it
                 }
-                setMenu()
             },
             {
                 Timber.e(it)
+            }, {
                 setMenu()
             })
             .addTo(viewDisposable)
@@ -191,7 +133,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             { commentList ->
                 Timber.tag("comments -- ").d(commentList.toString())
                 adapter?.submitList(commentList)
-                if(commentList.size > 0){
+                if (commentList.size > 0) {
                     rv_comments.visibility = View.VISIBLE
                 } else rv_comments.visibility = View.GONE
 
@@ -202,10 +144,79 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         ).addTo(viewDisposable)
     }
 
+    private fun setActions() {
+        btn_validate_comment.setOnClickListener {
+            photoId?.let { photoId ->
+                if (et_comments.text.isNotEmpty()) {
+                    val comment = et_comments.text.toString()
+                    viewModel.addComment(comment, photoId)
+                        .subscribe(
+                            {
+                                viewModel.getPhotoDetail(eventId, photoId)
+                                et_comments.text.clear()
+                                et_comments.hideKeyboard()
+                            },
+                            { error ->
+                                Timber.e(error)
+                            }
+                        ).addTo(viewDisposable)
+                } else {
+                    Toast.makeText(
+                        context,
+                        getString(R.string.detail_photo_fragment_toast_commentaire_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        }
+    }
+
+    private fun initAdapter(view: View) {
+        UserRepository.currentUser.value?.id?.let { userId ->
+            adapter = CommentsAdapter(
+                requireFragmentManager(),
+                userId,
+                idOrganizer,
+                commentSelectedListener = { commentId, commentChoice, likeId ->
+                    when (commentChoice) {
+                        CommentChoice.DELETE -> {
+                            photoId?.let {
+                                viewModel.deleteComment(it, commentId)
+                            }
+                        }
+                        CommentChoice.REPORT -> {
+
+                        }
+                        CommentChoice.LIKE -> {
+                            photoId?.let {
+                                viewModel.addCommentLike(userId, commentId, it)
+                            }
+                        }
+                        CommentChoice.DISLIKE -> {
+                            photoId?.let {
+                                likeId?.let { id ->
+                                    viewModel.removeCommentLike(likeId, it)
+                                }
+                            }
+                        }
+                        else -> {
+                        }
+                    }
+                },
+                editCommentListener = {
+                    viewModel.editComment(it)
+                    view.hideKeyboard()
+                })
+            rv_comments.itemAnimator = DefaultItemAnimator()
+            rv_comments.adapter = adapter
+            rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
+    }
+
     private fun setMenu() {
         val userId = UserRepository.currentUser.value?.id
         val authorId = photoAuthorId
-
         if (userId != null && (userId == authorId || userId == idOrganizer)) {
             displayDetailPhotoMenuDeletePhoto(true)
         }
@@ -343,38 +354,9 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
     }
 
-    private fun deletePicture(eventId: String, id: String, url: String) {
-        /** delete reference */
-        viewModel.deleteImageOrga(eventId, id).addOnCompleteListener {
-            if (it.isSuccessful) {
-                /** delete file */
-                deleteFireStoreReference(url)
-                /** delete likes */
-                deleteLikes()
-                /** delete comments */
-                deleteComments()
-            } else {
-                Toast.makeText(
-                    context!!,
-                    getString(R.string.unable_to_delete_picture, ""),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                Timber.e("an error occurred : ${it.exception}")
-            }
-        }
-    }
-
-    private fun deleteComments() {
-        photoId?.let { photoId ->
-            viewModel.deleteComments(photoId)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Timber.d("comments successfully deleted")
-                    } else {
-                        Timber.e("a problem occurred in deleting comments for the photo: ${task.exception}")
-                    }
-                }
+    private fun deletePicture(eventId: String, photoId: String, url: String) {
+        viewModel.deleteImageOrga(eventId, photoId).addOnCompleteListener {
+            deleteFireStoreReference(url)
         }
     }
 
@@ -382,8 +364,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         viewModel.deleteRefFromFirestore(url)
             .subscribe(
                 {
-                    Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT).show()
                     activity?.onBackPressed()
                 },
                 { error ->
@@ -395,19 +376,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     ).show()
                 }
             ).addTo(viewDisposable)
-    }
-
-    private fun deleteLikes() {
-        photoId?.let { pictureId ->
-            viewModel.deleteLikesForPhoto(pictureId)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Timber.d("photo likes deleted")
-                    } else {
-                        Timber.e("a problem occurred in deleting likes for the photo: ${task.exception}")
-                    }
-                }
-        }
     }
 
     override fun deleteAction() {

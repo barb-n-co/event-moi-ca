@@ -25,7 +25,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Check if message contains a notification payload.
         if (remoteMessage?.notification != null) {
-            Timber.d( "Message Notification Body: ${remoteMessage.notification?.body}")
+            Timber.d("Message Notification Body: ${remoteMessage.notification?.body}")
             notificationTitle = remoteMessage.notification?.title ?: "empty notification title"
             notificationBody = remoteMessage.notification?.body ?: "empty body"
         }
@@ -34,7 +34,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // message, here is where that should be initiated. See sendNotification method below.
         userRepository.fireBaseAuth.currentUser?.uid?.let {
             if (it == dataMessage) {
-                notificationRepository.sendNotification(notificationTitle!!, notificationBody!!, dataTitle!!, dataMessage, this)
+                notificationRepository.sendNotification(
+                    notificationTitle!!,
+                    notificationBody!!,
+                    dataTitle!!,
+                    dataMessage,
+                    this
+                )
             }
         }
 

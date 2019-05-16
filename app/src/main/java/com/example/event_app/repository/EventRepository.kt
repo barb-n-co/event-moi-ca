@@ -104,11 +104,6 @@ object EventRepository {
         return eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 1, 0))
     }
 
-    fun refuseInvitation(idEvent: String, idUser: String): Task<Void> {
-        myEventsRef.child(idUser).child(idEvent).removeValue()
-        return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
-    }
-
     fun exitEvent(idEvent: String, idUser: String): Task<Void> {
         myEventsRef.child(idUser).child(idEvent).removeValue()
         return eventParticipantsRef.child(idEvent).child(idUser).removeValue()
@@ -215,7 +210,7 @@ object EventRepository {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 
-    fun getLikesFromPhoto(photoId: String) : Flowable<List<LikeItem>> {
+    fun getLikesFromPhoto(photoId: String): Flowable<List<LikeItem>> {
         return RxFirebaseDatabase.observeValueEvent(
             likesRef.child(photoId), DataSnapshotMapper.listOf(LikeItem::class.java)
         )

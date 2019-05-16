@@ -89,14 +89,15 @@ class AddEventFragment : BaseFragment() {
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
 
-            if(dateEnd != null && dateStart != null
+            if (dateEnd != null && dateStart != null
                 && organizer.isNotEmpty() && name.isNotEmpty()
                 && place.isNotEmpty() && place != getString(R.string.chip_adresse))
             {
                 viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString, latitude, longitude)
                 fragmentManager?.popBackStack()
             } else {
-                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -105,7 +106,7 @@ class AddEventFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when(requestCode){
+        when (requestCode) {
             startDateCode -> {
                 startDateTimePicker = data?.extras?.get("args") as Calendar
                 val date = TimePickerFragment()

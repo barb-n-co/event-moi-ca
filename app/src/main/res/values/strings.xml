@@ -4,6 +4,7 @@
     <!-- Title -->
     <string name="title_home">Évènements</string>
     <string name="title_profile">Profil</string>
+    <string name="title_event_map">Carte</string>
     <string name="title_qr_code">QR CODE</string>
     <string name="title_share">Share</string>
 
@@ -131,5 +132,6 @@
     <string name="chip_adresse">Veuillez choisir une adresse</string>
     <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
     <string name="notification_channel_description">notification channel to report photos on events</string>
+    <string name="map_API_key">AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w</string>
 
 </resources>

@@ -14,6 +14,8 @@ class PermissionManager(val context: Context) {
         const val PERMISSION_IMPORT = 2
         const val IMAGE_PICK_CODE = 1000
         const val CAPTURE_PHOTO = 104
+        const val PERMISSION_LOCATION = 4
+
     }
 
     fun requestCameraPermission(activity: Activity): Boolean {

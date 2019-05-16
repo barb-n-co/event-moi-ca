@@ -9,6 +9,7 @@ import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(){
+
     var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     fun searchAdress() {

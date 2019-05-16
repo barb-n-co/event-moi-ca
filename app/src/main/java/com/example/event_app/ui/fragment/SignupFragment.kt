@@ -1,10 +1,12 @@
 package com.example.event_app.ui.fragment
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
@@ -42,19 +44,31 @@ class SignupFragment: BaseFragment() {
             val confirmPassword = et_confirm_password_signup_fragment.text.toString()
             userRegister(email, password, name)
         }
+        tv_cgu.setOnClickListener { openCGU() }
+    }
+
+    private fun openCGU() {
+        val popup = cguPopUp()
+        popup.show(requireFragmentManager(), "CGU")
     }
 
     private fun userRegister(email: String, password: String, name: String) {
-        viewModel.register(email, password, name).subscribe(
-            {
-                if(it) MainActivity.start(activity!!)
-                viewModel.setEmptyEvent()
-            },
-            {
-                Timber.e(it)
-                Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
-            }
-        ).addTo(viewDisposable)
+        if(cb_cgu.isChecked){
+            tv_cgu.setTextColor(ContextCompat.getColor(this.context!!, R.color.white))
+            viewModel.register(email, password, name).subscribe(
+                {
+                    if(it) MainActivity.start(activity!!)
+                    viewModel.setEmptyEvent()
+                },
+                {
+                    Timber.e(it)
+                    Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+                }
+            ).addTo(viewDisposable)
+        }else{
+            tv_cgu.setTextColor(ContextCompat.getColor(this.context!!, R.color.error))
+        }
+
     }
 
 }

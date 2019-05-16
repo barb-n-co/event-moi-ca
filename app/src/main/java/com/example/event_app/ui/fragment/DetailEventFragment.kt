@@ -79,6 +79,15 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         requestPermissions()
 
+        viewModel.loading.subscribe(
+            {
+                pb_detail_event_fragment.visibility = if(it) VISIBLE else GONE
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
         viewModel.event.subscribe(
             {
                 tv_eventName.text = it.nameEvent
@@ -90,6 +99,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 tv_eventDateEnd.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
+
+                root_layout.visibility = VISIBLE
 
                 adapter = CustomAdapter(it.organizer)
                 initAdapter(it.idEvent)

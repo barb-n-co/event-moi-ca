@@ -24,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -38,6 +39,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
+    val loading: PublishSubject<Boolean> = PublishSubject.create()
 
     init {
         DetailEventViewModel.disposeBag = disposeBag
@@ -120,7 +122,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                         t1,
                         t2
                     )
-                }).map { response ->
+                }).doOnSubscribe {
+                loading.onNext(true)
+            }.map { response ->
                 EventItem(
                     response.first.idEvent,
                     response.first.name,
@@ -140,6 +144,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             },
                 {
                     Timber.e(it)
+                },
+                {
+                    loading.onNext(false)
                 }).addTo(disposeBag)
 
         }

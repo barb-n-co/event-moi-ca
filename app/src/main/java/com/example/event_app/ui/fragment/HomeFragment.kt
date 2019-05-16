@@ -42,16 +42,13 @@ class HomeFragment : BaseFragment(), HomeInterface {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setDisplayHomeAsUpEnabled(false)
         setVisibilityNavBar(true)
-
         setFab()
 
         shimmer = shimmer_view_container
@@ -64,6 +61,15 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.adapter = adapter
 
         swiperefresh_fragment_home.isRefreshing = false
+
+        viewModel.loading.subscribe(
+            {
+                pb_home_fragment.visibility = if(it) VISIBLE else GONE
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
 
         adapter.acceptClickPublisher.subscribe(
             {

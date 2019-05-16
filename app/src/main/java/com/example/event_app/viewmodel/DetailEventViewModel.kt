@@ -322,6 +322,14 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         ).addTo(disposeBag)
     }
 
+    fun createMapIntent(address: String): Intent {
+        return Uri.parse(
+            address
+        ).let { location ->
+            Intent(Intent.ACTION_VIEW, location)
+        }
+    }
+
     class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

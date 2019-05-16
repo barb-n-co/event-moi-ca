@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.rxkotlin.addTo
@@ -73,14 +74,19 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address, 12.0f))
                 address?.let {
                     mMap.clear()
-                    val marker = MarkerOptions().position(address)
+                    val marker = MarkerOptions()
+                        .position(address)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+                        .title(addressMap.address)
                     mMap.addMarker(marker)
                 }
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
-                    val intent =
-                        Intent().putExtra(AddEventFragment.TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    val intent = Intent()
+                    intent.putExtra(AddEventFragment.ADDRESS_TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    intent.putExtra(AddEventFragment.LAT_TAG, addressMap.lat ?: 0.0)
+                    intent.putExtra(AddEventFragment.LONG_TAG, addressMap.lng ?: 0.0)
                     targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }

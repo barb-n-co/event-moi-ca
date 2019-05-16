@@ -24,11 +24,15 @@ class AddEventFragment : BaseFragment() {
     var dateEnd: Date? = null
     var startDateTimePicker: Calendar = Calendar.getInstance()
     var endDateTimePicker: Calendar = Calendar.getInstance()
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     private val viewModel: AddEventFragmentViewModel by instance(arg = this)
 
     companion object {
-        const val TAG = "ADDEVENTFRAGMENT"
-        var lieu: String? = ""
+        const val ADDRESS_TAG = "AddressTAG"
+        const val LAT_TAG = "LatitudeTAG"
+        const val LONG_TAG = "longitudeTAG"
+        var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -87,9 +91,9 @@ class AddEventFragment : BaseFragment() {
 
             if (dateEnd != null && dateStart != null
                 && organizer.isNotEmpty() && name.isNotEmpty()
-                && place.isNotEmpty() && place != getString(R.string.chip_adresse)
-            ) {
-                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString)
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
+            {
+                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString, latitude, longitude)
                 fragmentManager?.popBackStack()
             } else {
                 Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
@@ -130,8 +134,14 @@ class AddEventFragment : BaseFragment() {
                 chip_date_end_add_event_fragment.text = getDateToString(endDateTimePicker.time)
             }
             MapsFragment.requestCodeMapFragment -> {
-                data?.getStringExtra(TAG)?.let {
+                data?.getStringExtra(ADDRESS_TAG)?.let {
                     chip_place_add_event_fragment.text = it
+                }
+                data?.getDoubleExtra(LAT_TAG, 0.0)?.let {
+                    latitude = it
+                }
+                data?.getDoubleExtra(LONG_TAG, 0.0)?.let {
+                    longitude = it
                 }
             }
         }

@@ -13,7 +13,7 @@ import com.example.event_app.adapter.ListParticipantsAdapter
 import com.example.event_app.model.User
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main.list_participants_popup.*
+import kotlinx.android.synthetic.main.dialog_fragment_list_participants.*
 import timber.log.Timber
 
 
@@ -25,11 +25,11 @@ class ListParticipantFragment(
 ) : DialogFragment() {
 
     private lateinit var listParticipantsAdapter: ListParticipantsAdapter
-    private var viewDisposable : CompositeDisposable = CompositeDisposable()
+    private var viewDisposable: CompositeDisposable = CompositeDisposable()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.list_participants_popup, container, false)
+        return inflater.inflate(R.layout.dialog_fragment_list_participants, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

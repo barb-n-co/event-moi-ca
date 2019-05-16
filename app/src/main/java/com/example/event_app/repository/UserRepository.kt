@@ -63,7 +63,7 @@ object UserRepository {
 
         return RxFirebaseAuth.createUserWithEmailAndPassword(fireBaseAuth, email, password)
             .map { authResult ->
-                authResult.user?.let {firebaseUser ->
+                authResult.user?.let { firebaseUser ->
                     val user = User(
                         firebaseUser.uid,
                         name,
@@ -78,12 +78,12 @@ object UserRepository {
                     currentUser.onNext(user)
 
                 }
-                authResult.user!= null
+                authResult.user != null
             }
             .toFlowable()
     }
 
-    private fun setNameFirebase(uid: String, name: String, email: String){
+    private fun setNameFirebase(uid: String, name: String, email: String) {
         val user = User(uid, name, email)
         val disposeBag = CompositeDisposable()
         RxFirebaseDatabase.setValue(usersRef.child(uid), user)

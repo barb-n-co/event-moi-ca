@@ -3,7 +3,6 @@ package com.example.event_app.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +38,7 @@ class ListEventAdapter : ListAdapter<Event, ListEventAdapter.EventViewHolder>(Li
                 if (it.id == event.idOrganizer) {
                     itemView.b_refuse_myevent_item.visibility = View.VISIBLE
                     itemView.b_refuse_myevent_item.setOnClickListener {
-                        organizerClickPublisher.onNext(event.idOrganizer!!)
+                        organizerClickPublisher.onNext(event.idOrganizer)
                     }
                 } else {
                     itemView.b_refuse_myevent_item.visibility = View.INVISIBLE

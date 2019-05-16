@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_add_event.*
@@ -25,11 +24,15 @@ class AddEventFragment : BaseFragment() {
     var dateEnd: Date? = null
     var startDateTimePicker: Calendar = Calendar.getInstance()
     var endDateTimePicker: Calendar = Calendar.getInstance()
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     private val viewModel: AddEventFragmentViewModel by instance(arg = this)
 
     companion object {
-        const val TAG = "ADDEVENTFRAGMENT"
-        public var lieu : String ?=""
+        const val ADDRESS_TAG = "AddressTAG"
+        const val LAT_TAG = "LatitudeTAG"
+        const val LONG_TAG = "longitudeTAG"
+        var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -54,6 +57,7 @@ class AddEventFragment : BaseFragment() {
         chip_place_add_event_fragment.setOnClickListener {
             val fragment = MapsFragment.newInstance()
             fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
+
             fragmentManager?.beginTransaction()
                 ?.setCustomAnimations(
                     R.anim.transition_bottom_to_top,
@@ -62,6 +66,7 @@ class AddEventFragment : BaseFragment() {
                     R.anim.transition_top_to_bottom_exit
                 )
                 ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
+            fragmentMapIsOpen(true)
         }
         chip_date_start_add_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
@@ -84,11 +89,15 @@ class AddEventFragment : BaseFragment() {
             val startDateString = getDateToString(dateStart)
             val endDateString = getDateToString(dateEnd)
 
-            if(dateEnd != null && dateStart != null && organizer.isNotEmpty() && name.isNotEmpty()){
-                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString)
+            if (dateEnd != null && dateStart != null
+                && organizer.isNotEmpty() && name.isNotEmpty()
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
+            {
+                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString, latitude, longitude)
                 fragmentManager?.popBackStack()
             } else {
-                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -97,7 +106,7 @@ class AddEventFragment : BaseFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when(requestCode){
+        when (requestCode) {
             startDateCode -> {
                 startDateTimePicker = data?.extras?.get("args") as Calendar
                 val date = TimePickerFragment()
@@ -125,8 +134,14 @@ class AddEventFragment : BaseFragment() {
                 chip_date_end_add_event_fragment.text = getDateToString(endDateTimePicker.time)
             }
             MapsFragment.requestCodeMapFragment -> {
-                data?.getStringExtra(TAG)?.let {
+                data?.getStringExtra(ADDRESS_TAG)?.let {
                     chip_place_add_event_fragment.text = it
+                }
+                data?.getDoubleExtra(LAT_TAG, 0.0)?.let {
+                    latitude = it
+                }
+                data?.getDoubleExtra(LONG_TAG, 0.0)?.let {
+                    longitude = it
                 }
             }
         }

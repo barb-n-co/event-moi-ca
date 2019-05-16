@@ -7,8 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.MapsViewModel
@@ -16,38 +15,43 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
-
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import io.reactivex.rxkotlin.addTo
-import kotlinx.android.synthetic.main
-.activity_main.*
 import timber.log.Timber
 
 
 class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
-    private val viewModel : MapsViewModel by instance(arg = this)
+    private val viewModel: MapsViewModel by instance(arg = this)
     private lateinit var mMap: GoogleMap
 
     companion object {
-        const val TAG = "MAPSFRAGMENT"
         const val requestCodeMapFragment = 201
+
         fun newInstance(): MapsFragment = MapsFragment()
+
+        var fragmentManager: FragmentManager? = null
+        fun popBack() {
+            fragmentManager?.popBackStack()
+        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        MapsFragment.fragmentManager = fragmentManager
 
         initMap()
         viewModel.searchAdress()
@@ -63,15 +67,26 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         viewModel.mapAdress.subscribe(
-            {addressMap ->
+            { addressMap ->
                 btn_maps.visibility = View.VISIBLE
-                val sydney = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
-                  AddEventFragment.lieu=  addressMap.address
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,16.0f))
+                val address = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
+                AddEventFragment.lieu = addressMap.address
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address, 12.0f))
+                address?.let {
+                    mMap.clear()
+                    val marker = MarkerOptions()
+                        .position(address)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+                        .title(addressMap.address)
+                    mMap.addMarker(marker)
+                }
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
-                    val intent = Intent().putExtra(AddEventFragment.TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    val intent = Intent()
+                    intent.putExtra(AddEventFragment.ADDRESS_TAG, addressMap.address ?: getString(R.string.chip_adresse))
+                    intent.putExtra(AddEventFragment.LAT_TAG, addressMap.lat ?: 0.0)
+                    intent.putExtra(AddEventFragment.LONG_TAG, addressMap.lng ?: 0.0)
                     targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }
@@ -83,20 +98,27 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         ).addTo(viewDisposable)
     }
 
-    private fun initMap(){
-        val mapFragment : SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    private fun initMap() {
+        val mapFragment: SupportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setHasOptionsMenu(true)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-   }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setVisibilityToolbar(false)
+    }
 
     override fun onStop() {
         super.onStop()
         setVisibilityToolbar(true)
     }
+
+
 }
 
 

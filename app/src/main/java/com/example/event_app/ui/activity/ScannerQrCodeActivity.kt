@@ -1,17 +1,14 @@
 package com.example.event_app.ui.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.google.zxing.Result
-import me.dm7.barcodescanner.core.BarcodeScannerView
-import me.dm7.barcodescanner.zxing.ZXingScannerView
-import android.app.Activity
 import androidx.fragment.app.FragmentActivity
+import com.google.zxing.Result
+import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 
-class ScannerQrCodeActivity: BaseActivity(), ZXingScannerView.ResultHandler {
+class ScannerQrCodeActivity : BaseActivity(), ZXingScannerView.ResultHandler {
 
     private lateinit var mScannerView: ZXingScannerView
 
@@ -21,7 +18,7 @@ class ScannerQrCodeActivity: BaseActivity(), ZXingScannerView.ResultHandler {
 
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivityForResult(
-                    Intent(fromActivity, ScannerQrCodeActivity::class.java), QrCodeRequestCode
+                Intent(fromActivity, ScannerQrCodeActivity::class.java), QrCodeRequestCode
             )
         }
     }

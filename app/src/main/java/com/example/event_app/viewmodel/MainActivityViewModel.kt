@@ -9,7 +9,8 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
-class MainActivityViewModel(private val userRepository: UserRepository,private val mapsRepository: MapsRepository) : BaseViewModel() {
+class MainActivityViewModel(private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
+    BaseViewModel() {
 
     var user: BehaviorSubject<User> = BehaviorSubject.create()
 
@@ -24,13 +25,13 @@ class MainActivityViewModel(private val userRepository: UserRepository,private v
         ).addTo(disposeBag)
     }
 
-    class Factory(private val userRepository: UserRepository,private val mapsRepository: MapsRepository) : ViewModelProvider.Factory {
+    class Factory(private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return MainActivityViewModel(userRepository,mapsRepository) as T
+            return MainActivityViewModel(userRepository, mapsRepository) as T
         }
     }
-
 
 
 }

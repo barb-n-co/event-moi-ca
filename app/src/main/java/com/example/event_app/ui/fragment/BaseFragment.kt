@@ -11,7 +11,7 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
 
-abstract class BaseFragment: Fragment(), KodeinAware{
+abstract class BaseFragment : Fragment(), KodeinAware {
 
     override val kodein by closestKodein()
     val viewDisposable: CompositeDisposable = CompositeDisposable()
@@ -22,28 +22,28 @@ abstract class BaseFragment: Fragment(), KodeinAware{
         super.onDestroyView()
     }
 
-    protected fun setTitleToolbar(title : String) {
+    protected fun setTitleToolbar(title: String) {
         (activity as MainActivity).supportActionBar?.title = title
     }
 
     protected fun setVisibilityToolbar(value: Boolean) {
-        if(value) {
+        if (value) {
             (activity as MainActivity).app_bar.visibility = View.VISIBLE
         } else {
             (activity as MainActivity).app_bar.visibility = View.GONE
         }
     }
 
-    protected fun setDisplayHomeAsUpEnabled(value : Boolean) {
+    protected fun setDisplayHomeAsUpEnabled(value: Boolean) {
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(value)
     }
 
-    protected fun closeMainActivity(){
+    protected fun closeMainActivity() {
         (activity as MainActivity).finish()
     }
 
     protected fun setVisibilityNavBar(value: Boolean) {
-        if(value){
+        if (value) {
             (activity as AppCompatActivity).g_navBar_mainActivity.visibility = View.VISIBLE
         } else (activity as AppCompatActivity).g_navBar_mainActivity.visibility = View.GONE
     }
@@ -71,4 +71,9 @@ abstract class BaseFragment: Fragment(), KodeinAware{
     protected fun displayQrCodeMenu(value: Boolean) {
         (activity as MainActivity).displayQrCodeMenu(value)
     }
+
+    protected fun fragmentMapIsOpen(value: Boolean) {
+        (activity as MainActivity).isMapOpen(value)
+    }
+
 }

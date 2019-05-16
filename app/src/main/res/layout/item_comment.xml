@@ -53,11 +53,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
             android:layout_marginEnd="2dp"
             android:layout_marginStart="48dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
+            app:cardElevation="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_date_user_comment_item">
@@ -65,7 +64,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 app:layout_constraintTop_toBottomOf="@id/tv_date_other_user_comment_item"
                 app:layout_constraintStart_toStartOf="@id/tv_name_comment_item"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -76,17 +74,62 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="Ceci est un message pour Tristan Reffay"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_margin="12dp"
                     style="@style/SubtitleBlack"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_edit_comment_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="et_message_user_comment_item, iv_edit_comment_item"/>
+
+            <EditText
+                    android:id="@+id/et_message_user_comment_item"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="Ceci est un message pour Tristan Reffay"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    style="@style/SubtitleBlack"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_edit_comment_item"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                    android:id="@+id/iv_edit_comment_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_validate_green"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/chip_like_user_comment_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            app:chipStartPadding="4dp"
+            app:chipIcon="@drawable/like"
+            style="@style/bodyBlack"
+            app:chipStrokeColor="@color/black"
+            app:chipStrokeWidth="1dp"
+            android:clickable="false"
+            app:chipBackgroundColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/card_view_user_comment_item"
+            app:layout_constraintEnd_toEndOf="@id/card_view_user_comment_item"
+            app:layout_constraintBottom_toBottomOf="@id/card_view_user_comment_item"/>
 
     <androidx.cardview.widget.CardView
             android:id="@+id/card_view_other_user_comment_item"
@@ -97,7 +140,7 @@
             android:layout_marginEnd="48dp"
             android:layout_marginStart="2dp"
             app:cardCornerRadius="16dp"
-            app:cardElevation="4dp"
+            app:cardElevation="0dp"
             app:cardBackgroundColor="@color/colorPrimary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -117,8 +160,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="Ceci est un message pour Tristan Reffay"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_margin="12dp"
                     style="@style/SubtitleBlack"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -128,5 +170,21 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/chip_like_other_comment_item"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="5"
+            app:chipStartPadding="4dp"
+            app:chipIcon="@drawable/like"
+            style="@style/bodyBlack"
+            android:clickable="false"
+            app:chipStrokeColor="@color/black"
+            app:chipStrokeWidth="1dp"
+            app:chipBackgroundColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/card_view_other_user_comment_item"
+            app:layout_constraintEnd_toEndOf="@id/card_view_other_user_comment_item"
+            app:layout_constraintBottom_toBottomOf="@id/card_view_other_user_comment_item"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

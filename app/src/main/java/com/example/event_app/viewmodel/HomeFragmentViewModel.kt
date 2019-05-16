@@ -12,12 +12,14 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class HomeFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
     BaseViewModel() {
 
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
+    val loading: PublishSubject<Boolean> = PublishSubject.create()
     var stateUserEvent = UserEventState.NOTHING
 
     fun getMyEvents() {
@@ -29,7 +31,9 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
                     Pair(t1, t2)
                 })
-                .map { response ->
+                .doOnSubscribe {
+                    loading.onNext(true)
+                }.map { response ->
                     response.second.filter {
                         when {
                             stateUserEvent.equals(UserEventState.NOTHING) -> true
@@ -38,7 +42,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                             stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
                             else -> false
                         }
-                    }.map {myEvents ->
+                    }.map { myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }
@@ -65,6 +69,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 },
                     {
                         Timber.e(it)
+                    }, {
+                        loading.onNext(false)
                     }).addTo(disposeBag)
         }
     }
@@ -93,7 +99,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun refuseInvitation(idEvent: String) {
         userRepository.currentUser.value?.id?.let { userId ->
-            eventsRepository.refuseInvitation(idEvent, userId).addOnCompleteListener {
+            eventsRepository.exitEvent(idEvent, userId).addOnCompleteListener {
                 getMyEvents()
             }
         }

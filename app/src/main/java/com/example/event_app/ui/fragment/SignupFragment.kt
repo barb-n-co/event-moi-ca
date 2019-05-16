@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_signup.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-class SignupFragment: BaseFragment() {
+class SignupFragment : BaseFragment() {
 
 
     private val viewModel: LoginViewModel by instance(arg = this)
@@ -26,8 +26,10 @@ class SignupFragment: BaseFragment() {
         fun newInstance(): SignupFragment = SignupFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         return inflater.inflate(R.layout.fragment_signup, container, false)
     }
@@ -53,22 +55,21 @@ class SignupFragment: BaseFragment() {
     }
 
     private fun userRegister(email: String, password: String, name: String) {
-        if(cb_cgu.isChecked){
+        if (cb_cgu.isChecked) {
             tv_cgu.setTextColor(ContextCompat.getColor(this.context!!, R.color.white))
             viewModel.register(email, password, name).subscribe(
                 {
-                    if(it) MainActivity.start(activity!!)
+                    if (it) MainActivity.start(activity!!)
                     viewModel.setEmptyEvent()
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
                 }
             ).addTo(viewDisposable)
-        }else{
+        } else {
             tv_cgu.setTextColor(ContextCompat.getColor(this.context!!, R.color.error))
         }
-
     }
 
 }

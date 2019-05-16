@@ -8,6 +8,7 @@ import timber.log.Timber
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private val notificationRepository = NotificationRepository(this)
+    private val userRepository = UserRepository
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         var notificationTitle: String? = null
@@ -24,14 +25,25 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Check if message contains a notification payload.
         if (remoteMessage?.notification != null) {
-            Timber.d( "Message Notification Body: ${remoteMessage.notification?.body}")
+            Timber.d("Message Notification Body: ${remoteMessage.notification?.body}")
             notificationTitle = remoteMessage.notification?.title ?: "empty notification title"
             notificationBody = remoteMessage.notification?.body ?: "empty body"
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
-        notificationRepository.sendNotification(notificationTitle!!, notificationBody!!, dataTitle!!, dataMessage!!, this)
+        userRepository.fireBaseAuth.currentUser?.uid?.let {
+            if (it == dataMessage) {
+                notificationRepository.sendNotification(
+                    notificationTitle!!,
+                    notificationBody!!,
+                    dataTitle!!,
+                    dataMessage,
+                    this
+                )
+            }
+        }
+
     }
 
 

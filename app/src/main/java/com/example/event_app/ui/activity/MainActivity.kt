@@ -14,10 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
-import com.example.event_app.ui.fragment.DetailEventInterface
-import com.example.event_app.ui.fragment.DetailPhotoInterface
-import com.example.event_app.ui.fragment.HomeFragment
-import com.example.event_app.ui.fragment.HomeInterface
+import com.example.event_app.ui.fragment.*
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -41,8 +38,11 @@ class MainActivity : BaseActivity() {
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
     private lateinit var navControllerProfile: NavController
+    private lateinit var navControllerEventMap: NavController
     private lateinit var homeWrapper: FrameLayout
     private lateinit var profileWrapper: FrameLayout
+    private lateinit var eventMapWrapper: FrameLayout
+    private var isMapOpenned = false
 
 
     companion object {
@@ -61,6 +61,7 @@ class MainActivity : BaseActivity() {
                 currentController = navControllerHome
                 homeWrapper.visibility = View.VISIBLE
                 profileWrapper.visibility = View.INVISIBLE
+                eventMapWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
                 displayFilterMenu(true)
                 supportActionBar?.setTitle(R.string.title_home)
@@ -73,11 +74,25 @@ class MainActivity : BaseActivity() {
 
                 homeWrapper.visibility = View.INVISIBLE
                 profileWrapper.visibility = View.VISIBLE
+                eventMapWrapper.visibility = View.INVISIBLE
                 app_bar.visibility = View.VISIBLE
                 displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_profile)
 
                 returnValue = true
+            }
+            R.id.navigation_event_map -> {
+
+                currentController = navControllerEventMap
+
+                eventMapWrapper.visibility = View.VISIBLE
+                homeWrapper.visibility = View.INVISIBLE
+                profileWrapper.visibility = View.INVISIBLE
+                app_bar.visibility = View.VISIBLE
+                displayFilterMenu(false)
+                supportActionBar?.setTitle(R.string.title_event_map)
+
+                EventMapFragment.displayEventOnMap.onNext(true)
             }
         }
         return@OnNavigationItemSelectedListener returnValue
@@ -92,9 +107,11 @@ class MainActivity : BaseActivity() {
         viewModel.user.subscribe(
             {
                 Snackbar
-                    .make(main_constraint_layout,
+                    .make(
+                        main_constraint_layout,
                         getString(R.string.toast_welcome_user_main_activity, it.name),
-                        Snackbar.LENGTH_SHORT)
+                        Snackbar.LENGTH_SHORT
+                    )
                     .show()
             },
             {
@@ -117,8 +134,13 @@ class MainActivity : BaseActivity() {
             .findFragmentById(R.id.content_profile) as NavHostFragment)
             .navController
 
+        navControllerEventMap = (supportFragmentManager
+            .findFragmentById(R.id.content_event_map) as NavHostFragment)
+            .navController
+
         homeWrapper = content_home_wrapper
         profileWrapper = content_profile_wrapper
+        eventMapWrapper = content_event_map_wrapper
     }
 
     override fun supportNavigateUpTo(upIntent: Intent) {
@@ -141,7 +163,7 @@ class MainActivity : BaseActivity() {
 
         val container = supportFragmentManager.findFragmentById(R.id.content_home)
         val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-        if(frg is HomeFragment){
+        if (frg is HomeFragment) {
             displayFilterMenu(true)
         } else {
             displayFilterMenu(false)
@@ -227,6 +249,7 @@ class MainActivity : BaseActivity() {
         if (requestCode == PermissionManager.REQUEST_PERMISSION_CAMERA && grantResults[permissions.indexOf(Manifest.permission.CAMERA)] == PackageManager.PERMISSION_GRANTED) {
             openQrCode()
         }
+
     }
 
     fun displayFilterMenu(value: Boolean) {
@@ -262,13 +285,23 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        currentController
-            .let { if (it.popBackStack().not()) finish() }
-            .or { finish() }
+        if (!isMapOpenned) {
+            currentController
+                .let { if (it.popBackStack().not()) finish() }
+                .or { finish() }
+        } else {
+            MapsFragment.popBack()
+            isMapOpenned = false
+        }
+
     }
 
     private fun openQrCode() {
         ScannerQrCodeActivity.start(this)
+    }
+
+    fun isMapOpen(value: Boolean) {
+        isMapOpenned = value
     }
 
 

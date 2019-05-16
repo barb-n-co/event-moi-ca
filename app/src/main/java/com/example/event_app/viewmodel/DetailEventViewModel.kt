@@ -24,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -38,6 +39,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
+    val loading: PublishSubject<Boolean> = PublishSubject.create()
 
     init {
         DetailEventViewModel.disposeBag = disposeBag
@@ -45,7 +47,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     companion object {
 
-        lateinit var disposeBag : CompositeDisposable
+        lateinit var disposeBag: CompositeDisposable
         var eventsRepository = EventRepository
         var userRepository = UserRepository
 
@@ -71,7 +73,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         fun putImageWithBitmap(bitmap: Bitmap, eventId: String, fromGallery: Boolean) {
 
-            val data : ByteArray
+            val data: ByteArray
             val baos = ByteArrayOutputStream()
             data = if (fromGallery) {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, HIGH_COMPRESSION_QUALITY, baos)
@@ -120,7 +122,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                         t1,
                         t2
                     )
-                }).map { response ->
+                }).doOnSubscribe {
+                loading.onNext(true)
+            }.map { response ->
                 EventItem(
                     response.first.idEvent,
                     response.first.name,
@@ -140,6 +144,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             },
                 {
                     Timber.e(it)
+                },
+                {
+                    loading.onNext(false)
                 }).addTo(disposeBag)
 
         }
@@ -237,7 +244,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun removeParticipant(idEvent: String, userId: String) {
-        eventsRepository.refuseInvitation(idEvent, userId)
+        eventsRepository.exitEvent(idEvent, userId)
         getParticipant(idEvent)
     }
 
@@ -313,6 +320,14 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 Timber.e(it)
             }
         ).addTo(disposeBag)
+    }
+
+    fun createMapIntent(address: String): Intent {
+        return Uri.parse(
+            address
+        ).let { location ->
+            Intent(Intent.ACTION_VIEW, location)
+        }
     }
 
     class Factory(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :

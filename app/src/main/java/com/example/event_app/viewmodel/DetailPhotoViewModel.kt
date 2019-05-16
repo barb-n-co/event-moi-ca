@@ -4,25 +4,24 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Environment
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.model.Commentaire
-import com.example.event_app.model.Event
-import com.example.event_app.model.LikeItem
-import com.example.event_app.model.Photo
+import com.example.event_app.R
+import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -34,7 +33,7 @@ class DetailPhotoViewModel(
 ) : BaseViewModel() {
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
-    val commentaires: BehaviorSubject<List<Commentaire>> = BehaviorSubject.create()
+    val commentaires: PublishSubject<List<CommentaireItem>> = PublishSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
@@ -42,10 +41,10 @@ class DetailPhotoViewModel(
 
 
     fun getPhotoDetail(eventId: String?, photoId: String?) {
-        eventId?.let { eventId ->
+        eventId?.let { eventIdNotNull ->
             photoId?.let { photoId ->
                 getNumberOfLikes(photoId)
-                eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
+                eventsRepository.getPhotoDetail(eventIdNotNull, photoId).subscribe(
                     { picture ->
                         Timber.d("vm: ${picture.url}")
                         photo.onNext(picture)
@@ -54,20 +53,57 @@ class DetailPhotoViewModel(
                         Timber.e(error)
                     }).addTo(disposeBag)
 
-                fetchCommentaires(photoId)
+                fetchComments(photoId)
             }
         }
     }
 
-    fun fetchCommentaires(photoId: String){
-        eventsRepository.fetchCommentaires(photoId).subscribe(
+    private fun fetchComments(photoId: String) {
+        Flowable.zip(
+            eventsRepository.fetchCommentaires(photoId),
+            eventsRepository.getCommentLikes(photoId),
+            BiFunction { t1: List<Commentaire>, t2: List<LikeComment> ->
+                Pair(t1, t2)
+            }
+        ).map { result ->
+            result.first.map {
+                CommentaireItem(
+                    it.commentId,
+                    it.author,
+                    it.authorId,
+                    it.comment,
+                    it.photoId,
+                    it.date,
+                    result.second.filter { like ->
+                        like.commentId == it.commentId
+                    }
+                )
+            }
+        }.subscribe(
             {
-                Timber.d( "getCommentaires ${it[0]}")
                 commentaires.onNext(it)
             },
             {
                 Timber.e(it)
-            }).addTo(disposeBag)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun addCommentLike(userId: String, commentId: String, photoId: String) {
+        eventsRepository.addNewCommentLike(userId, commentId, photoId).subscribe(
+            {
+                fetchComments(photoId)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun removeCommentLike(likeId: String, photoId: String) {
+        eventsRepository.removeCommentLike(likeId, photoId).addOnSuccessListener {
+            fetchComments(photoId)
+        }
     }
 
     fun addComment(comment: String, photoId: String): Completable {
@@ -75,14 +111,33 @@ class DetailPhotoViewModel(
         return eventsRepository.addCommentToPhoto(comment, photoId, user)
     }
 
-    fun deleteComment(photoId: String, commentId: String){
+    fun deleteComment(photoId: String, commentId: String) {
         eventsRepository.deleteCommentOfPhoto(photoId, commentId).addOnSuccessListener {
-            fetchCommentaires(photoId)
+            fetchComments(photoId)
         }
     }
 
-    fun deleteComments(photoId: String): Task<Void> {
-        return eventsRepository.deleteCommentsForDeletedPhoto(photoId)
+    fun editComment(comment: Commentaire) {
+        eventsRepository.editCommentOfPhoto(comment)
+            .subscribe(
+                {
+                    Timber.d("comment edited")
+                    fetchComments(comment.photoId)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(disposeBag)
+    }
+
+    fun deleteComments(photoId: String) {
+        eventsRepository.deleteCommentsForDeletedPhoto(photoId).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.d("comments successfully deleted")
+            } else {
+                Timber.e("a problem occurred in deleting comments for the photo: ${task.exception}")
+            }
+        }
     }
 
     fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
@@ -115,7 +170,16 @@ class DetailPhotoViewModel(
     }
 
     fun deleteImageOrga(eventId: String, photoId: String): Task<Void> {
-        return eventsRepository.deletePhotoOrga(eventId, photoId)
+        return eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
+            if (it.isSuccessful) {
+                /** delete likes */
+                deleteLikesForPhoto(photoId)
+                /** delete comments */
+                deleteComments(photoId)
+            } else {
+                Timber.e("an error occurred : ${it.exception}")
+            }
+        }
     }
 
     fun deleteRefFromFirestore(photoUrl: String): Completable {
@@ -139,7 +203,7 @@ class DetailPhotoViewModel(
 
     }
 
-    fun getNumberOfLikes(photoId: String) {
+    private fun getNumberOfLikes(photoId: String) {
         eventsRepository.getLikesFromPhoto(photoId).subscribe(
             {
                 peopleWhoLike.onNext(it)
@@ -184,43 +248,19 @@ class DetailPhotoViewModel(
 
     }
 
-    fun deleteLikesForPhoto(photoId: String): Task<Void> {
-        return eventsRepository.removeLikes(photoId)
+    fun deleteLikesForPhoto(photoId: String) {
+        eventsRepository.removeLikes(photoId).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.d("photo likes deleted")
+            } else {
+                Timber.e("a problem occurred in deleting likes for the photo: ${task.exception}")
+            }
+        }
     }
 
     fun sendReportMessageToEventOwner(eventOwner: String) {
         notificationRepository.sendMessageToSpecificChannel(eventOwner)
     }
-
-
-    fun initMessageReceiving() {
-
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Timber.w(task.exception, "getInstanceId failed")
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                val token = task.result?.token
-
-                // Log and toast
-                val msg = "message with token = $token"
-                Timber.d(msg)
-            })
-
-        FirebaseMessaging.getInstance().subscribeToTopic("notif_event_moi_ca")
-            .addOnCompleteListener { task ->
-            var msg = "subscribed !!!"
-            if (!task.isSuccessful) {
-                msg = "failed to subscribed"
-            }
-            Timber.d("message for subscribing: $msg")
-        }
-
-    }
-
 
     class Factory(
         private val eventsRepository: EventRepository,

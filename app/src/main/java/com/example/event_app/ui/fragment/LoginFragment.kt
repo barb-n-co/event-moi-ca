@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
@@ -13,12 +15,9 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
-import android.widget.LinearLayout
-import android.widget.EditText
-import kotlinx.android.synthetic.main.activity_authentification.*
 
 
-class LoginFragment: BaseFragment() {
+class LoginFragment : BaseFragment() {
 
     private val viewModel: LoginViewModel by instance(arg = this)
 
@@ -27,8 +26,10 @@ class LoginFragment: BaseFragment() {
         fun newInstance(): LoginFragment = LoginFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
@@ -39,7 +40,12 @@ class LoginFragment: BaseFragment() {
         b_signin_fragment.setOnClickListener {
             val email = et_email_signin_fragment.text.toString()
             val password = et_password_signin_fragment.text.toString()
-            userLogin(email, password)
+            if (!viewModel.checkIfFieldsAreEmpty(email, password)) {
+                userLogin(email, password)
+            } else {
+                Toast.makeText(context, getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         b_reset_password_signin_fragment.setOnClickListener {
@@ -60,7 +66,11 @@ class LoginFragment: BaseFragment() {
             ) { dialog, which ->
                 val email = input.text.toString()
                 if (email.length == 0) {
-                    Toast.makeText(activity!!, getString(R.string.t_empty_email_reset_password_dialog_fragment), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity!!,
+                        getString(R.string.t_empty_email_reset_password_dialog_fragment),
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     viewModel.resetPassword(email)
                 }
@@ -77,11 +87,11 @@ class LoginFragment: BaseFragment() {
     private fun userLogin(email: String, password: String) {
         viewModel.logIn(email, password).subscribe(
             {
-                if(it) MainActivity.start(activity!!)
+                if (it) MainActivity.start(activity!!)
             },
             {
                 Timber.e(it)
-                Toast.makeText(context,getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
             }
         ).addTo(viewDisposable)
     }

@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.event_app.R
-import com.example.event_app.model.User
 import com.example.event_app.model.UserEventState
-import com.example.event_app.viewmodel.HomeFragmentViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_fragment_filter.*
-import org.kodein.di.generic.instance
 
-class FilterDialogFragment(private val stateSelectedListener: (UserEventState) -> Unit, private val filterState: UserEventState) : BottomSheetDialogFragment() {
+class FilterDialogFragment(
+    private val stateSelectedListener: (UserEventState) -> Unit,
+    private val filterState: UserEventState
+) : BottomSheetDialogFragment() {
 
     var cbInvitation: Boolean = false
     var cbParticipate: Boolean = false
@@ -25,7 +25,7 @@ class FilterDialogFragment(private val stateSelectedListener: (UserEventState) -
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when(filterState){
+        when (filterState) {
             UserEventState.INVITATION -> {
                 cb_filter_invitation_dialog_fragment.isChecked = true
             }
@@ -57,11 +57,11 @@ class FilterDialogFragment(private val stateSelectedListener: (UserEventState) -
         }
     }
 
-    private fun changeStateCheckboxes(userStateEvent: UserEventState){
-        if(!cbInvitation && !cbParticipate && !cbOrganizer){
+    private fun changeStateCheckboxes(userStateEvent: UserEventState) {
+        if (!cbInvitation && !cbParticipate && !cbOrganizer) {
             stateSelectedListener(UserEventState.NOTHING)
         } else {
-            when(userStateEvent){
+            when (userStateEvent) {
                 UserEventState.INVITATION -> {
                     cb_filter_participate_dialog_fragment.isChecked = false
                     cb_filter_organizer_dialog_fragment.isChecked = false

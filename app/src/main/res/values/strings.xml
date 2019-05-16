@@ -1,10 +1,12 @@
 <resources>
-    <string name="app_name">Event-App</string>
+    <string name="app_name">Event Moi Ça</string>
 
     <!-- Title -->
     <string name="title_home">Évènements</string>
     <string name="title_profile">Profil</string>
+    <string name="title_event_map">Carte</string>
     <string name="title_qr_code">QR CODE</string>
+    <string name="title_share">Share</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
@@ -46,7 +48,7 @@
     <!-- Item My Events -->
     <string name="tv_state_invited">Je suis invité</string>
     <string name="tv_state_participate">Je participe</string>
-    <string name="tv_state_organizer">j\'organise</string>
+    <string name="tv_state_organizer">J\'organise</string>
 
     <!-- Add Event Fragment -->
     <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>
@@ -85,6 +87,12 @@
     </plurals>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
     <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
+    <string name="tv_delete_comment_choice">Supprimer</string>
+    <string name="tv_report_comment_choice">Signaler</string>
+    <string name="tv_edit_comment_choice">Editer</string>
+    <string name="tv_like_comment_choice">J\'aime</string>
+    <string name="tv_dislike_comment_choice">Je n\'aime plus</string>
+
 
     <!-- Detail Photo Fragment -->
     <string name="delete_picture_fab_title">Supprimer</string>
@@ -123,8 +131,9 @@
 
     <!-- Other -->
     <string name="chip_adresse">Veuillez choisir une adresse</string>
-    <string name="map_query">http://maps.google.co.in/maps?q=%s</string>
+    <string name="map_query">geo:0,0?q=%s</string>
     <string name="notification_channel_description">notification channel to report photos on events</string>
+    <string name="map_API_key">AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

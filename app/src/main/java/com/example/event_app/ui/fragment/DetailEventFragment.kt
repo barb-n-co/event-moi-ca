@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -141,8 +140,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             val query = tv_eventPlace.text.toString()
             val address = getString(R.string.map_query, query)
             if (query.isNotEmpty()) {
-                val mapsIntent =  Intent(Intent.ACTION_VIEW, Uri.parse(address))
-                startActivity(mapsIntent)
+                startActivity(viewModel.createMapIntent(address))
             }
 
         }

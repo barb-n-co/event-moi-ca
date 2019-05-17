@@ -343,25 +343,27 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
         super.onActivityResult(requestCode, resultCode, returnIntent)
 
-        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
-                    val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
-                    eventId?.let { eventId ->
-                        viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
+                    if (resultCode == Activity.RESULT_OK) {
+                        val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
+                        eventId?.let { eventId ->
+                            viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
+                        }
                     }
                 }
 
                 IMAGE_PICK_CODE -> {
-                    returnIntent?.extras
-                    val galleryUri = returnIntent?.data!!
-                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    eventId?.let { eventId ->
-                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
+                    if (resultCode == Activity.RESULT_OK) {
+                        returnIntent?.extras
+                        val galleryUri = returnIntent?.data!!
+                        val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                        eventId?.let { eventId ->
+                            viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
+                        }
                     }
                 }
             }
-        }
     }
 
     override fun loadQrCode() {

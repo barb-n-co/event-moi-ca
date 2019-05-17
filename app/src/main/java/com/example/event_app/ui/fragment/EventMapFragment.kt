@@ -43,6 +43,15 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
         viewModel.fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(activity as MainActivity)
+
+        viewModel.currentLocation.subscribe(
+            {
+                googleEventMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 10f))
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
     }
 
     override fun onCreateView(
@@ -57,14 +66,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_event_detail_map)
         initMap()
 
-        viewModel.currentLocation.subscribe(
-            {
-                googleEventMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 10f))
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
+
     }
 
     private fun initMap() {

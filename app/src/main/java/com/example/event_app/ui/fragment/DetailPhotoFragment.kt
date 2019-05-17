@@ -94,16 +94,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             }
         ).addTo(viewDisposable)
 
-        viewModel.successListener.subscribe(
-            {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
-        viewModel.errorListener.subscribe(
+        viewModel.messageDispatcher.subscribe(
             {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             },

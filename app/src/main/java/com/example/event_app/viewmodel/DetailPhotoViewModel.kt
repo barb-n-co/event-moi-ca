@@ -32,8 +32,7 @@ class DetailPhotoViewModel(
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val menuListener: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    val successListener: BehaviorSubject<String> = BehaviorSubject.create()
-    val errorListener: BehaviorSubject<String> = BehaviorSubject.create()
+    val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
@@ -145,14 +144,14 @@ class DetailPhotoViewModel(
             .subscribe(
                 { byteArray ->
                     if (saveImage(byteArray, eventId, photoId).isNotEmpty()) {
-                        successListener.onNext(message)
+                        messageDispatcher.onNext(message)
                     } else {
-                        errorListener.onNext(errorMessage)
+                        messageDispatcher.onNext(errorMessage)
                     }
                 },
                 { error ->
                     Timber.e(error)
-                    errorListener.onNext(errorMessage)
+                    messageDispatcher.onNext(errorMessage)
                 }
             ).addTo(disposeBag)
     }
@@ -224,12 +223,12 @@ class DetailPhotoViewModel(
         eventsRepository.deletePhotoFromFireStore(photoUrl)
             .subscribe(
                 {
-                    successListener.onNext(message)
+                    messageDispatcher.onNext(message)
                     onBackPressedTrigger.onNext(true)
                 },
                 { error ->
                     Timber.e(error)
-                    errorListener.onNext(errorMessage + error)
+                    messageDispatcher.onNext(errorMessage + error)
                 }
             ).addTo(disposeBag)
     }
@@ -252,13 +251,13 @@ class DetailPhotoViewModel(
                         .subscribe(
                             {
                                 Timber.d("photo unreported ")
-                                successListener.onNext(message)
+                                messageDispatcher.onNext(message)
                                 if (reportValue == 1) {
                                     sendReportMessageToEventOwner(it.idOrganizer)
                                 }
                             },
                             {
-                                errorListener.onNext(errorMessage)
+                                messageDispatcher.onNext(errorMessage)
                                 Timber.e(it)
                             }
                         ).addTo(disposeBag)
@@ -274,7 +273,7 @@ class DetailPhotoViewModel(
                                     menuListener.onNext(true)
                                 },
                                 {
-                                    errorListener.onNext(errorMessage)
+                                    messageDispatcher.onNext(errorMessage)
                                     Timber.e("error for update event reported photo = $it")
                                 }
                             )
@@ -283,7 +282,7 @@ class DetailPhotoViewModel(
                 },
                 {
                     Timber.e(it)
-                    errorListener.onNext(errorMessage)
+                    messageDispatcher.onNext(errorMessage)
                 }
             ).addTo(disposeBag)
     }

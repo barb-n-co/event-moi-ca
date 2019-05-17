@@ -100,7 +100,7 @@
     <string name="picture_downloaded_toast">Image téléchargée.</string>
     <string name="error_on_download_toast">Une erreur est survenue lors du téléchargement.</string>
     <string name="picture_deleted">Image supprimée.</string>
-    <string name="unable_to_delete_picture">Impossible de supprimer l\'image %s.</string>
+    <string name="unable_to_delete_picture">Impossible de supprimer l\'image : </string>
     <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur.</string>
     <string name="add_comment_to_photo">Ajouter un commentaire…</string>
     <string name="detail_photo_fragment_fab_signaler">Signaler</string>

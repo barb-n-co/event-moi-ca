@@ -52,7 +52,7 @@
                 android:name="eventId"
                 app:argType="string"/>
         <argument
-                android:name="photoURL"
+                android:name="photoId"
                 app:argType="string"/>
         <argument
                 android:name="idOrganizer"

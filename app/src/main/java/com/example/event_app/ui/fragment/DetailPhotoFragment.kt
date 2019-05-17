@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
 import com.example.event_app.model.CommentChoice
-import com.example.event_app.model.Event
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
@@ -33,7 +32,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private var photoId: String? = null
     private var idOrganizer: String? = null
     private var photoAuthorId: String? = null
-    private var photoURL: String? = null
+    private var photoURL: String = ""
     private var adapter: CommentsAdapter? = null
     private val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
@@ -51,7 +50,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             DetailPhotoFragmentArgs.fromBundle(it).eventId
         }
         photoId = arguments?.let {
-            DetailPhotoFragmentArgs.fromBundle(it).photoURL
+            DetailPhotoFragmentArgs.fromBundle(it).photoId
         }
         idOrganizer = arguments?.let {
             DetailPhotoFragmentArgs.fromBundle(it).idOrganizer
@@ -63,6 +62,55 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         super.onViewCreated(view, savedInstanceState)
         initAdapter(view)
         setActions()
+
+        viewModel.onBackPressedTrigger.subscribe(
+            {
+                if (it) {
+                    activity?.onBackPressed()
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        viewModel.menuListener.subscribe(
+            {
+                if (it) {
+                    setMenu()
+                }
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        viewModel.numberOfLikes.subscribe(
+            {
+                tv_like.text = it
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        viewModel.successListener.subscribe(
+            {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        viewModel.errorListener.subscribe(
+            {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
 
         viewModel.userLike.subscribe(
             { liked ->
@@ -77,25 +125,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         viewModel.photo.subscribe(
             { photo ->
                 this.photo.onNext(photo)
-                photo.url?.let { url ->
-                    GlideApp
-                        .with(context!!)
-                        .load(viewModel.getStorageRef(url))
-                        .centerInside()
-                        .into(iv_photo)
-                }
-                photo.auteurId?.let {
-                    photoAuthorId = it
-                }
-                photo.url?.let {
-                    photoURL = it
-                }
-                photo.like?.let {
-                    tv_like.text = it.toString()
-                }
-                photo.authorName?.let {
-                    tv_auteur.text = it
-                }
+                photoURL = photo.url
+                photoAuthorId = photo.auteurId
+
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(photoURL))
+                    .centerInside()
+                    .into(iv_photo)
+
+                tv_like.text = photo.like.toString()
+
+                tv_auteur.text = photo.authorName
+                setMenu()
             },
             {
                 Timber.e(it)
@@ -106,15 +148,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.peopleWhoLike.subscribe(
             { list ->
-                var number = 0
-                list.forEach { item ->
-                    number++
-                    if (item.userId == UserRepository.currentUser.value?.id) {
-                        viewModel.isPhotoAlreadyLiked = true
-                        viewModel.userLike.onNext(true)
-                    }
-                }
-                tv_like.text = number.toString()
+                viewModel.getNumberOfLike(list)
             },
             {
                 Timber.e(it)
@@ -217,7 +251,10 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private fun setMenu() {
         val userId = UserRepository.currentUser.value?.id
         val authorId = photoAuthorId
-        if (userId != null && (userId == authorId || userId == idOrganizer)) {
+        if (userId != null && (userId == idOrganizer)) {
+            displayDetailPhotoMenuDeletePhoto(true)
+        }
+        if (userId != null && (userId == authorId)) {
             displayDetailPhotoMenuDeletePhoto(true)
         }
         photo.value?.let {
@@ -231,11 +268,12 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         eventId?.let { eventId ->
             photo.value?.let { photo ->
                 if (photo.isReported == 1) {
-                    reportOrValidateImage(
+                    viewModel.reportOrValidateImage(
                         eventId,
                         photo,
                         -1,
-                        getString(R.string.picture_authorized_by_admin)
+                        getString(R.string.picture_authorized_by_admin),
+                        getString(R.string.problem_occured_during_download)
                     )
                     displayDetailPhotoMenuActionValidatePhoto(false)
                 }
@@ -247,7 +285,9 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         eventId?.let { eventId ->
             photo.value?.let { photo ->
                 if (photo.isReported == 0) {
-                    reportOrValidateImage(eventId, photo, 1, getString(R.string.picture_reported_to_owner))
+                    viewModel.reportOrValidateImage(eventId, photo, 1,
+                        getString(R.string.picture_reported_to_owner),
+                        getString(R.string.problem_occured_during_download))
                 } else {
                     Toast.makeText(context, getString(R.string.picture_already_reported), Toast.LENGTH_SHORT).show()
                 }
@@ -256,126 +296,21 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     }
 
     private fun downloadImage() {
-        photoURL?.let {
-            viewModel.downloadImageOnPhone(it)
-                .subscribe(
-                    { byteArray ->
-                        if (viewModel.saveImage(byteArray, eventId!!, photoId!!).isNotEmpty()) {
-                            Toast.makeText(
-                                context,
-                                getString(R.string.picture_downloaded_toast),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                getString(R.string.error_on_download_toast),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    },
-                    { error ->
-                        Timber.e(error)
-                        Toast.makeText(
-                            context,
-                            getString(R.string.error_on_download_toast),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                ).addTo(viewDisposable)
-        }
+        viewModel.downloadImageOnPhone(photoURL, eventId!!, photoId!!,
+            getString(R.string.picture_downloaded_toast),
+            getString(R.string.error_on_download_toast))
     }
 
     private fun deleteImage() {
         eventId?.let { eventId ->
             viewModel.photo.value?.let { photo ->
-                photo.id?.let { id ->
-                    photo.url?.let { url ->
-                        deletePicture(eventId, id, url)
-                    }
+                photoId?.let { id ->
+                    viewModel.deleteImageOrga(eventId, id, photoURL, photo.isReported,
+                        getString(R.string.picture_deleted),
+                        getString(R.string.unable_to_delete_picture))
                 }
             }
         }
-    }
-
-    private fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String) {
-        val reportValue = if (delta > 0) 1 else 0
-
-        handleReportPhoto(eventId, photo, reportValue, message)
-
-        viewModel.getEvents()
-            .subscribe(
-                {
-                    handleEventUpdate(it, eventId, delta)
-                },
-                {
-                    Timber.e("error getting event for update reported photo = $it")
-                }
-            ).addTo(viewDisposable)
-    }
-
-    private fun handleReportPhoto(eventId: String, photo: Photo, reportValue: Int, message: String) {
-        viewModel.reportPhoto(eventId, photo, reportValue)
-            .subscribe(
-                {
-                    Timber.d("photo unreported ")
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                    if (reportValue == 1) {
-                        viewModel.sendReportMessageToEventOwner(idOrganizer ?: "")
-                    }
-                },
-                {
-                    Timber.e(it)
-                    Toast.makeText(
-                        context,
-                        getString(R.string.problem_occured_during_download),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            ).addTo(viewDisposable)
-    }
-
-    private fun handleEventUpdate(list: List<Event>, eventId: String, delta: Int) {
-        list.forEach {
-            if (it.idEvent == eventId) {
-                val updateEvent = it
-                updateEvent.reportedPhotoCount = it.reportedPhotoCount + delta
-                viewModel.updateEventReportedPhotoCount(eventId, updateEvent)
-                    .subscribe(
-                        {
-                            Timber.e("event updated")
-                            setMenu()
-                        },
-                        {
-                            Timber.e("error for update event reported photo = $it")
-                        }
-                    )
-            }
-        }
-    }
-
-    private fun deletePicture(eventId: String, photoId: String, url: String) {
-        viewModel.deleteImageOrga(eventId, photoId).addOnCompleteListener {
-            deleteFireStoreReference(url)
-        }
-    }
-
-    private fun deleteFireStoreReference(url: String) {
-        viewModel.deleteRefFromFirestore(url)
-            .subscribe(
-                {
-                    Toast.makeText(context!!, getString(R.string.picture_deleted), Toast.LENGTH_SHORT).show()
-                    activity?.onBackPressed()
-                },
-                { error ->
-                    Timber.e(error)
-                    Toast.makeText(
-                        context!!,
-                        String.format(getString(R.string.unable_to_delete_picture, error)),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            ).addTo(viewDisposable)
     }
 
     override fun deleteAction() {

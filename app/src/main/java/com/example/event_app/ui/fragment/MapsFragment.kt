@@ -2,22 +2,19 @@ package com.example.event_app.ui.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
+import com.example.event_app.utils.getLatLng
 import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.MapsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
@@ -55,7 +52,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         initMap()
         viewModel.searchAdress()
 
-
         iv_back_menu_maps.setOnClickListener {
             fragmentManager?.popBackStack()
         }
@@ -68,24 +64,16 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         viewModel.mapAdress.subscribe(
             { addressMap ->
                 btn_maps.visibility = View.VISIBLE
-                val address = addressMap.lat?.let { it1 -> addressMap.lng?.let { it2 -> LatLng(it1, it2) } }
-                AddEventFragment.lieu = addressMap.address
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(address, 12.0f))
-                address?.let {
+                val latLng = addressMap.getLatLng()
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f))
+                latLng?.let {
                     mMap.clear()
-                    val marker = MarkerOptions()
-                        .position(address)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
-                        .title(addressMap.address)
-                    mMap.addMarker(marker)
+                    mMap.addMarker(viewModel.createMarker(latLng, addressMap))
                 }
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
-                    val intent = Intent()
-                    intent.putExtra(AddEventFragment.ADDRESS_TAG, addressMap.address ?: getString(R.string.chip_adresse))
-                    intent.putExtra(AddEventFragment.LAT_TAG, addressMap.lat ?: 0.0)
-                    intent.putExtra(AddEventFragment.LONG_TAG, addressMap.lng ?: 0.0)
+                    val intent = viewModel.createIntentWithExtra(addressMap, getString(R.string.chip_adresse))
                     targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }

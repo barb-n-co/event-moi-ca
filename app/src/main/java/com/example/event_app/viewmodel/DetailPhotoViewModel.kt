@@ -4,20 +4,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Environment
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.R
 import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
-import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
@@ -36,6 +31,10 @@ class DetailPhotoViewModel(
     val commentaires: PublishSubject<List<CommentaireItem>> = PublishSubject.create()
     val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val menuListener: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
+    val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
@@ -130,7 +129,7 @@ class DetailPhotoViewModel(
             ).addTo(disposeBag)
     }
 
-    fun deleteComments(photoId: String) {
+    private fun deleteComments(photoId: String) {
         eventsRepository.deleteCommentsForDeletedPhoto(photoId).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Timber.d("comments successfully deleted")
@@ -140,11 +139,24 @@ class DetailPhotoViewModel(
         }
     }
 
-    fun downloadImageOnPhone(url: String): Maybe<ByteArray> {
-        return eventsRepository.downloadImageFile(url)
+    fun downloadImageOnPhone(url: String, eventId: String, photoId: String, message: String, errorMessage: String) {
+        eventsRepository.downloadImageFile(url)
+            .subscribe(
+                { byteArray ->
+                    if (saveImage(byteArray, eventId, photoId).isNotEmpty()) {
+                        messageDispatcher.onNext(message)
+                    } else {
+                        messageDispatcher.onNext(errorMessage)
+                    }
+                },
+                { error ->
+                    Timber.e(error)
+                    messageDispatcher.onNext(errorMessage)
+                }
+            ).addTo(disposeBag)
     }
 
-    fun saveImage(byteArray: ByteArray, eventName: String, photoId: String): String {
+    private fun saveImage(byteArray: ByteArray, eventName: String, photoId: String): String {
 
         val options = BitmapFactory.Options()
         options.inTargetDensity = PixelFormat.RGBA_8888
@@ -169,24 +181,59 @@ class DetailPhotoViewModel(
         return imagePath
     }
 
-    fun deleteImageOrga(eventId: String, photoId: String): Task<Void> {
-        return eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
+    fun deleteImageOrga(eventId: String, photoId: String, url: String, isReported: Int,  message: String, errorMessage: String) {
+        eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
             if (it.isSuccessful) {
+                /** delete from FireStore */
+                deleteRefFromFirestore(url, message, errorMessage)
                 /** delete likes */
                 deleteLikesForPhoto(photoId)
                 /** delete comments */
                 deleteComments(photoId)
+                /** update reported count if needed */
+                if (isReported == 1) {
+                    eventsRepository.getEventDetail(eventId)
+                        .subscribe(
+                            {
+                                val event = it
+                                event.reportedPhotoCount--
+                                updateEventReportedPhotoCount(event.idEvent, event)
+                                    .subscribe(
+                                        {
+                                            Timber.d("event Updated")
+                                        },
+                                        {
+                                            Timber.e(it)
+                                        }
+                                    ).addTo(disposeBag)
+                            },
+                            {
+                                Timber.e(it)
+                            }
+                        ).addTo(disposeBag)
+                }
+
             } else {
                 Timber.e("an error occurred : ${it.exception}")
             }
         }
     }
 
-    fun deleteRefFromFirestore(photoUrl: String): Completable {
-        return eventsRepository.deletePhotoFromFireStore(photoUrl)
+    private fun deleteRefFromFirestore(photoUrl: String, message: String, errorMessage: String) {
+        eventsRepository.deletePhotoFromFireStore(photoUrl)
+            .subscribe(
+                {
+                    messageDispatcher.onNext(message)
+                    onBackPressedTrigger.onNext(true)
+                },
+                { error ->
+                    Timber.e(error)
+                    messageDispatcher.onNext(errorMessage + error)
+                }
+            ).addTo(disposeBag)
     }
 
-    fun reportPhoto(eventId: String, photo: Photo, reportValue: Int): Completable {
+    private fun reportPhoto(eventId: String, photo: Photo, reportValue: Int): Completable {
         return eventsRepository.pushPictureReport(eventId, photo, reportValue)
     }
 
@@ -194,11 +241,53 @@ class DetailPhotoViewModel(
         return eventsRepository.getStorageReferenceForUrl(url)
     }
 
-    fun getEvents(): Observable<List<Event>> {
-        return eventsRepository.fetchEvents()
+    fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String, errorMessage: String) {
+        val reportValue = if (delta > 0) 1 else 0
+
+        eventsRepository.getEventDetail(eventId)
+            .subscribe(
+                {
+                    reportPhoto(eventId, photo, reportValue)
+                        .subscribe(
+                            {
+                                Timber.d("photo unreported ")
+                                messageDispatcher.onNext(message)
+                                if (reportValue == 1) {
+                                    sendReportMessageToEventOwner(it.idOrganizer)
+                                }
+                            },
+                            {
+                                messageDispatcher.onNext(errorMessage)
+                                Timber.e(it)
+                            }
+                        ).addTo(disposeBag)
+
+
+                    if (it.idEvent == eventId) {
+                        val updateEvent = it
+                        updateEvent.reportedPhotoCount = it.reportedPhotoCount + delta
+                        updateEventReportedPhotoCount(eventId, updateEvent)
+                            .subscribe(
+                                {
+                                    Timber.e("event updated")
+                                    menuListener.onNext(true)
+                                },
+                                {
+                                    messageDispatcher.onNext(errorMessage)
+                                    Timber.e("error for update event reported photo = $it")
+                                }
+                            )
+                    }
+
+                },
+                {
+                    Timber.e(it)
+                    messageDispatcher.onNext(errorMessage)
+                }
+            ).addTo(disposeBag)
     }
 
-    fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
+    private fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
         return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
 
     }
@@ -248,7 +337,7 @@ class DetailPhotoViewModel(
 
     }
 
-    fun deleteLikesForPhoto(photoId: String) {
+    private fun deleteLikesForPhoto(photoId: String) {
         eventsRepository.removeLikes(photoId).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Timber.d("photo likes deleted")
@@ -258,8 +347,20 @@ class DetailPhotoViewModel(
         }
     }
 
-    fun sendReportMessageToEventOwner(eventOwner: String) {
+    private fun sendReportMessageToEventOwner(eventOwner: String) {
         notificationRepository.sendMessageToSpecificChannel(eventOwner)
+    }
+
+    fun getNumberOfLike(list: List<LikeItem>?) {
+        var number = 0
+        list?.forEach { item ->
+            number++
+            if (item.userId == UserRepository.currentUser.value?.id) {
+                isPhotoAlreadyLiked = true
+                userLike.onNext(true)
+            }
+        }
+        numberOfLikes.onNext(number.toString())
     }
 
     class Factory(

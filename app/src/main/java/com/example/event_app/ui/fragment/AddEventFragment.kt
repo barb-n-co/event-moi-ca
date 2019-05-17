@@ -93,8 +93,23 @@ class AddEventFragment : BaseFragment() {
                 && organizer.isNotEmpty() && name.isNotEmpty()
                 && place.isNotEmpty() && place != getString(R.string.chip_adresse))
             {
-                viewModel.addEventFragment(id, organizer, name, place, description, startDateString, endDateString, latitude, longitude)
-                fragmentManager?.popBackStack()
+                if(dateEnd!!.time <= dateStart!!.time){
+                    Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    viewModel.addEventFragment(
+                        id,
+                        organizer,
+                        name,
+                        place,
+                        description,
+                        startDateString,
+                        endDateString,
+                        latitude,
+                        longitude
+                    )
+                    fragmentManager?.popBackStack()
+                }
             } else {
                 Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
                     .show()

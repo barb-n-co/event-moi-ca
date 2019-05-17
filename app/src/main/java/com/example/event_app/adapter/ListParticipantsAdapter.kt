@@ -14,7 +14,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_participant.view.*
 
 class ListParticipantsAdapter(
-    private val context: Context,
     private val idOrga: String,
     private val isNotAnOrga: Boolean
 ) :

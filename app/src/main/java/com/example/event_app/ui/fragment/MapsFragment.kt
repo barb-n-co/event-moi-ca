@@ -52,10 +52,9 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         MapsFragment.fragmentManager = fragmentManager
-
         initMap()
         viewModel.searchAdress()
-        setVisibilityToolbar(false)
+
 
         iv_back_menu_maps.setOnClickListener {
             fragmentManager?.popBackStack()
@@ -117,8 +116,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
         super.onStop()
         setVisibilityToolbar(true)
     }
-
-
 }
 
 

@@ -1,13 +1,11 @@
 package com.example.event_app.ui.fragment
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.LoginViewModel
@@ -50,7 +48,7 @@ class SignupFragment : BaseFragment() {
     }
 
     private fun openCGU() {
-        val popup = cguPopUp()
+        val popup = CguDialogFragment()
         popup.show(requireFragmentManager(), "CGU")
     }
 

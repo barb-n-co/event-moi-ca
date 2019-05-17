@@ -259,7 +259,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         eventId?.let {
             viewModel.getParticipant(it)
         }
-        val popup = ListParticipantFragment(
+        val popup = ListParticipantDialogFragment(
             deleteSelectedListener = {
                 removeUser(it)
             },

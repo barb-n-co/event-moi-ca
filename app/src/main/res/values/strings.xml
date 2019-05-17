@@ -58,6 +58,7 @@
     <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
     <string name="b_validate_add_event_fragment">Créer l\'évènement</string>
     <string name="error_empty_field_add_event_fragment">Vous n\'avez pas complété tous les champs</string>
+    <string name="error_date_add_event_fragment">La date de fin doit être supérieure à la date de début</string>
     <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
     <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
 
@@ -125,6 +126,9 @@
     <!-- Dialog Fragment -->
     <string name="b_cancel_dialog">Annuler</string>
     <string name="b_validate_dialog">Valider</string>
+
+    <!-- Event Map Fragment -->
+    <string name="tv_click_window_info_map">Cliquez pour avoir les détails</string>
 
     <!-- Share Activity -->
     <string name="selectEventToShare">Choisissez l\'évenement de publication :</string>

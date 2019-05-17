@@ -21,22 +21,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+    <com.google.android.material.chip.Chip
+            android:id="@+id/chip_user_state_info_window_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accepted"
+            android:clickable="false"
+            android:visibility="gone"
+            app:chipBackgroundColor="@color/colorPrimary"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_info_window_map"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
     <TextView
             android:id="@+id/tv_date_info_window_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             tools:text="Title"
             style="@style/bodyBlack"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title_info_window_map"/>
+            app:layout_constraintTop_toBottomOf="@id/chip_user_state_info_window_map"/>
 
     <TextView
             android:id="@+id/tv_click_info_window_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="@string/tv_click_window_info_map"
             style="@style/bodyBlack"
             android:textColor="@color/colorPrimary"

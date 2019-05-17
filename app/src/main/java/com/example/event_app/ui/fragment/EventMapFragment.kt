@@ -5,14 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
+import com.example.event_app.injection.viewModelModule
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
 import com.example.event_app.model.EventItem
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.viewmodel.EventMapViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -52,6 +53,15 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         super.onViewCreated(view, savedInstanceState)
 
         initMap()
+
+        viewModel.currentLocation.subscribe(
+            {
+                googleEventMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 10f))
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
     }
 
     private fun initMap() {
@@ -62,22 +72,28 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
 
     private fun displayEventsOnMap() {
-        if (googleEventMap.isBuildingsEnabled) {
-
+        if (::googleEventMap.isInitialized) {
             viewModel.myEventList.subscribe(
                 {
                     googleEventMap.clear()
-                    it.forEach { event ->
+                    if (it.isNotEmpty()) {
+                        it.forEach { event ->
 
-                        val position = LatLng(event.latitude, event.longitude)
-                        val marker = googleEventMap.addMarker(
-                            MarkerOptions().position(position)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
-                            //.title(event.nameEvent)
-                        )
-                        marker.tag = event
-                        marker.showInfoWindow()
+                            val position = LatLng(event.latitude, event.longitude)
+                            val marker = googleEventMap.addMarker(
+                                MarkerOptions().position(position)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+                            )
+                            marker.tag = event
+                            marker.showInfoWindow()
+                            val region = viewModel.setRegion(it)
+                            /** center region on all events */
+                            googleEventMap.moveCamera(CameraUpdateFactory.newLatLngBounds(region, 0))
+                        }
+                    } else {
+                        viewModel.getCurrentLocation()
                     }
+
                 },
                 {
                     Timber.e(it)
@@ -87,6 +103,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
             viewModel.getMyEvents()
         }
     }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         googleEventMap = googleMap
@@ -112,7 +129,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_LOCATION && grantResults.size == 2) {
-            viewModel.getCurrentLocation(googleEventMap)
+            viewModel.getCurrentLocation()
         }
 
     }

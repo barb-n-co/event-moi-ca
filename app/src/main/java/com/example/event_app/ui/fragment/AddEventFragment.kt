@@ -32,7 +32,6 @@ class AddEventFragment : BaseFragment() {
         const val ADDRESS_TAG = "AddressTAG"
         const val LAT_TAG = "LatitudeTAG"
         const val LONG_TAG = "longitudeTAG"
-        var lieu : String ?=""
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3

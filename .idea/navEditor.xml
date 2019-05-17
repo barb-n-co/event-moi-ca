@@ -53,6 +53,18 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="EditDetailEventFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="758" />
+                            <option name="y" value="706" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="MapsFragment">
                     <value>
                       <LayoutPositions>

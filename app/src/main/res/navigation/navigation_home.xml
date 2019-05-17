@@ -41,6 +41,9 @@
         <action
                 android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
                 app:destination="@id/detailPhotoFragment"/>
+        <action
+                android:id="@+id/action_detail_event_fragment_to_EditDetailEventFragment"
+                app:destination="@id/EditDetailEventFragment"/>
     </fragment>
 
     <fragment
@@ -65,5 +68,14 @@
             android:label="MapsOrganizerFragment"
             tools:layout="@layout/fragment_maps"/>
 
+    <fragment
+            android:id="@+id/EditDetailEventFragment"
+            android:name="com.example.event_app.ui.fragment.EditDetailEventFragment"
+            android:label="EditDetailEventFragment"
+            tools:layout="@layout/fragment_edit_detail_event">
+        <argument
+                android:name="eventId"
+                app:argType="string"/>
+    </fragment>
 
 </navigation>

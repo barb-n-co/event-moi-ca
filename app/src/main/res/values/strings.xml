@@ -70,6 +70,7 @@
     <string name="detail_event_startDate">Date de début :</string>
     <string name="detail_event_endDate">Date de fin :</string>
     <string name="b_exit_detail_event_fragment">Quitter l\'évènement</string>
+    <string name="b_edit_detail_event_fragment">Editer l\'évènement</string>
     <string name="tv_dialogTitle_detail_event_fragment">Quitter l\'évènement</string>
     <string name="tv_dialogMessage_detail_event_fragment">Voulez-vous vraiment quitter l\'évènement ?</string>
     <string name="tv_dialogCancel_detail_event_fragment">Non</string>

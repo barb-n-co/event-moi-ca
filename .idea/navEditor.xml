@@ -10,25 +10,12 @@
                 <map>
                   <entry key="detailPhotoFragment">
                     <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="256" />
-                            <option name="y" value="12" />
-                          </Point>
-                        </option>
-                      </LayoutPositions>
+                      <LayoutPositions />
                     </value>
                   </entry>
                   <entry key="detail_event_fragment">
                     <value>
                       <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="34" />
-                            <option name="y" value="24" />
-                          </Point>
-                        </option>
                         <option name="myPositions">
                           <map>
                             <entry key="action_detail_event_fragment_to_detailPhotoFragment">
@@ -44,11 +31,14 @@
                   <entry key="event_map_fragment">
                     <value>
                       <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="-170" />
-                            <option name="y" value="20" />
-                          </Point>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_event_map_fragment_to_detail_event_fragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

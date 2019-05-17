@@ -128,7 +128,7 @@
     <string name="b_validate_dialog">Valider</string>
 
     <!-- Event Map Fragment -->
-    <string name="tv_click_window_info_map">Cliquez pour avoir les détails</string>
+    <string name="tv_click_window_info_map">Cliquez ici pour avoir les détails</string>
 
     <!-- Share Activity -->
     <string name="selectEventToShare">Choisissez l\'évenement de publication :</string>

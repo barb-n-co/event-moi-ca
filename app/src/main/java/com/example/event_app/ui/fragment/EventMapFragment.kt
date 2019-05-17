@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.NavHostFragment
+import android.widget.LinearLayout
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
@@ -19,7 +19,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.bottom_sheet_detail_event_map.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
@@ -27,6 +29,7 @@ import timber.log.Timber
 class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInterface {
 
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var googleEventMap: GoogleMap
     private val viewModel: EventMapViewModel by instance(arg = this)
 
@@ -50,7 +53,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_event_detail_map)
         initMap()
     }
 
@@ -62,30 +65,25 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
 
     private fun displayEventsOnMap() {
-        if (googleEventMap.isBuildingsEnabled) {
+        viewModel.myEventList.subscribe(
+            {
+                googleEventMap.clear()
+                it.forEach { event ->
 
-            viewModel.myEventList.subscribe(
-                {
-                    googleEventMap.clear()
-                    it.forEach { event ->
-
-                        val position = LatLng(event.latitude, event.longitude)
-                        val marker = googleEventMap.addMarker(
-                            MarkerOptions().position(position)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
-                            //.title(event.nameEvent)
-                        )
-                        marker.tag = event
-                        marker.showInfoWindow()
-                    }
-                },
-                {
-                    Timber.e(it)
+                    val position = LatLng(event.latitude, event.longitude)
+                    val marker = googleEventMap.addMarker(
+                        MarkerOptions().position(position)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+                    )
+                    marker.tag = event
                 }
-            ).addTo(viewDisposable)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
 
-            viewModel.getMyEvents()
-        }
+        viewModel.getMyEvents()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -95,9 +93,20 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         val customInfoWindow = CustomInfoWindowGoogleMap(context = requireContext())
         googleMap.setOnInfoWindowClickListener {
             val event: EventItem = it.tag as EventItem
+            showBottomSheetDetails(event)
         }
 
         googleEventMap.setInfoWindowAdapter(customInfoWindow)
+    }
+
+    private fun showBottomSheetDetails(event: EventItem) {
+        tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
+        tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer
+        tv_address_detail_bottom_sheet_map.text = event.place
+        tv_start_event_detail_bottom_sheet_map.text = event.dateStart
+        tv_finish_event_detail_bottom_sheet_map.text = event.dateEnd
+        tv_description_detail_bottom_sheet_map.text = event.description
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
 

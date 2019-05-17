@@ -17,14 +17,13 @@ import kotlinx.android.synthetic.main.dialog_fragment_list_participants.*
 import timber.log.Timber
 
 
-class ListParticipantFragment(
+class ListParticipantDialogFragment(
     private val deleteSelectedListener: (String) -> Unit,
     private val idOrganizer: String,
     private val isNotAnOrga: Boolean,
     private val participants: List<User>
 ) : DialogFragment() {
 
-    private lateinit var listParticipantsAdapter: ListParticipantsAdapter
     private var viewDisposable: CompositeDisposable = CompositeDisposable()
 
 
@@ -35,15 +34,14 @@ class ListParticipantFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mLinear = LinearLayoutManager(context)
-        listParticipantsAdapter = ListParticipantsAdapter(context!!, idOrganizer, isNotAnOrga)
-        rv_listParticipants.layoutManager = mLinear
-        rv_listParticipants.adapter = listParticipantsAdapter
-        listParticipantsAdapter.submitList(participants)
+        val adapter = ListParticipantsAdapter(idOrganizer, isNotAnOrga)
+        rv_listParticipants.layoutManager = LinearLayoutManager(context)
+        rv_listParticipants.adapter = adapter
         val itemDecor = DividerItemDecoration(context, VERTICAL)
         rv_listParticipants.addItemDecoration(itemDecor)
+        adapter.submitList(participants)
 
-        listParticipantsAdapter.userClickPublisher.subscribe({
+        adapter.userClickPublisher.subscribe({
             deleteSelectedListener(it)
             dismiss()
         }, {

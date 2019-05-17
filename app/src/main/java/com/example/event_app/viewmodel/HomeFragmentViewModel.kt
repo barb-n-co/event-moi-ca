@@ -30,10 +30,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 eventsRepository.fetchMyEvents(idUser),
                 BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
                     Pair(t1, t2)
-                })
-                .doOnSubscribe {
-                    loading.onNext(true)
-                }.map { response ->
+                }).map { response ->
                     response.second.filter {
                         when {
                             stateUserEvent.equals(UserEventState.NOTHING) -> true

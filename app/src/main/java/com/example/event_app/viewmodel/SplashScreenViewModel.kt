@@ -45,7 +45,6 @@ class SplashScreenViewModel(private val userRepository: UserRepository) : BaseVi
                 }
                 Timber.d("message for subscribing: $msg")
             }
-
     }
 
     class Factory(private val userRepository: UserRepository) : ViewModelProvider.Factory {

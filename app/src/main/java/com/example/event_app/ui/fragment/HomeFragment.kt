@@ -174,11 +174,10 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onStart() {
         super.onStart()
-        //viewModel.getMyEvents()
         setTitleToolbar(getString(R.string.title_home))
         shimmer.startShimmer()
         handler.postDelayed(shimmerRunnable, 1000L)
-        //viewModel.getMyEvents()
+        pb_home_fragment.visibility = VISIBLE
     }
 
     override fun onPause() {

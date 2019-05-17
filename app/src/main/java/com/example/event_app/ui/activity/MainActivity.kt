@@ -92,7 +92,11 @@ class MainActivity : BaseActivity() {
                 displayFilterMenu(false)
                 supportActionBar?.setTitle(R.string.title_event_map)
 
-                EventMapFragment.displayEventOnMap.onNext(true)
+                val container = supportFragmentManager.findFragmentById(R.id.content_event_map)
+                val frg = container?.childFragmentManager?.findFragmentById(R.id.content_event_map)
+                if (frg is EventMapFragmentInterface) {
+                    frg.displayMapItems()
+                }
             }
         }
         return@OnNavigationItemSelectedListener returnValue

@@ -89,13 +89,13 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         viewModel.event.subscribe(
             {
-                tv_eventName.text = it.nameEvent
-                tv_eventDescription.text = it.description
-                tv_eventOrga.text = it.nameOrganizer
+                tv_event_name_detail_fragment.text = it.nameEvent
+                tv_description_detail_fragment.text = it.description
+                tv_organizer_detail_fragment.text = it.nameOrganizer
 
-                tv_eventPlace.text = spannable { url("", it.place) }
-                tv_eventDateStart.text = it.dateStart
-                tv_eventDateEnd.text = it.dateEnd
+                tv_address_detail_fragment.text = spannable { url("", it.place) }
+                tv_start_event_detail_fragment.text = it.dateStart
+                tv_finish_event_detail_fragment.text = it.dateEnd
                 setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
 
@@ -147,8 +147,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             Timber.e(it)
         }).addTo(viewDisposable)
 
-        tv_eventPlace.setOnClickListener {
-            val query = tv_eventPlace.text.toString()
+        tv_address_detail_fragment.setOnClickListener {
+            val query = tv_address_detail_fragment.text.toString()
             val address = getString(R.string.map_query, query)
             if (query.isNotEmpty()) {
                 startActivity(viewModel.createMapIntent(address))

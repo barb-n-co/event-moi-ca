@@ -4,7 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -16,6 +16,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -37,6 +38,8 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.io.File
+import java.io.IOException
 import java.lang.ref.WeakReference
 
 
@@ -307,7 +310,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                                 )
                             )
                         ) {
-                            startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
+                            takePhotoByGallery()
                         } else {
                             requestPermissions()
                         }
@@ -337,13 +340,41 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
 
         if (requestCode == PERMISSION_IMPORT && grantResults.size == 2) {
-            startActivityForResult(viewModel.pickImageFromGallery(), IMAGE_PICK_CODE)
+            takePhotoByGallery()
         }
     }
 
     private fun takePhotoByCamera() {
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(cameraIntent, CAPTURE_PHOTO)
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(context!!.packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    viewModel.createImageFile(context!!)
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        context!!,
+                        "com.example.event_app.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
+                }
+                //startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
+            }
+        }
+    }
+
+    private fun takePhotoByGallery() {
+        viewModel.pickImageFromGallery().also { galleryIntent ->
+            galleryIntent.resolveActivity(context!!.packageManager)?.also {
+                startActivityForResult(galleryIntent, IMAGE_PICK_CODE)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
@@ -352,7 +383,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
                     if (resultCode == Activity.RESULT_OK) {
-                        val capturedBitmap = returnIntent?.extras!!.get("data") as Bitmap
+                        Timber.tag("trytrytry").d(returnIntent?.extras.toString())
+                        val capturedBitmap = viewModel.getBitmapWithPath()
                         eventId?.let { eventId ->
                             viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
                         }

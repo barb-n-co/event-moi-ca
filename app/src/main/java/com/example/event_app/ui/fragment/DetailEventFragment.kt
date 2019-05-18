@@ -108,6 +108,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 initAdapter(it.idEvent)
 
                 if (it.organizer != 1) {
+                    b_edit_detail_event_fragment.visibility = GONE
                     if (it.accepted != 1) {
                         rv_listImage.visibility = GONE
                         fabmenu_detail_event.visibility = GONE
@@ -131,6 +132,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     b_exit_detail_event_fragment.visibility = VISIBLE
                     b_exit_detail_event_fragment.setOnClickListener {
                         actionDeleteEvent()
+                    }
+                    b_edit_detail_event_fragment.visibility = VISIBLE
+                    b_edit_detail_event_fragment.setOnClickListener { _ ->
+                        val action = DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
+                        NavHostFragment.findNavController(this).navigate(action)
                     }
                     fabmenu_detail_event.visibility = VISIBLE
                     rv_listImage.visibility = VISIBLE
@@ -204,8 +210,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
             .setMessage(getString(R.string.tv_delete_event_message_detail_event_fragment))
-            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { dialoginterface, i -> }
-            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { dialoginterface, i ->
+            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { _, _ -> }
+            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { _, _ ->
                 eventId?.let {
                     viewModel.deleteEvent(it).addOnCompleteListener {
                         fragmentManager?.popBackStack()
@@ -223,8 +229,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_dialogTitle_detail_event_fragment))
             .setMessage(getString(R.string.tv_dialogMessage_detail_event_fragment))
-            .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { dialoginterface, i -> }
-            .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { dialoginterface, i ->
+            .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { _, _ -> }
+            .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { _, _ ->
                 eventId?.let {
                     viewModel.exitEvent(it)?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {

@@ -21,7 +21,7 @@ class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener 
 
     override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
         val date = Calendar.getInstance()
-        date.set(Calendar.HOUR, hourOfDay)
+        date.set(Calendar.HOUR_OF_DAY, hourOfDay)
         date.set(Calendar.MINUTE, minute)
 
         val intent = Intent()

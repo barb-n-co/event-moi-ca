@@ -1,5 +1,6 @@
 package com.example.event_app.viewmodel
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.NumberEvent
@@ -70,6 +71,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
             }
         ).addTo(disposeBag)
     }
+
+    fun pickImageFromGallery(): Intent {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        return intent
+    }
+
+
 
     class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
         ViewModelProvider.Factory {

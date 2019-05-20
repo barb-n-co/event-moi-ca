@@ -1,11 +1,14 @@
 package com.example.event_app.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
+import com.example.event_app.manager.PermissionManager
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
 import com.example.event_app.ui.activity.LoginActivity
@@ -42,6 +45,15 @@ class ProfileFragment : BaseFragment() {
             actionDeleteAccount()
         }
 
+        iv_photo_fragment_profile.setOnClickListener {
+
+            viewModel.pickImageFromGallery().also { galleryIntent ->
+                galleryIntent.resolveActivity(context!!.packageManager)?.also {
+                    startActivityForResult(galleryIntent, PermissionManager.IMAGE_PICK_CODE)
+                }
+            }
+
+        }
         viewModel.user.subscribe(
             {
                 initUser(it)
@@ -104,6 +116,27 @@ class ProfileFragment : BaseFragment() {
         super.onStart()
         viewModel.getCurrentUser()
         viewModel.getNumberEventUser()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, returnIntent)
+
+        when (requestCode) {
+
+
+            PermissionManager.IMAGE_PICK_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    returnIntent?.extras
+                    val galleryUri = returnIntent?.data!!
+                    iv_photo_fragment_profile.setImageURI(galleryUri)
+//                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+//                    eventId?.let { eventId ->
+//                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
+//                    }
+                }
+            }
+        }
     }
 
 }

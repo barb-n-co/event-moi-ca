@@ -34,15 +34,37 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
+            <com.google.android.material.chip.Chip
+                    android:id="@+id/tv_listParticipant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipBackgroundColor="@color/colorPrimary"
+                    app:chipStrokeWidth="1dp"
+                    app:chipStrokeColor="@color/black"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_event_name_detail_fragment"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_activate_detail_event_fragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_listParticipant"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
             <View
                     android:id="@+id/hr1_detail_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginStart="64dp"
                     android:layout_marginEnd="64dp"
                     android:background="@color/colorPrimary"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_listParticipant"
+                    app:layout_constraintTop_toBottomOf="@+id/switch_activate_detail_event_fragment"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -137,18 +159,6 @@
                     android:layout_marginEnd="16dp"
                     app:layout_constraintTop_toBottomOf="@+id/tv_start_event_detail_fragment"
                     app:layout_constraintStart_toEndOf="@id/iv_finish_event_detail_fragment"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-            <com.google.android.material.chip.Chip
-                    android:id="@+id/tv_listParticipant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:chipBackgroundColor="@color/colorPrimary"
-                    app:chipStrokeWidth="1dp"
-                    app:chipStrokeColor="@color/black"
-                    android:textColor="@color/black"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_event_name_detail_fragment"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
             <View

@@ -1,6 +1,7 @@
 package com.example.event_app.ui.activity
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -15,6 +16,8 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_share_gallery.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+
+
 
 
 class ShareGalleryActivity : BaseActivity() {
@@ -41,9 +44,10 @@ class ShareGalleryActivity : BaseActivity() {
 
         viewModel.getMyEvents()
 
-        if (uri != null && uri.toString().isNotEmpty()) {
+        if (SplashScreenActivity.sharedPhotoPath != null) {
+            GlideApp.with(this).load(SplashScreenActivity.sharedPhotoPath).into(iv_imageToShare)
+        } else if (uri != null && uri.toString().isNotEmpty()) {
             GlideApp.with(this).load(uri).into(iv_imageToShare)
-            Timber.tag("success with photo").d("success: $uri")
         } else {
             Toast.makeText(
                 this,
@@ -58,13 +62,15 @@ class ShareGalleryActivity : BaseActivity() {
     private fun initAdapter(eventList: List<EventItem>) {
         val adapter = ListEventAdapter()
         val mLayoutManager = LinearLayoutManager(this)
-        uri?.let {
-            val galeryBitmap = viewModel.getBitmapWithResolver(this.contentResolver, it)
 
-            rv_shareEvent.layoutManager = mLayoutManager
-            rv_shareEvent.itemAnimator = DefaultItemAnimator()
-            rv_shareEvent.adapter = adapter
-            adapter.submitList(eventList)
+        rv_shareEvent.layoutManager = mLayoutManager
+        rv_shareEvent.itemAnimator = DefaultItemAnimator()
+        rv_shareEvent.adapter = adapter
+        adapter.submitList(eventList)
+
+        uri?.let {
+
+            val galeryBitmap = viewModel.getBitmapWithResolver(contentResolver, it)
 
             adapter.eventsClickPublisher.subscribe(
                 {
@@ -78,11 +84,34 @@ class ShareGalleryActivity : BaseActivity() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard 2", Toast.LENGTH_LONG)
+                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
                         .show()
                     finish()
                 }
             ).addTo(viewDisposable)
+        }
+
+        SplashScreenActivity.sharedPhotoPath?.let { path ->
+
+            adapter.eventsClickPublisher.subscribe(
+                {
+                    val bitmap = BitmapFactory.decodeFile(path)
+                    viewModel.putImageWithBitmap(bitmap, it, true)
+                    Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
+                        .show()
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
+                },
+                {
+                    Timber.e(it)
+                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
+                        .show()
+                    finish()
+                }
+            ).addTo(viewDisposable)
+
         }
 
 

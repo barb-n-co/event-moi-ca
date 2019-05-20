@@ -47,24 +47,7 @@
                 android:value="notif_event_moi_ca" />
 
 
-        <activity android:name=".ui.activity.ShareGalleryActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-
-
-                <data android:mimeType="image/*" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="image/*" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.activity.ShareGalleryActivity"/>
         <activity android:name=".ui.activity.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -88,10 +71,8 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.LoginActivity">
-        </activity>
-        <activity android:name=".ui.activity.MainActivity">
-        </activity>
+        <activity android:name=".ui.activity.LoginActivity"/>
+        <activity android:name=".ui.activity.MainActivity"/>
         <activity
                 android:name=".ui.activity.ScannerQrCodeActivity"
                 android:label="@string/app_name"

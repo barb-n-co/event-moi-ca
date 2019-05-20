@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.viewmodel.SplashScreenViewModel
 import org.kodein.di.generic.instance
-import timber.log.Timber
 
 
 class SplashScreenActivity : BaseActivity() {
@@ -17,6 +16,7 @@ class SplashScreenActivity : BaseActivity() {
     private lateinit var intentReceived: Intent
 
     companion object {
+        var sharedPhotoPath: String? = null
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
                 Intent(fromActivity, SplashScreenActivity::class.java)
@@ -34,23 +34,32 @@ class SplashScreenActivity : BaseActivity() {
 
         val user = viewModel.getCurrentUser()
         Handler().postDelayed({
-            if (user != null && Intent.ACTION_SEND == action && type.startsWith("image/")) {
-                Timber.tag("TEST_").d("1")
-                val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
-                val shareGalleryIntent = Intent(this, ShareGalleryActivity::class.java)
-                shareGalleryIntent.putExtra("uri",imageUri)
-                startActivity(shareGalleryIntent)
-            }else if (user != null) {
-                Timber.tag("TEST_").d("2")
-                MainActivity.start(this)
-            } else {
-                Timber.tag("TEST_").d("3")
-                LoginActivity.start(this)
+            when {
+                user != null && Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                    val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+                    val shareGalleryIntent = Intent(this, ShareGalleryActivity::class.java)
+                    shareGalleryIntent.putExtra("uri",imageUri)
+                    startActivity(shareGalleryIntent)
+                }
+                user != null -> {
+                    MainActivity.start(this)
+                }
+                Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                    val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+                    viewModel.createImageFile(this, imageUri)
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                }
+                else -> {
+                    LoginActivity.start(this)
+                }
             }
         }, 2000L)
 
         viewModel.initMessageReceiving()
     }
+
+
 
     override fun onStop() {
         super.onStop()

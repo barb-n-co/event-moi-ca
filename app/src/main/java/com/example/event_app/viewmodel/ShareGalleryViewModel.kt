@@ -25,7 +25,7 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
     val eventList: PublishSubject<List<EventItem>> = PublishSubject.create()
 
 
-    fun getCurrentUser(): FirebaseUser? {
+    private fun getCurrentUser(): FirebaseUser? {
         val user = userRepository.fireBaseAuth.currentUser
         user?.let {
             userRepository.currentUser.onNext(User(it.uid, it.displayName, it.email))
@@ -34,9 +34,7 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
     }
 
     fun getMyEvents() {
-        userRepository.currentUser.value?.id?.let { idUser ->
-            //eventsRepository.fetchMyEvents(idUser)
-            Timber.tag("TEST_").d(idUser)
+        getCurrentUser()?.uid?.let { idUser ->
             Observable.combineLatest(
                 eventsRepository.fetchEvents(),
                 eventsRepository.fetchMyEvents(idUser),

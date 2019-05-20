@@ -1,6 +1,5 @@
 package com.example.event_app.adapter
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +44,7 @@ class ListParticipantsAdapter(
 
         fun bindUser(user: User) {
             v.tv_participants.text = user.name
-            if (user.id == idOrga || isNotAnOrga) {
+            if (user.id == idOrga) {
                 v.iv_remove.visibility = View.GONE
             }
             v.iv_remove.setOnClickListener {

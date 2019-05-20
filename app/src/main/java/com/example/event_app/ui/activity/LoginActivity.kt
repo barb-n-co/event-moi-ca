@@ -8,10 +8,12 @@ import com.example.event_app.adapter.AuthentificationViewPagerAdapter
 import com.example.event_app.ui.fragment.LoginFragment
 import com.example.event_app.ui.fragment.SignupFragment
 import kotlinx.android.synthetic.main.activity_authentification.*
+import java.io.File
 
 class LoginActivity : BaseActivity() {
 
     companion object {
+        var file: File? = null
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivity(
                 Intent(fromActivity, LoginActivity::class.java)

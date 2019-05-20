@@ -1,5 +1,6 @@
 package com.example.event_app.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.ui.activity.ShareGalleryActivity
+import com.example.event_app.ui.activity.SplashScreenActivity
 import com.example.event_app.viewmodel.LoginViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -87,7 +90,12 @@ class LoginFragment : BaseFragment() {
     private fun userLogin(email: String, password: String) {
         viewModel.logIn(email, password).subscribe(
             {
-                if (it) MainActivity.start(activity!!)
+                if(it && SplashScreenActivity.sharedPhotoPath != null) {
+                    val shareGalleryIntent = Intent(context, ShareGalleryActivity::class.java)
+                    startActivity(shareGalleryIntent)
+                } else if (it) {
+                    MainActivity.start(activity!!)
+                }
             },
             {
                 Timber.e(it)

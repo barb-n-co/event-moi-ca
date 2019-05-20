@@ -52,7 +52,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     companion object {
 
-        lateinit var disposeBag: CompositeDisposable
+        var disposeBag = CompositeDisposable()
         var eventsRepository = EventRepository
         var userRepository = UserRepository
 
@@ -203,7 +203,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return eventsRepository.getAllPicturesStream(id)
     }
 
-
     fun pickImageFromGallery(): Intent {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -222,7 +221,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return BitmapFactory.decodeFile(currentPhotoPath)
     }
 
-    fun getAllPictures(eventId: String, context: Context) {
+    fun getAllPictures(eventId: String, context: Context, folderName: String) {
+
         eventsRepository.fetchPictures(eventId)
             .subscribe(
                 { photoList ->
@@ -230,7 +230,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     photoList.forEach { photo ->
                         GlideApp.with(context)
                             .asBitmap()
-                            .load(eventsRepository.getStorageReferenceForUrl(photo.url!!))
+                            .load(eventsRepository.getStorageReferenceForUrl(photo.url))
                             .into(object : CustomTarget<Bitmap>() {
 
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -242,9 +242,15 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     Timber.d("image downloading in progress")
-                                    number.add(saveImage(resource, eventId, photo.id!!))
+                                    val path = saveImage(resource, folderName, photo.id)
+                                    if (path.isNotEmpty()) {
+                                        number.add(path)
+                                    }
+                                    //number.add(saveImage(resource, eventId, photo.id))
                                     if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT).show()
                                     }
                                 }
 
@@ -265,7 +271,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         var imagePath = ""
         val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/Event-Moi-Ca/$eventName/")
+        val photoFolder = File("$root/Event-Moi-Ca/${eventName.replace(" ", "_")}/")
         photoFolder.mkdirs()
         val outletFrame = "$photoId.jpg"
         val file = File(photoFolder, outletFrame)
@@ -336,22 +342,18 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         eventsRepository.fetchPictures(idEvent).subscribe(
             {
                 it.forEach { picture ->
-                    picture.id?.let { pictureId ->
-                        eventsRepository.removeLikes(pictureId).addOnCompleteListener { task ->
-                            Timber.d("task is succesful ? : ${task.isSuccessful}")
-                        }
-
-                        picture.url?.let { url ->
-                            eventsRepository.deletePhotoFromFireStore(url).subscribe(
-                                {
-                                    Timber.d("photo deleted from fireStore")
-                                },
-                                {
-                                    Timber.e(it)
-                                }
-                            ).addTo(disposeBag)
-                        }
+                    eventsRepository.removeLikes(picture.id).addOnCompleteListener { task ->
+                        Timber.d("task is succesful ? : ${task.isSuccessful}")
                     }
+
+                    eventsRepository.deletePhotoFromFireStore(picture.url).subscribe(
+                        {
+                            Timber.d("photo deleted from fireStore")
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    ).addTo(disposeBag)
                 }
                 eventsRepository.removePictureReference(idEvent)
             },
@@ -362,9 +364,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun createMapIntent(address: String): Intent {
-        return Uri.parse(
-            address
-        ).let { location ->
+        return Uri.parse(address).let { location ->
             Intent(Intent.ACTION_VIEW, location)
         }
     }

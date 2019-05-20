@@ -15,5 +15,6 @@ class EventItem(
     val reportedPhotoCount: Int = 0,
     val isEmptyEvent: Int = 0,
     var latitude: Double = 0.0,
-    var longitude: Double = 0.0
+    var longitude: Double = 0.0,
+    var activate: Int = 1
 )

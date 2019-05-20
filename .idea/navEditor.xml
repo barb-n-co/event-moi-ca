@@ -112,6 +112,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_detail_event_fragment_to_EditDetailEventFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_detail_event_fragment_to_detailPhotoFragment">
                               <value>
                                 <LayoutPositions />

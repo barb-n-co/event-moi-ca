@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
@@ -29,9 +30,11 @@ import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
-const val COMPRESSION_QUALITY = 100
+const val COMPRESSION_QUALITY = 50
 const val HIGH_COMPRESSION_QUALITY = 15
 
 class DetailEventViewModel(private val eventsRepository: EventRepository, private val userRepository: UserRepository) :
@@ -41,6 +44,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
     val eventLoaded: BehaviorSubject<Event> = BehaviorSubject.create()
     val loading: PublishSubject<Boolean> = PublishSubject.create()
+    lateinit var currentPhotoPath: String
 
     init {
         DetailEventViewModel.disposeBag = disposeBag
@@ -109,6 +113,21 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         private fun getCurrentUser(): User {
             return Companion.userRepository.currentUser.value!!
+        }
+    }
+
+    @Throws(IOException::class)
+    fun createImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
         }
     }
 
@@ -197,6 +216,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     fun getBitmapWithResolver(resolver: ContentResolver, uri: Uri): Bitmap {
         return MediaStore.Images.Media.getBitmap(resolver, uri)
+    }
+
+    fun getBitmapWithPath() :Bitmap {
+        return BitmapFactory.decodeFile(currentPhotoPath)
     }
 
     fun getAllPictures(eventId: String, context: Context) {

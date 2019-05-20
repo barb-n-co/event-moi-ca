@@ -51,7 +51,7 @@ class ShareGalleryActivity : BaseActivity() {
         } else {
             Toast.makeText(
                 this,
-                "Une erreur est survenue, merci de ressayer plus tard",
+                getString(R.string.an_error_occured_please_try_later),
                 Toast.LENGTH_SHORT
             ).show()
             finish()
@@ -75,7 +75,7 @@ class ShareGalleryActivity : BaseActivity() {
             adapter.eventsClickPublisher.subscribe(
                 {
                     viewModel.putImageWithBitmap(galeryBitmap, it, true)
-                    Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.image_shared_success), Toast.LENGTH_LONG)
                         .show()
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -84,7 +84,7 @@ class ShareGalleryActivity : BaseActivity() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.an_error_occured_please_try_later), Toast.LENGTH_LONG)
                         .show()
                     finish()
                 }
@@ -97,7 +97,7 @@ class ShareGalleryActivity : BaseActivity() {
                 {
                     val bitmap = BitmapFactory.decodeFile(path)
                     viewModel.putImageWithBitmap(bitmap, it, true)
-                    Toast.makeText(this, "Votre image a été envoyé", Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.image_shared_success), Toast.LENGTH_LONG)
                         .show()
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -106,7 +106,7 @@ class ShareGalleryActivity : BaseActivity() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(this, "Une erreur est survenue, merci de ressayer plus tard", Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.an_error_occured_please_try_later), Toast.LENGTH_LONG)
                         .show()
                     finish()
                 }

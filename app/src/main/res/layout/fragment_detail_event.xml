@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
     <androidx.core.widget.NestedScrollView
             android:id="@+id/nested_for_detail_bottom_sheet_map"
             android:layout_width="match_parent"
@@ -268,17 +269,18 @@
 
     </androidx.core.widget.NestedScrollView>
 
-
     <io.github.kobakei.materialfabspeeddial.FabSpeedDial
             android:id="@+id/fabmenu_detail_event"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="6dp"
             android:visibility="gone"
             tools:visibility="visible"
             app:fab_fabBackgroundColor="@color/colorAccent"
-            app:fab_miniFabBackgroundColor="@color/colorAccent"
+            app:fab_miniFabBackgroundColor="@color/white"
             app:fab_miniFabTextBackground="@drawable/fab_label_back"
             app:fab_extraMargin="-12dp"
             app:fab_fabDrawable="@drawable/ic_menu_fab"

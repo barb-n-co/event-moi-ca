@@ -42,6 +42,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
+    val eventLoaded: BehaviorSubject<Event> = BehaviorSubject.create()
     val loading: PublishSubject<Boolean> = PublishSubject.create()
     lateinit var currentPhotoPath: String
 
@@ -130,6 +131,15 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
     }
 
+    fun changeActivationEvent(state: Boolean){
+        eventLoaded.value?.let {
+            var newEvent = it.apply {
+                this.activate = if(state) 1 else 0
+            }
+            eventsRepository.addEvent(it.idOrganizer, it.organizer, newEvent)
+        }
+    }
+
     fun getEventInfo(eventId: String) {
         userRepository.currentUser.value?.id?.let { idUser ->
             eventsRepository.getEventDetail(eventId)
@@ -144,6 +154,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 }).doOnSubscribe {
                 loading.onNext(true)
             }.map { response ->
+                eventLoaded.onNext(response.first)
                 EventItem(
                     response.first.idEvent,
                     response.first.name,
@@ -155,7 +166,12 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.second.accepted,
                     response.second.organizer,
                     response.first.description,
-                    response.first.idOrganizer
+                    response.first.idOrganizer,
+                    response.first.reportedPhotoCount,
+                    response.first.isEmptyEvent,
+                    response.first.latitude,
+                    response.first.longitude,
+                    response.first.activate
                 )
 
             }.subscribe({

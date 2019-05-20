@@ -9,8 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -109,12 +108,14 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
                 if (it.organizer != 1) {
                     b_edit_detail_event_fragment.visibility = GONE
+                    switch_activate_detail_event_fragment.visibility = GONE
                     if (it.accepted != 1) {
                         rv_listImage.visibility = GONE
                         fabmenu_detail_event.visibility = GONE
                         iv_alert_not_accepted_event.visibility = VISIBLE
                         not_already_accepted_alert.visibility = VISIBLE
                         b_exit_detail_event_fragment.visibility = GONE
+
                     } else {
                         rv_listImage.visibility = VISIBLE
                         fabmenu_detail_event.visibility = VISIBLE
@@ -123,21 +124,40 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                         b_exit_detail_event_fragment.setOnClickListener {
                             actionExitEvent()
                         }
-                        setFab()
+                        setFab(if(it.activate == 0) false else true)
                     }
 
                 } else {
-                    setFab()
+                    setFab(if(it.activate == 0) false else true)
                     b_exit_detail_event_fragment.text = getString(R.string.b_delete_detail_event_fragment)
                     b_exit_detail_event_fragment.visibility = VISIBLE
                     b_exit_detail_event_fragment.setOnClickListener {
                         actionDeleteEvent()
+                    }
+                    if(it.activate == 0) {
+                        switch_activate_detail_event_fragment.isChecked = false
+                        switch_activate_detail_event_fragment.text = getString(R.string.switch_desactivate_detail_event_fragment)
+                    } else {
+                        switch_activate_detail_event_fragment.isChecked = true
+                        switch_activate_detail_event_fragment.text = getString(R.string.switch_activate_detail_event_fragment)
                     }
                     b_edit_detail_event_fragment.visibility = VISIBLE
                     b_edit_detail_event_fragment.setOnClickListener { _ ->
                         val action = DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
                         NavHostFragment.findNavController(this).navigate(action)
                     }
+                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { buttonView, isChecked ->
+                        if(isChecked) {
+                            switch_activate_detail_event_fragment.text = getString(R.string.switch_activate_detail_event_fragment)
+                            viewModel.changeActivationEvent(true)
+                            setFab(true)
+                        } else {
+                            switch_activate_detail_event_fragment.text = getString(R.string.switch_desactivate_detail_event_fragment)
+                            viewModel.changeActivationEvent(false)
+                            setFab(false)
+                        }
+                    }
+                    switch_activate_detail_event_fragment.visibility = VISIBLE
                     fabmenu_detail_event.visibility = VISIBLE
                     rv_listImage.visibility = VISIBLE
                 }
@@ -155,6 +175,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }, {
             Timber.e(it)
         }).addTo(viewDisposable)
+
 
         tv_address_detail_fragment.setOnClickListener {
             val query = tv_address_detail_fragment.text.toString()
@@ -284,7 +305,19 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
     }
 
-    private fun setFab() {
+    private fun setFab(state: Boolean) {
+
+        if(state){
+            fabmenu_detail_event.getMiniFab(0).show()
+            fabmenu_detail_event.getMiniFabTextView(0).visibility = VISIBLE
+            fabmenu_detail_event.getMiniFab(1).show()
+            fabmenu_detail_event.getMiniFabTextView(1).visibility = VISIBLE
+        } else {
+            fabmenu_detail_event.getMiniFab(0).hide()
+            fabmenu_detail_event.getMiniFabTextView(0).visibility = GONE
+            fabmenu_detail_event.getMiniFab(1).hide()
+            fabmenu_detail_event.getMiniFabTextView(1).visibility = GONE
+        }
 
         fabmenu_detail_event.addOnMenuItemClickListener(object : OnMenuItemClick {
             override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {

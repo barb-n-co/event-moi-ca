@@ -61,9 +61,8 @@ class ShareGalleryActivity : BaseActivity() {
 
     private fun initAdapter(eventList: List<EventItem>) {
         val adapter = ListEventAdapter()
-        val mLayoutManager = LinearLayoutManager(this)
 
-        rv_shareEvent.layoutManager = mLayoutManager
+        rv_shareEvent.layoutManager = LinearLayoutManager(this)
         rv_shareEvent.itemAnimator = DefaultItemAnimator()
         rv_shareEvent.adapter = adapter
         adapter.submitList(eventList)

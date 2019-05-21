@@ -8,9 +8,9 @@
         tools:context=".ui.activity.ShareGalleryActivity">
 
     <ImageView
+            android:id="@+id/iv_imageToShare"
             android:layout_width="0dp"
             android:layout_height="300dp"
-            android:id="@+id/iv_imageToShare"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginTop="16dp"
@@ -20,10 +20,11 @@
             />
 
     <TextView
+            android:id="@+id/textView"
             android:text="@string/selectEventToShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView"
+            style="@style/ItemTitle"
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,13 +34,15 @@
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_shareEvent"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
             android:scrollbars="vertical"
             tools:listitem="@layout/item_myevent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView"
-            />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="0.0"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

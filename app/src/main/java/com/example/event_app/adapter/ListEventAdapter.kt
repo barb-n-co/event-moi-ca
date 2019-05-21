@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.model.EventItem
-import com.example.event_app.repository.UserRepository
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_myevent.view.*
@@ -33,18 +32,18 @@ class ListEventAdapter : ListAdapter<EventItem, ListEventAdapter.EventViewHolder
         fun bind(event: EventItem) {
             //disposition
             itemView.tv_name_myevent_item.text = event.nameEvent
-            itemView.tv_startDate_myevent_item.text = "Du ${event.dateStart} au  ${event.dateEnd}"
+            itemView.tv_startDate_myevent_item.text = "Du ${event.dateStart} au ${event.dateEnd}"
 
-            UserRepository.currentUser.value?.let {
-                if (it.id == event.idOrganizer) {
-                    itemView.b_refuse_myevent_item.visibility = View.VISIBLE
-                    itemView.b_refuse_myevent_item.setOnClickListener {
-                        organizerClickPublisher.onNext(event.idOrganizer)
-                    }
-                } else {
-                    itemView.b_refuse_myevent_item.visibility = View.INVISIBLE
-                }
-            }
+//            UserRepository.currentUser.value?.let {
+//                if (it.id == event.idOrganizer) {
+//                    itemView.b_refuse_myevent_item.visibility = View.VISIBLE
+//                    itemView.b_refuse_myevent_item.setOnClickListener {
+//                        organizerClickPublisher.onNext(event.idOrganizer)
+//                    }
+//                } else {
+//                    itemView.b_refuse_myevent_item.visibility = View.INVISIBLE
+//                }
+//            }
 
             bindPositionClick(event.idEvent)
         }

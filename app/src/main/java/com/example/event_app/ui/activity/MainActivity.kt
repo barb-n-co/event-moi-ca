@@ -43,6 +43,7 @@ class MainActivity : BaseActivity() {
     private lateinit var profileWrapper: FrameLayout
     private lateinit var eventMapWrapper: FrameLayout
     private var isMapOpenned = false
+    private var isHelloDisplayed = false
 
 
     companion object {
@@ -110,13 +111,16 @@ class MainActivity : BaseActivity() {
 
         viewModel.user.subscribe(
             {
-                Snackbar
-                    .make(
-                        main_constraint_layout,
-                        getString(R.string.toast_welcome_user_main_activity, it.name),
-                        Snackbar.LENGTH_SHORT
-                    )
-                    .show()
+                if (!isHelloDisplayed) {
+                    Snackbar
+                        .make(
+                            main_constraint_layout,
+                            getString(R.string.toast_welcome_user_main_activity, it.name),
+                            Snackbar.LENGTH_SHORT
+                        )
+                        .show()
+                    isHelloDisplayed = true
+                }
             },
             {
                 Timber.e(it)

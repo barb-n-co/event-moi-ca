@@ -1,23 +1,37 @@
 package com.example.event_app.ui.fragment
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
+import com.example.event_app.manager.PermissionManager
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
 import com.example.event_app.ui.activity.LoginActivity
+import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.ProfileViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.io.File
+import java.io.IOException
 
 class ProfileFragment : BaseFragment() {
 
     private val viewModel: ProfileViewModel by instance(arg = this)
+    lateinit var alertDialog: AlertDialog
+    private var userId: String? = null
 
     companion object {
         const val TAG = "PROFILERAGMENT"
@@ -42,6 +56,13 @@ class ProfileFragment : BaseFragment() {
             actionDeleteAccount()
         }
 
+        iv_photo_fragment_profile.setOnClickListener {
+
+            openPopUp()
+
+
+        }
+
         viewModel.user.subscribe(
             {
                 initUser(it)
@@ -59,6 +80,70 @@ class ProfileFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+    }
+
+    private fun openPopUp() {
+
+        val popup = ProfilePhotoSourceDialogFragment(
+            choiceSelectedListener = {
+                if (permissionManager.checkPermissions(
+                        arrayOf(
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                    )
+                ) {
+                    if (it) {
+                        takePhotoByCamera()
+                    } else {
+                        takePhotoByGallery()
+                    }
+                } else {
+                    requestPermissions()
+                }
+            }
+        )
+        popup.show(requireFragmentManager(), "profilePhotoSource")
+    }
+
+    private fun takePhotoByCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(context!!.packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    viewModel.createImageFile(context!!)
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        context!!,
+                        "com.example.event_app.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
+                }
+            }
+        }
+    }
+
+    private fun takePhotoByGallery() {
+        viewModel.pickImageFromGallery().also { galleryIntent ->
+            galleryIntent.resolveActivity(context!!.packageManager)?.also {
+                startActivityForResult(galleryIntent, PermissionManager.IMAGE_PICK_CODE)
+            }
+        }
+    }
+
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
     }
 
 
@@ -87,6 +172,20 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initUser(user: User) {
+        userId = user.id
+
+        if (user.photoUrl.isNotEmpty()) {
+            GlideApp
+                .with(context!!)
+                .load(viewModel.getStorageRef(user.photoUrl))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .centerInside()
+                .into(iv_photo_fragment_profile)
+
+            Timber.tag("TEST_1").d("pass")
+        }
+
         tv_name_fragment_profile.text = user.name
         tv_email_fragment_profile.text = user.email
     }
@@ -104,6 +203,36 @@ class ProfileFragment : BaseFragment() {
         super.onStart()
         viewModel.getCurrentUser()
         viewModel.getNumberEventUser()
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, returnIntent)
+
+        when (requestCode) {
+
+            PermissionManager.IMAGE_PICK_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    returnIntent?.extras
+                    val galleryUri = returnIntent?.data!!
+                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, userId, true)
+                    }
+                }
+            }
+
+            PermissionManager.CAPTURE_PHOTO -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
+                    val capturedBitmap = viewModel.getBitmapWithPath()
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, userId, false)
+                    }
+                }
+            }
+
+        }
     }
 
 }

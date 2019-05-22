@@ -246,7 +246,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                     if (path.isNotEmpty()) {
                                         number.add(path)
                                     }
-                                    //number.add(saveImage(resource, eventId, photo.id))
                                     if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
                                     } else {

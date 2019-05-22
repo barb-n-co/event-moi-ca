@@ -350,12 +350,15 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     }
                     R.id.action_download_every_photos -> {
                         eventId?.let { id ->
-                            viewModel.getAllPictures(id, weakContext.get()!!)
+                            val eventName = tv_event_name_detail_fragment.text.toString()
+                            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
                         }
                     }
                 }
             }
         })
+
+
     }
 
     private fun requestPermissions() {
@@ -384,7 +387,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 val photoFile: File? = try {
                     viewModel.createImageFile(context!!)
                 } catch (ex: IOException) {
-                    // Error occurred while creating the File
+                    Toast.makeText(context, "Une erreur est arrivée lors du téléchargement de la photo", Toast.LENGTH_SHORT).show()
                     null
                 }
                 // Continue only if the File was successfully created
@@ -397,7 +400,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
                 }
-                //startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
             }
         }
     }
@@ -416,7 +418,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             when (requestCode) {
                 CAPTURE_PHOTO -> {
                     if (resultCode == Activity.RESULT_OK) {
-                        Timber.tag("trytrytry").d(returnIntent?.extras.toString())
                         val capturedBitmap = viewModel.getBitmapWithPath()
                         eventId?.let { eventId ->
                             viewModel.putImageWithBitmap(capturedBitmap, eventId, false)

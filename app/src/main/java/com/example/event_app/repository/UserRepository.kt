@@ -1,5 +1,6 @@
 package com.example.event_app.repository
 
+import android.net.Uri
 import com.example.event_app.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -73,7 +74,7 @@ object UserRepository {
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(name).build()
                     userAuth?.updateProfile(profileUpdates)?.addOnCompleteListener {
-                        setNameFirebase(firebaseUser.uid, name, email)
+                        setNameFirebase(firebaseUser.uid, name, email, null)
                     }
                     currentUser.onNext(user)
 
@@ -83,14 +84,35 @@ object UserRepository {
             .toFlowable()
     }
 
-    private fun setNameFirebase(uid: String, name: String, email: String) {
-        val user = User(uid, name, email)
+    fun updateUser(uid: String, email: String, name: String, photoUrl: String) {
+
+        fireBaseAuth.currentUser?.let { user ->
+
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setPhotoUri(Uri.parse(photoUrl))
+                .build()
+            user.updateProfile(profileUpdates).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    setNameFirebase(uid, name, email, photoUrl)
+                }
+            }
+        }
+
+    }
+
+    private fun setNameFirebase(uid: String, name: String, email: String, photoUrl: String?) {
+        val user: User = if (photoUrl == null) {
+            User(uid, name, email)
+        } else {
+            User(uid, name, email, photoUrl)
+        }
         val disposeBag = CompositeDisposable()
         RxFirebaseDatabase.setValue(usersRef.child(uid), user)
             .subscribe(
                 {
                     Timber.d("user successfully added to database")
                     disposeBag.dispose()
+                    currentUser.onNext(user)
                 },
                 {
                     Timber.e(it)

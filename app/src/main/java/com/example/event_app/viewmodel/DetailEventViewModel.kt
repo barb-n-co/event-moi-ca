@@ -230,7 +230,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     photoList.forEach { photo ->
                         GlideApp.with(context)
                             .asBitmap()
-                            .load(eventsRepository.getStorageReferenceForUrl(photo.url!!))
+                            .load(eventsRepository.getStorageReferenceForUrl(photo.url))
                             .into(object : CustomTarget<Bitmap>() {
 
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -242,7 +242,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     Timber.d("image downloading in progress")
-                                    number.add(saveImage(resource, eventId, photo.id!!))
+                                    number.add(saveImage(resource, eventId, photo.id))
                                     if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
                                     }

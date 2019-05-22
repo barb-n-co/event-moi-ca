@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/tv_title_profile_photo_source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/SubtitleBlack"
+            android:paddingBottom="8dp"
+            android:text="@string/profile_picture_choice_title"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+    <ImageView
+            android:id="@+id/b_validate_camera_source_dialog_fragment"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_camera"
+            android:tint="@color/colorAccent"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_profile_photo_source"
+            app:layout_constraintEnd_toStartOf="@id/tv_camera_profile_photo_source_dialog_fragment"
+            app:layout_constraintBottom_toTopOf="@id/b_validate_gallery_source_dialog_fragment"
+            />
+
+    <TextView
+            android:id="@+id/tv_camera_profile_photo_source_dialog_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/bodyBlack"
+            android:text="@string/fab_camera_detail_event_fragment"
+            android:paddingStart="12dp"
+            android:paddingEnd="0dp"
+            app:layout_constraintStart_toEndOf="@id/b_validate_camera_source_dialog_fragment"
+            app:layout_constraintTop_toTopOf="@id/b_validate_camera_source_dialog_fragment"
+            app:layout_constraintBottom_toBottomOf="@id/b_validate_camera_source_dialog_fragment"
+            />
+
+    <ImageView
+            android:id="@+id/b_validate_gallery_source_dialog_fragment"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_galery"
+            android:tint="@color/colorAccent"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_gallery_profile_photo_source_dialog_fragment"
+            app:layout_constraintTop_toBottomOf="@id/b_validate_camera_source_dialog_fragment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
+    <TextView
+            android:id="@+id/tv_gallery_profile_photo_source_dialog_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/bodyBlack"
+            android:text="@string/fab_gallery_detail_event_fragment"
+            android:paddingStart="12dp"
+            android:paddingEnd="0dp"
+            app:layout_constraintStart_toEndOf="@+id/b_validate_gallery_source_dialog_fragment"
+            app:layout_constraintTop_toTopOf="@id/b_validate_gallery_source_dialog_fragment"
+            app:layout_constraintBottom_toBottomOf="@id/b_validate_gallery_source_dialog_fragment"
+            />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

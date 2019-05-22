@@ -172,6 +172,11 @@ object EventRepository {
             .toFlowable()
     }
 
+    fun putBytesToFireStoreForUserPhotoProfile(userId: String, data: ByteArray, photoName: String): Flowable<UploadTask.TaskSnapshot> {
+        return RxFirebaseStorage.putBytes(ref.child("$userId/$photoName.jpeg"), data)
+            .toFlowable()
+    }
+
     fun getPhotoDetail(eventId: String, photoId: String): Maybe<Photo> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             allPictures.child(eventId).child(photoId), Photo::class.java

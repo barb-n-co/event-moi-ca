@@ -13,6 +13,9 @@ import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
 import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.viewmodel.ProfileViewModel
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.kodein.di.generic.instance
@@ -21,6 +24,8 @@ import timber.log.Timber
 class ProfileFragment : BaseFragment() {
 
     private val viewModel: ProfileViewModel by instance(arg = this)
+    lateinit var alertDialog: AlertDialog
+    lateinit var storageReference: StorageReference
 
     companion object {
         const val TAG = "PROFILERAGMENT"
@@ -36,7 +41,12 @@ class ProfileFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//         val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
+//        val ref = db.reference
+//         val database = FirebaseDatabase.getInstance()
+//         val userRef = database.reference.child("users")
 
+        storageReference = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com").getReference("users")
         b_deconnexion_profile_fragment.setOnClickListener {
             actionDeconnexion()
         }
@@ -129,7 +139,25 @@ class ProfileFragment : BaseFragment() {
                 if (resultCode == Activity.RESULT_OK) {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
-                    iv_photo_fragment_profile.setImageURI(galleryUri)
+
+
+                    val uploadTask=storageReference!!.putFile(galleryUri)
+                    val task = uploadTask.continueWithTask{task->
+
+
+                        if (!task.isSuccessful){}
+                        storageReference!!.downloadUrl
+
+                    }.addOnCompleteListener {task->
+                        if (task.isSuccessful){
+                            val downloadUri = task.result
+                            val url = downloadUri!!.toString()
+                            Timber.d("DIRECTLINK "+url)
+                            iv_photo_fragment_profile.setImageURI(galleryUri)
+                        }
+
+                    }
+
 //                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
 //                    eventId?.let { eventId ->
 //                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)

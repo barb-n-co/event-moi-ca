@@ -61,7 +61,7 @@ class EditDetailEventFragment : BaseFragment() {
             EditDetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-        chip_place_edit_event_fragment.setOnClickListener {
+        /*chip_place_edit_event_fragment.setOnClickListener {
             val fragment = MapsFragment.newInstance()
             fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
 
@@ -74,7 +74,7 @@ class EditDetailEventFragment : BaseFragment() {
                 )
                 ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
             fragmentMapIsOpen(true)
-        }
+        }*/
         chip_date_start_edit_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, startDateCode)

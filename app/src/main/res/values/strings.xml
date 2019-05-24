@@ -114,6 +114,7 @@
     <string name="detail_photo_fragment_authorize_photo">Autoriser la Photo</string>
     <string name="detail_photo_fragment_toast_commentaire_error">Veuillez saisir un commentaire.</string>
     <string name="detail_photo_fragment_comment_added">Commentaire publié</string>
+    <string name="detail_photo_fragment_comment_reported">Le commentaire a été signalé à l\'organisateur</string>
 
 
     <!-- Profile Fragment -->

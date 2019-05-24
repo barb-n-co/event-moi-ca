@@ -78,8 +78,20 @@
                     style="@style/SubtitleBlack"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_reported_user_comment_item"
                     app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                    android:id="@+id/iv_reported_user_comment_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_report_problem"
+                    android:tint="@android:color/holo_red_dark"
+                    android:layout_margin="4dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             <androidx.constraintlayout.widget.Group
                     android:id="@+id/group_edit_comment_item"
@@ -164,8 +176,20 @@
                     style="@style/SubtitleBlack"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/iv_reported_other_user_comment_item"
                     app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                    android:id="@+id/iv_reported_other_user_comment_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_report_problem"
+                    android:tint="@android:color/holo_red_dark"
+                    android:layout_margin="4dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

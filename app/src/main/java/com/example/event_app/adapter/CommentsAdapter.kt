@@ -24,7 +24,7 @@ class CommentsAdapter(
     private val fragmentManager: FragmentManager,
     private val idUser: String,
     private val idOrganizer: String?,
-    private val commentSelectedListener: (String, CommentChoice, String?) -> Unit,
+    private val commentSelectedListener: (CommentaireItem, CommentChoice, String?) -> Unit,
     private val editCommentListener: (Commentaire) -> Unit
 ) : ListAdapter<CommentaireItem, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
 
@@ -61,6 +61,10 @@ class CommentsAdapter(
                 if (comment.likes.size > 0) {
                     itemView.chip_like_user_comment_item.visibility = VISIBLE
                 } else itemView.chip_like_user_comment_item.visibility = GONE
+
+                if (idOrganizer.equals(idUser)) {
+                    itemView.iv_reported_user_comment_item.visibility = if (comment.reported == 0) GONE else VISIBLE
+                }
             } else {
                 itemView.iv_user_comment_item.visibility = VISIBLE
                 itemView.tv_name_comment_item.visibility = VISIBLE
@@ -76,6 +80,10 @@ class CommentsAdapter(
                 if (comment.likes.size > 0) {
                     itemView.chip_like_other_comment_item.visibility = VISIBLE
                 } else itemView.chip_like_other_comment_item.visibility = GONE
+                if (idOrganizer.equals(idUser)) {
+                    itemView.iv_reported_other_user_comment_item.visibility =
+                        if (comment.reported == 0) GONE else VISIBLE
+                }
             }
 
             itemView.setOnClickListener {
@@ -91,11 +99,11 @@ class CommentsAdapter(
                                 itemView.tv_message_user_comment_item.visibility = GONE
                             }
                             CommentChoice.DISLIKE -> {
-                                commentSelectedListener(comment.commentId, it, comment.likes.find {
+                                commentSelectedListener(comment, it, comment.likes.find {
                                     it.userId == idUser
                                 }?.likeId)
                             }
-                            else -> commentSelectedListener(comment.commentId, it, null)
+                            else -> commentSelectedListener(comment, it, null)
                         }
                     })
                 dialogFragment.show(fragmentManager, HomeFragment.TAG)
@@ -128,10 +136,11 @@ class CommentsAdapter(
             return oldItem.commentId == newItem.commentId
                     && oldItem.comment == newItem.comment
                     && oldItem.likes == newItem.likes
+                    && oldItem.reported == newItem.reported
         }
 
         override fun areContentsTheSame(oldItem: CommentaireItem, newItem: CommentaireItem): Boolean {
-            return oldItem.comment == newItem.comment && oldItem.likes == newItem.likes
+            return oldItem.comment == newItem.comment && oldItem.likes == newItem.likes && oldItem.reported == newItem.reported
         }
     }
 }

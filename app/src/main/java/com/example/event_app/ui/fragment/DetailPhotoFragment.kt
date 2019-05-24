@@ -203,19 +203,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 requireFragmentManager(),
                 userId,
                 idOrganizer,
-                commentSelectedListener = { commentId, commentChoice, likeId ->
+                commentSelectedListener = { comment, commentChoice, likeId ->
                     when (commentChoice) {
                         CommentChoice.DELETE -> {
                             photoId?.let {
-                                viewModel.deleteComment(it, commentId)
+                                viewModel.deleteComment(it, comment.commentId)
                             }
                         }
                         CommentChoice.REPORT -> {
-
+                            viewModel.reportComment(comment, getString(R.string.detail_photo_fragment_comment_reported))
                         }
                         CommentChoice.LIKE -> {
                             photoId?.let {
-                                viewModel.addCommentLike(userId, commentId, it)
+                                viewModel.addCommentLike(userId, comment.commentId, it)
                             }
                         }
                         CommentChoice.DISLIKE -> {

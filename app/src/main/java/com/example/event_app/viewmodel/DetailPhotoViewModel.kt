@@ -75,7 +75,8 @@ class DetailPhotoViewModel(
                     it.date,
                     result.second.filter { like ->
                         like.commentId == it.commentId
-                    }
+                    },
+                    it.reported
                 )
             }
         }.subscribe(
@@ -92,6 +93,27 @@ class DetailPhotoViewModel(
         eventsRepository.addNewCommentLike(userId, commentId, photoId).subscribe(
             {
                 fetchComments(photoId)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun reportComment(commentaireItem: CommentaireItem, message: String){
+        val commentReported = Commentaire(
+            commentaireItem.commentId,
+            commentaireItem.author,
+            commentaireItem.authorId,
+            commentaireItem.comment,
+            commentaireItem.photoId,
+            commentaireItem.date,
+            1
+        )
+        eventsRepository.editCommentOfPhoto(commentReported).subscribe(
+            {
+                messageDispatcher.onNext(message)
+                fetchComments(commentaireItem.photoId)
             },
             {
                 Timber.e(it)

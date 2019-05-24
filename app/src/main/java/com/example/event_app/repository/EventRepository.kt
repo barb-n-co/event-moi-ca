@@ -238,6 +238,10 @@ object EventRepository {
         } ?: return Completable.complete()
     }
 
+    fun reportComment(comment: Commentaire): Completable {
+        return RxFirebaseDatabase.setValue(commentsRef.child(comment.photoId).child(comment.commentId), comment)
+    }
+
     fun removeCommentLike(likeId: String, photoId: String): Task<Void> {
         return commentLikesRef.child(photoId).child(likeId).removeValue()
     }

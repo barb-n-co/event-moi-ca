@@ -36,6 +36,7 @@ class EditDetailEventFragment : BaseFragment() {
         const val ADDRESS_TAG = "AddressTAG"
         const val LAT_TAG = "LatitudeTAG"
         const val LONG_TAG = "longitudeTAG"
+        const val requestCodeMapFragment = 601
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -61,9 +62,9 @@ class EditDetailEventFragment : BaseFragment() {
             EditDetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-        /*chip_place_edit_event_fragment.setOnClickListener {
+        chip_place_edit_event_fragment.setOnClickListener {
             val fragment = MapsFragment.newInstance()
-            fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
+            fragment.setTargetFragment(this, requestCodeMapFragment)
 
             fragmentManager?.beginTransaction()
                 ?.setCustomAnimations(
@@ -74,7 +75,8 @@ class EditDetailEventFragment : BaseFragment() {
                 )
                 ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
             fragmentMapIsOpen(true)
-        }*/
+        }
+
         chip_date_start_edit_event_fragment.setOnClickListener {
             val date = DatePickerFragment()
             date.setTargetFragment(this, startDateCode)
@@ -179,7 +181,7 @@ class EditDetailEventFragment : BaseFragment() {
                 dateEnd = endDateTimePicker.time
                 chip_date_end_edit_event_fragment.text = getDateToString(endDateTimePicker.time)
             }
-            MapsFragment.requestCodeMapFragment -> {
+            requestCodeMapFragment -> {
                 data?.getStringExtra(ADDRESS_TAG)?.let {
                     chip_place_edit_event_fragment.text = it
                 }

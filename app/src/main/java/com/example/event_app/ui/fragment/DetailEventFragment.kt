@@ -382,7 +382,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     private fun takePhotoByCamera() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(context!!.packageManager)?.also {
                 // Create the File where the photo should go
                 val photoFile: File? = try {
                     viewModel.createImageFile(context!!)
@@ -400,15 +399,14 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                     startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
                 }
-            }
         }
     }
 
     private fun takePhotoByGallery() {
         viewModel.pickImageFromGallery().also { galleryIntent ->
-            galleryIntent.resolveActivity(context!!.packageManager)?.also {
-                startActivityForResult(galleryIntent, IMAGE_PICK_CODE)
-            }
+            val chooser =
+                Intent.createChooser(galleryIntent, "My Gallery")
+            startActivityForResult(chooser, IMAGE_PICK_CODE)
         }
     }
 

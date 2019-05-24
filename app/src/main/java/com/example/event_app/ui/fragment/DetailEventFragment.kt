@@ -9,7 +9,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -124,35 +125,40 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                         b_exit_detail_event_fragment.setOnClickListener {
                             actionExitEvent()
                         }
-                        setFab(if(it.activate == 0) false else true)
+                        setFab(it.activate != 0)
                     }
 
                 } else {
-                    setFab(if(it.activate == 0) false else true)
+                    setFab(it.activate != 0)
                     b_exit_detail_event_fragment.text = getString(R.string.b_delete_detail_event_fragment)
                     b_exit_detail_event_fragment.visibility = VISIBLE
                     b_exit_detail_event_fragment.setOnClickListener {
                         actionDeleteEvent()
                     }
-                    if(it.activate == 0) {
+                    if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
-                        switch_activate_detail_event_fragment.text = getString(R.string.switch_desactivate_detail_event_fragment)
+                        switch_activate_detail_event_fragment.text =
+                            getString(R.string.switch_desactivate_detail_event_fragment)
                     } else {
                         switch_activate_detail_event_fragment.isChecked = true
-                        switch_activate_detail_event_fragment.text = getString(R.string.switch_activate_detail_event_fragment)
+                        switch_activate_detail_event_fragment.text =
+                            getString(R.string.switch_activate_detail_event_fragment)
                     }
                     b_edit_detail_event_fragment.visibility = VISIBLE
                     b_edit_detail_event_fragment.setOnClickListener { _ ->
-                        val action = DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
+                        val action =
+                            DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
                         NavHostFragment.findNavController(this).navigate(action)
                     }
                     switch_activate_detail_event_fragment.setOnCheckedChangeListener { buttonView, isChecked ->
-                        if(isChecked) {
-                            switch_activate_detail_event_fragment.text = getString(R.string.switch_activate_detail_event_fragment)
+                        if (isChecked) {
+                            switch_activate_detail_event_fragment.text =
+                                getString(R.string.switch_activate_detail_event_fragment)
                             viewModel.changeActivationEvent(true)
                             setFab(true)
                         } else {
-                            switch_activate_detail_event_fragment.text = getString(R.string.switch_desactivate_detail_event_fragment)
+                            switch_activate_detail_event_fragment.text =
+                                getString(R.string.switch_desactivate_detail_event_fragment)
                             viewModel.changeActivationEvent(false)
                             setFab(false)
                         }
@@ -193,6 +199,32 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         tv_listParticipant.setOnClickListener { openPopUp() }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, returnIntent)
+
+        when (requestCode) {
+            CAPTURE_PHOTO -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val capturedBitmap = viewModel.getBitmapWithPath()
+                    eventId?.let { eventId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
+                    }
+                }
+            }
+
+            IMAGE_PICK_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    returnIntent?.extras
+                    val galleryUri = returnIntent?.data!!
+                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                    eventId?.let { eventId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
+                    }
+                }
+            }
+        }
     }
 
     private fun initAdapter(eventId: String) {
@@ -307,7 +339,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     private fun setFab(state: Boolean) {
 
-        if(state){
+        if (state) {
             fabmenu_detail_event.getMiniFab(0).show()
             fabmenu_detail_event.getMiniFabTextView(0).visibility = VISIBLE
             fabmenu_detail_event.getMiniFab(1).show()
@@ -361,6 +393,43 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     }
 
+    private fun takePhotoByCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                viewModel.createImageFile(context!!)
+            } catch (ex: IOException) {
+                Toast.makeText(context, "Une erreur est arrivée lors du téléchargement de la photo", Toast.LENGTH_SHORT)
+                    .show()
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    context!!,
+                    "com.example.event_app.fileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
+            }
+        }
+    }
+
+    private fun takePhotoByGallery() {
+        viewModel.pickImageFromGallery().also { galleryIntent ->
+            val chooser =
+                Intent.createChooser(galleryIntent, "My Gallery")
+            startActivityForResult(chooser, IMAGE_PICK_CODE)
+        }
+    }
+
+    override fun loadQrCode() {
+        eventId?.let {
+            GenerationQrCodeActivity.start(activity as MainActivity, it)
+        }
+    }
+
     private fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -377,68 +446,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         if (requestCode == PERMISSION_IMPORT && grantResults.size == 2) {
             takePhotoByGallery()
-        }
-    }
-
-    private fun takePhotoByCamera() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    viewModel.createImageFile(context!!)
-                } catch (ex: IOException) {
-                    Toast.makeText(context, "Une erreur est arrivée lors du téléchargement de la photo", Toast.LENGTH_SHORT).show()
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        context!!,
-                        "com.example.event_app.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
-                }
-        }
-    }
-
-    private fun takePhotoByGallery() {
-        viewModel.pickImageFromGallery().also { galleryIntent ->
-            val chooser =
-                Intent.createChooser(galleryIntent, "My Gallery")
-            startActivityForResult(chooser, IMAGE_PICK_CODE)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, returnIntent)
-
-            when (requestCode) {
-                CAPTURE_PHOTO -> {
-                    if (resultCode == Activity.RESULT_OK) {
-                        val capturedBitmap = viewModel.getBitmapWithPath()
-                        eventId?.let { eventId ->
-                            viewModel.putImageWithBitmap(capturedBitmap, eventId, false)
-                        }
-                    }
-                }
-
-                IMAGE_PICK_CODE -> {
-                    if (resultCode == Activity.RESULT_OK) {
-                        returnIntent?.extras
-                        val galleryUri = returnIntent?.data!!
-                        val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                        eventId?.let { eventId ->
-                            viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
-                        }
-                    }
-                }
-            }
-    }
-
-    override fun loadQrCode() {
-        eventId?.let {
-            GenerationQrCodeActivity.start(activity as MainActivity, it)
         }
     }
 

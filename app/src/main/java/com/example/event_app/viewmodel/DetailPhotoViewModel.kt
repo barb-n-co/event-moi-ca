@@ -100,7 +100,7 @@ class DetailPhotoViewModel(
         ).addTo(disposeBag)
     }
 
-    fun reportComment(commentaireItem: CommentaireItem, message: String){
+    fun reportComment(commentaireItem: CommentaireItem, message: String) {
         val commentReported = Commentaire(
             commentaireItem.commentId,
             commentaireItem.author,
@@ -203,7 +203,14 @@ class DetailPhotoViewModel(
         return imagePath
     }
 
-    fun deleteImageOrga(eventId: String, photoId: String, url: String, isReported: Int,  message: String, errorMessage: String) {
+    fun deleteImageOrga(
+        eventId: String,
+        photoId: String,
+        url: String,
+        isReported: Int,
+        message: String,
+        errorMessage: String
+    ) {
         eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
             if (it.isSuccessful) {
                 /** delete from FireStore */

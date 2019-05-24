@@ -65,8 +65,6 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         super.onViewCreated(view, savedInstanceState)
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_event_detail_map)
         initMap()
-
-
     }
 
     private fun initMap() {

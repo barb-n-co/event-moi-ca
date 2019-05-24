@@ -82,6 +82,35 @@ class ProfileFragment : BaseFragment() {
         ).addTo(viewDisposable)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, returnIntent)
+
+        when (requestCode) {
+
+            PermissionManager.IMAGE_PICK_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    returnIntent?.extras
+                    val galleryUri = returnIntent?.data!!
+                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, userId, true)
+                    }
+                }
+            }
+
+            PermissionManager.CAPTURE_PHOTO -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
+                    val capturedBitmap = viewModel.getBitmapWithPath()
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, userId, false)
+                    }
+                }
+            }
+
+        }
+    }
+
     private fun openPopUp() {
 
         val popup = ProfilePhotoSourceDialogFragment(
@@ -134,14 +163,6 @@ class ProfileFragment : BaseFragment() {
                 Intent.createChooser(galleryIntent, "My Gallery")
             startActivityForResult(chooser, PermissionManager.IMAGE_PICK_CODE)
         }
-    }
-
-    private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
     }
 
 
@@ -197,40 +218,17 @@ class ProfileFragment : BaseFragment() {
             resources.getString(R.string.tv_number_organizer_profile_fragment, numberEvent.organizer)
     }
 
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.getCurrentUser()
         viewModel.getNumberEventUser()
     }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, returnIntent)
-
-        when (requestCode) {
-
-            PermissionManager.IMAGE_PICK_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    returnIntent?.extras
-                    val galleryUri = returnIntent?.data!!
-                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    userId?.let { userId ->
-                        viewModel.putImageWithBitmap(galeryBitmap, userId, true)
-                    }
-                }
-            }
-
-            PermissionManager.CAPTURE_PHOTO -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
-                    val capturedBitmap = viewModel.getBitmapWithPath()
-                    userId?.let { userId ->
-                        viewModel.putImageWithBitmap(capturedBitmap, userId, false)
-                    }
-                }
-            }
-
-        }
-    }
-
 }

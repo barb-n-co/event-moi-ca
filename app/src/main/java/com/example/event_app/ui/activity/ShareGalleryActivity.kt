@@ -18,8 +18,6 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-
-
 class ShareGalleryActivity : BaseActivity() {
 
     private val viewModel: ShareGalleryViewModel by instance(arg = this)

@@ -148,18 +148,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    private fun requestCameraPermission() {
-        if (permissionManager.requestCameraPermission(activity!!)) {
-            openQrCode()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setTitleToolbar(getString(R.string.title_home))
-        displayFilterMenu(true)
-    }
-
     override fun getInvitation(idEvent: String) {
         viewModel.addInvitation(idEvent)
     }
@@ -170,6 +158,18 @@ class HomeFragment : BaseFragment(), HomeInterface {
             viewModel.getMyEvents()
         }, filterState = viewModel.stateUserEvent)
         bottomSheetDialog.show(requireFragmentManager(), TAG)
+    }
+
+    private fun requestCameraPermission() {
+        if (permissionManager.requestCameraPermission(activity!!)) {
+            openQrCode()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setTitleToolbar(getString(R.string.title_home))
+        displayFilterMenu(true)
     }
 
     override fun onStart() {

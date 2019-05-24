@@ -20,7 +20,6 @@ import java.util.Calendar.HOUR_OF_DAY
 import java.util.Calendar.MINUTE
 
 
-
 class EditDetailEventFragment : BaseFragment() {
 
 
@@ -56,7 +55,7 @@ class EditDetailEventFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
         setVisibilityNavBar(false)
-        setTitleToolbar(getString(R.string.toolbar_add_event_fragment_add_event))
+        setTitleToolbar(getString(R.string.title_edit_detail_event))
 
         val eventId = arguments?.let {
             EditDetailEventFragmentArgs.fromBundle(it).eventId
@@ -102,55 +101,6 @@ class EditDetailEventFragment : BaseFragment() {
         }
     }
 
-    private fun initEditorPage(event: Event) {
-        et_name_edit_event_fragment.setText(event.name)
-        et_description_edit_event_fragment.setText(event.description)
-        chip_place_edit_event_fragment.text = event.place
-        chip_date_start_edit_event_fragment.text = event.dateStart
-        chip_date_end_edit_event_fragment.text = event.dateEnd
-        dateStart = getDateOfString(event.dateStart)
-        dateEnd = getDateOfString(event.dateEnd)
-        latitude = event.latitude
-        longitude = event.longitude
-    }
-
-    private fun initActions(event: Event) {
-        b_validate_edit_event_fragment.setOnClickListener {
-            val name = et_name_edit_event_fragment.text.toString()
-            val place = chip_place_edit_event_fragment.text.toString()
-            val description = et_description_edit_event_fragment.text.toString()
-            val startDateString = getDateToString(dateStart)
-            val endDateString = getDateToString(dateEnd)
-
-            if (dateEnd != null && dateStart != null
-                && name.isNotEmpty()
-                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
-            {
-                if(dateEnd!!.time <= dateStart!!.time){
-                    Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    viewModel.addEventFragment(
-                        event.idEvent,
-                        event.organizer,
-                        name,
-                        place,
-                        description,
-                        startDateString,
-                        endDateString,
-                        latitude,
-                        longitude
-                    )
-                    fragmentManager?.popBackStack()
-                }
-            } else {
-                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -195,6 +145,54 @@ class EditDetailEventFragment : BaseFragment() {
         }
     }
 
+    private fun initEditorPage(event: Event) {
+        et_name_edit_event_fragment.setText(event.name)
+        et_description_edit_event_fragment.setText(event.description)
+        chip_place_edit_event_fragment.text = event.place
+        chip_date_start_edit_event_fragment.text = event.dateStart
+        chip_date_end_edit_event_fragment.text = event.dateEnd
+        dateStart = getDateOfString(event.dateStart)
+        dateEnd = getDateOfString(event.dateEnd)
+        latitude = event.latitude
+        longitude = event.longitude
+    }
+
+    private fun initActions(event: Event) {
+        b_validate_edit_event_fragment.setOnClickListener {
+            val name = et_name_edit_event_fragment.text.toString()
+            val place = chip_place_edit_event_fragment.text.toString()
+            val description = et_description_edit_event_fragment.text.toString()
+            val startDateString = getDateToString(dateStart)
+            val endDateString = getDateToString(dateEnd)
+
+            if (dateEnd != null && dateStart != null
+                && name.isNotEmpty()
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse)
+            ) {
+                if (dateEnd!!.time <= dateStart!!.time) {
+                    Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    viewModel.addEventFragment(
+                        event.idEvent,
+                        event.organizer,
+                        name,
+                        place,
+                        description,
+                        startDateString,
+                        endDateString,
+                        latitude,
+                        longitude
+                    )
+                    fragmentManager?.popBackStack()
+                }
+            } else {
+                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
     private fun getDateToString(date: Date?): String {
         val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
         return if (date != null) df.format(date) else "Erreur test"
@@ -204,6 +202,4 @@ class EditDetailEventFragment : BaseFragment() {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm")
         return dateFormat.parse(date)
     }
-
-
 }

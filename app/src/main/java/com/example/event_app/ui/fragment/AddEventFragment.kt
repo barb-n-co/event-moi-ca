@@ -91,9 +91,9 @@ class AddEventFragment : BaseFragment() {
 
             if (dateEnd != null && dateStart != null
                 && organizer.isNotEmpty() && name.isNotEmpty()
-                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
-            {
-                if(dateEnd!!.time <= dateStart!!.time){
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse)
+            ) {
+                if (dateEnd!!.time <= dateStart!!.time) {
                     Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
                         .show()
                 } else {

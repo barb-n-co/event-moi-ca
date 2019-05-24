@@ -113,7 +113,7 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         return intent
     }
 
-    fun getBitmapWithPath() :Bitmap {
+    fun getBitmapWithPath(): Bitmap {
         return BitmapFactory.decodeFile(currentPhotoPath)
     }
 
@@ -140,7 +140,7 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                         val url = snapshot.metadata!!.path
                         currentUser.photoUrl = url
 
-                        userRepository.updateUser(currentUser.id!!, currentUser.email!!, currentUser.name!!, url )
+                        userRepository.updateUser(currentUser.id!!, currentUser.email!!, currentUser.name!!, url)
                     }
 
 

@@ -3,10 +3,8 @@ package com.example.event_app.adapter
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
-import android.opengl.Visibility
 import android.view.View
 import com.example.event_app.R
-import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker

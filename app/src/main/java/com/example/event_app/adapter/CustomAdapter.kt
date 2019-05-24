@@ -52,11 +52,11 @@ class CustomAdapter(private val isOrganizer: Int) :
             }
 
             v.setOnClickListener {
-                photo.id?.let {
-                    photosClickPublisher.onNext(photo.id!!)
+                photo.id.let {
+                    photosClickPublisher.onNext(photo.id)
                 }
             }
-            photo.url?.let { path ->
+            photo.url.let { path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
                 GlideApp.with(v.context).load(storageReference).override(300, 300).centerCrop().into(iv!!)

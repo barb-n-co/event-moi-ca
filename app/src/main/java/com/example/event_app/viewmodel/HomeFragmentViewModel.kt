@@ -31,44 +31,44 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
                     Pair(t1, t2)
                 }).map { response ->
-                    response.second.filter {
-                        when {
-                            stateUserEvent.equals(UserEventState.NOTHING) -> true
-                            stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
-                            stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
-                            stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
-                            else -> false
-                        }
-                    }.map { myEvents ->
-                        val item = response.first.find { events ->
-                            events.idEvent == myEvents.idEvent
-                        }
-                        item?.let {
-                            EventItem(
-                                it.idEvent,
-                                it.name,
-                                idUser,
-                                it.organizer,
-                                it.place,
-                                it.dateStart,
-                                it.dateEnd,
-                                myEvents.accepted,
-                                myEvents.organizer,
-                                it.description,
-                                it.idOrganizer,
-                                it.reportedPhotoCount,
-                                it.isEmptyEvent
-                            )
-                        }
-                    }.filterNotNull()
-                }.subscribe({
-                    myEventList.onNext(it)
-                },
-                    {
-                        Timber.e(it)
-                    }, {
-                        loading.onNext(false)
-                    }).addTo(disposeBag)
+                response.second.filter {
+                    when {
+                        stateUserEvent.equals(UserEventState.NOTHING) -> true
+                        stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
+                        stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
+                        stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
+                        else -> false
+                    }
+                }.map { myEvents ->
+                    val item = response.first.find { events ->
+                        events.idEvent == myEvents.idEvent
+                    }
+                    item?.let {
+                        EventItem(
+                            it.idEvent,
+                            it.name,
+                            idUser,
+                            it.organizer,
+                            it.place,
+                            it.dateStart,
+                            it.dateEnd,
+                            myEvents.accepted,
+                            myEvents.organizer,
+                            it.description,
+                            it.idOrganizer,
+                            it.reportedPhotoCount,
+                            it.isEmptyEvent
+                        )
+                    }
+                }.filterNotNull()
+            }.subscribe({
+                myEventList.onNext(it)
+            },
+                {
+                    Timber.e(it)
+                }, {
+                    loading.onNext(false)
+                }).addTo(disposeBag)
         }
     }
 

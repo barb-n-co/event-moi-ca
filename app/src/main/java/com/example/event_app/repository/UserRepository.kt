@@ -6,9 +6,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
@@ -24,6 +26,12 @@ object UserRepository {
 
     fun resetPassword(email: String) {
         fireBaseAuth.sendPasswordResetEmail(email)
+    }
+
+    fun getAllUsers(): Observable<List<User>> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            usersRef, DataSnapshotMapper.listOf(User::class.java)
+        ).toObservable()
     }
 
     fun getUserNameFromFirebase() {

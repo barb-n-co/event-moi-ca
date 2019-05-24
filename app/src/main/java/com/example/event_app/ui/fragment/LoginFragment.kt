@@ -90,7 +90,7 @@ class LoginFragment : BaseFragment() {
     private fun userLogin(email: String, password: String) {
         viewModel.logIn(email, password).subscribe(
             {
-                if(it && SplashScreenActivity.sharedPhotoPath != null) {
+                if (it && SplashScreenActivity.sharedPhotoPath != null) {
                     val shareGalleryIntent = Intent(context, ShareGalleryActivity::class.java)
                     startActivity(shareGalleryIntent)
                 } else if (it) {

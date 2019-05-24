@@ -90,7 +90,6 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
                             )
                             marker.tag = event
-                            marker.showInfoWindow()
                             val region = viewModel.setRegion(it)
                             /** center region on all events */
                             googleEventMap.moveCamera(CameraUpdateFactory.newLatLngBounds(region, 0))

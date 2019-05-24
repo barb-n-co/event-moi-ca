@@ -108,33 +108,31 @@ class ProfileFragment : BaseFragment() {
 
     private fun takePhotoByCamera() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(context!!.packageManager)?.also {
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    viewModel.createImageFile(context!!)
-                } catch (ex: IOException) {
-                    // Error occurred while creating the File
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        context!!,
-                        "com.example.event_app.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
-                }
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                viewModel.createImageFile(context!!)
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    context!!,
+                    "com.example.event_app.fileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
             }
         }
     }
 
     private fun takePhotoByGallery() {
         viewModel.pickImageFromGallery().also { galleryIntent ->
-            galleryIntent.resolveActivity(context!!.packageManager)?.also {
-                startActivityForResult(galleryIntent, PermissionManager.IMAGE_PICK_CODE)
-            }
+            val chooser =
+                Intent.createChooser(galleryIntent, "My Gallery")
+            startActivityForResult(chooser, PermissionManager.IMAGE_PICK_CODE)
         }
     }
 

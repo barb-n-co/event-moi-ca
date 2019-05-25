@@ -82,6 +82,35 @@ class ProfileFragment : BaseFragment() {
         ).addTo(viewDisposable)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, returnIntent)
+
+        when (requestCode) {
+
+            PermissionManager.IMAGE_PICK_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    returnIntent?.extras
+                    val galleryUri = returnIntent?.data!!
+                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(galeryBitmap, userId, true)
+                    }
+                }
+            }
+
+            PermissionManager.CAPTURE_PHOTO -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
+                    val capturedBitmap = viewModel.getBitmapWithPath()
+                    userId?.let { userId ->
+                        viewModel.putImageWithBitmap(capturedBitmap, userId, false)
+                    }
+                }
+            }
+
+        }
+    }
+
     private fun openPopUp() {
 
         val popup = ProfilePhotoSourceDialogFragment(
@@ -108,42 +137,32 @@ class ProfileFragment : BaseFragment() {
 
     private fun takePhotoByCamera() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(context!!.packageManager)?.also {
-                // Create the File where the photo should go
-                val photoFile: File? = try {
-                    viewModel.createImageFile(context!!)
-                } catch (ex: IOException) {
-                    // Error occurred while creating the File
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        context!!,
-                        "com.example.event_app.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
-                }
+            // Create the File where the photo should go
+            val photoFile: File? = try {
+                viewModel.createImageFile(context!!)
+            } catch (ex: IOException) {
+                // Error occurred while creating the File
+                null
+            }
+            // Continue only if the File was successfully created
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    context!!,
+                    "com.example.event_app.fileprovider",
+                    it
+                )
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
             }
         }
     }
 
     private fun takePhotoByGallery() {
         viewModel.pickImageFromGallery().also { galleryIntent ->
-            galleryIntent.resolveActivity(context!!.packageManager)?.also {
-                startActivityForResult(galleryIntent, PermissionManager.IMAGE_PICK_CODE)
-            }
+            val chooser =
+                Intent.createChooser(galleryIntent, "My Gallery")
+            startActivityForResult(chooser, PermissionManager.IMAGE_PICK_CODE)
         }
-    }
-
-    private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
     }
 
 
@@ -199,40 +218,17 @@ class ProfileFragment : BaseFragment() {
             resources.getString(R.string.tv_number_organizer_profile_fragment, numberEvent.organizer)
     }
 
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.getCurrentUser()
         viewModel.getNumberEventUser()
     }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, returnIntent)
-
-        when (requestCode) {
-
-            PermissionManager.IMAGE_PICK_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    returnIntent?.extras
-                    val galleryUri = returnIntent?.data!!
-                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
-                    userId?.let { userId ->
-                        viewModel.putImageWithBitmap(galeryBitmap, userId, true)
-                    }
-                }
-            }
-
-            PermissionManager.CAPTURE_PHOTO -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
-                    val capturedBitmap = viewModel.getBitmapWithPath()
-                    userId?.let { userId ->
-                        viewModel.putImageWithBitmap(capturedBitmap, userId, false)
-                    }
-                }
-            }
-
-        }
-    }
-
 }

@@ -27,8 +27,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
 
     companion object {
-        const val requestCodeMapFragment = 201
-
         fun newInstance(): MapsFragment = MapsFragment()
 
         var fragmentManager: FragmentManager? = null
@@ -74,7 +72,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.INVISIBLE
                     val intent = viewModel.createIntentWithExtra(addressMap, getString(R.string.chip_adresse))
-                    targetFragment?.onActivityResult(requestCodeMapFragment, RESULT_OK, intent)
+                    targetFragment?.onActivityResult(targetRequestCode, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }
             },

@@ -10,5 +10,6 @@ data class Commentaire(
     var authorId: String = "",
     var comment: String = "",
     var photoId: String = "",
-    var date: String = ""
+    var date: String = "",
+    var reported: Int = 0
 ) : Parcelable

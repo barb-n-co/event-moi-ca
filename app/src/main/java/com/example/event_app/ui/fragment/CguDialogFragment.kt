@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.event_app.R
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_fragment_cgu.*
 
 class CguDialogFragment : DialogFragment() {

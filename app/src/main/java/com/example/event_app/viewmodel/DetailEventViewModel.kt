@@ -131,10 +131,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         }
     }
 
-    fun changeActivationEvent(state: Boolean){
+    fun changeActivationEvent(state: Boolean) {
         eventLoaded.value?.let {
             var newEvent = it.apply {
-                this.activate = if(state) 1 else 0
+                this.activate = if (state) 1 else 0
             }
             eventsRepository.addEvent(it.idOrganizer, it.organizer, newEvent)
         }
@@ -217,7 +217,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return MediaStore.Images.Media.getBitmap(resolver, uri)
     }
 
-    fun getBitmapWithPath() :Bitmap {
+    fun getBitmapWithPath(): Bitmap {
         return BitmapFactory.decodeFile(currentPhotoPath)
     }
 
@@ -249,7 +249,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                     if (number.size == photoList.size) {
                                         Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
                                     } else {
-                                        Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT)
+                                            .show()
                                     }
                                 }
 
@@ -321,7 +322,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     private fun removeEventsReference(idEvent: String) {
-        eventsRepository.getAllUsers().subscribe(
+        userRepository.getAllUsers().subscribe(
             {
                 it.forEach { user ->
                     user.id?.let { userId ->

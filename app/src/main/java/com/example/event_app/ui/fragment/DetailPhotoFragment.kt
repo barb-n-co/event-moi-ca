@@ -203,19 +203,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 requireFragmentManager(),
                 userId,
                 idOrganizer,
-                commentSelectedListener = { commentId, commentChoice, likeId ->
+                commentSelectedListener = { comment, commentChoice, likeId ->
                     when (commentChoice) {
                         CommentChoice.DELETE -> {
                             photoId?.let {
-                                viewModel.deleteComment(it, commentId)
+                                viewModel.deleteComment(it, comment.commentId)
                             }
                         }
                         CommentChoice.REPORT -> {
-
+                            viewModel.reportComment(comment, getString(R.string.detail_photo_fragment_comment_reported))
                         }
                         CommentChoice.LIKE -> {
                             photoId?.let {
-                                viewModel.addCommentLike(userId, commentId, it)
+                                viewModel.addCommentLike(userId, comment.commentId, it)
                             }
                         }
                         CommentChoice.DISLIKE -> {
@@ -276,9 +276,11 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         eventId?.let { eventId ->
             photo.value?.let { photo ->
                 if (photo.isReported == 0) {
-                    viewModel.reportOrValidateImage(eventId, photo, 1,
+                    viewModel.reportOrValidateImage(
+                        eventId, photo, 1,
                         getString(R.string.picture_reported_to_owner),
-                        getString(R.string.problem_occured_during_download))
+                        getString(R.string.problem_occured_during_download)
+                    )
                 } else {
                     Toast.makeText(context, getString(R.string.picture_already_reported), Toast.LENGTH_SHORT).show()
                 }
@@ -287,18 +289,22 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     }
 
     private fun downloadImage() {
-        viewModel.downloadImageOnPhone(photoURL, eventId!!, photoId!!,
+        viewModel.downloadImageOnPhone(
+            photoURL, eventId!!, photoId!!,
             getString(R.string.picture_downloaded_toast),
-            getString(R.string.error_on_download_toast))
+            getString(R.string.error_on_download_toast)
+        )
     }
 
     private fun deleteImage() {
         eventId?.let { eventId ->
             viewModel.photo.value?.let { photo ->
                 photoId?.let { id ->
-                    viewModel.deleteImageOrga(eventId, id, photoURL, photo.isReported,
+                    viewModel.deleteImageOrga(
+                        eventId, id, photoURL, photo.isReported,
                         getString(R.string.picture_deleted),
-                        getString(R.string.unable_to_delete_picture))
+                        getString(R.string.unable_to_delete_picture)
+                    )
                 }
             }
         }

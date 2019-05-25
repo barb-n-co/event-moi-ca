@@ -19,7 +19,8 @@ import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 
-class EventMapViewModel (private val eventRepository: EventRepository, private val userRepository: UserRepository): BaseViewModel(){
+class EventMapViewModel(private val eventRepository: EventRepository, private val userRepository: UserRepository) :
+    BaseViewModel() {
 
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
     val currentLocation: PublishSubject<LatLng> = PublishSubject.create()
@@ -34,7 +35,7 @@ class EventMapViewModel (private val eventRepository: EventRepository, private v
                     Pair(t1, t2)
                 })
                 .map { response ->
-                    response.second.map {myEvents ->
+                    response.second.map { myEvents ->
                         val item = response.first.find { events ->
                             events.idEvent == myEvents.idEvent
                         }
@@ -103,7 +104,8 @@ class EventMapViewModel (private val eventRepository: EventRepository, private v
         return LatLngBounds(LatLng(latitudeMin, longitudeMin), LatLng(latitudeMax, longitudeMax))
     }
 
-    class Factory(private val eventRepository: EventRepository,private val userRepository: UserRepository) : ViewModelProvider.Factory {
+    class Factory(private val eventRepository: EventRepository, private val userRepository: UserRepository) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return EventMapViewModel(eventRepository, userRepository) as T

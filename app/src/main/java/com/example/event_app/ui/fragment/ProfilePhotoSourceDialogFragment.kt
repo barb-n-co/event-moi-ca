@@ -9,7 +9,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_fragment_profile_photo_source.*
 
-class ProfilePhotoSourceDialogFragment(private val choiceSelectedListener: (Boolean) -> Unit): BottomSheetDialogFragment() {
+class ProfilePhotoSourceDialogFragment(private val choiceSelectedListener: (Boolean) -> Unit) :
+    BottomSheetDialogFragment() {
 
     private var viewDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -20,10 +21,14 @@ class ProfilePhotoSourceDialogFragment(private val choiceSelectedListener: (Bool
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cameraTriggers = listOf(b_validate_camera_source_dialog_fragment,
-            tv_camera_profile_photo_source_dialog_fragment)
-        val galleryTriggers = listOf(b_validate_gallery_source_dialog_fragment,
-            tv_gallery_profile_photo_source_dialog_fragment)
+        val cameraTriggers = listOf(
+            b_validate_camera_source_dialog_fragment,
+            tv_camera_profile_photo_source_dialog_fragment
+        )
+        val galleryTriggers = listOf(
+            b_validate_gallery_source_dialog_fragment,
+            tv_gallery_profile_photo_source_dialog_fragment
+        )
 
         cameraTriggers.forEach {
             it.setOnClickListener {

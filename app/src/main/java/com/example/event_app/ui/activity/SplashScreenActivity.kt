@@ -38,7 +38,7 @@ class SplashScreenActivity : BaseActivity() {
                 user != null && Intent.ACTION_SEND == action && type.startsWith("image/") -> {
                     val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                     val shareGalleryIntent = Intent(this, ShareGalleryActivity::class.java)
-                    shareGalleryIntent.putExtra("uri",imageUri)
+                    shareGalleryIntent.putExtra("uri", imageUri)
                     startActivity(shareGalleryIntent)
                 }
                 user != null -> {
@@ -58,7 +58,6 @@ class SplashScreenActivity : BaseActivity() {
 
         viewModel.initMessageReceiving()
     }
-
 
 
     override fun onStop() {

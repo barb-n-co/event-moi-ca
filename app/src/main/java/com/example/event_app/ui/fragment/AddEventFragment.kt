@@ -32,6 +32,7 @@ class AddEventFragment : BaseFragment() {
         const val ADDRESS_TAG = "AddressTAG"
         const val LAT_TAG = "LatitudeTAG"
         const val LONG_TAG = "longitudeTAG"
+        const val requestCodeMapFragment = 602
         const val startDateCode = 1
         const val startTimeCode = 2
         const val endDateCode = 3
@@ -55,7 +56,7 @@ class AddEventFragment : BaseFragment() {
 
         chip_place_add_event_fragment.setOnClickListener {
             val fragment = MapsFragment.newInstance()
-            fragment.setTargetFragment(this, MapsFragment.requestCodeMapFragment)
+            fragment.setTargetFragment(this, requestCodeMapFragment)
 
             fragmentManager?.beginTransaction()
                 ?.setCustomAnimations(
@@ -90,9 +91,9 @@ class AddEventFragment : BaseFragment() {
 
             if (dateEnd != null && dateStart != null
                 && organizer.isNotEmpty() && name.isNotEmpty()
-                && place.isNotEmpty() && place != getString(R.string.chip_adresse))
-            {
-                if(dateEnd!!.time <= dateStart!!.time){
+                && place.isNotEmpty() && place != getString(R.string.chip_adresse)
+            ) {
+                if (dateEnd!!.time <= dateStart!!.time) {
                     Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
                         .show()
                 } else {
@@ -147,7 +148,7 @@ class AddEventFragment : BaseFragment() {
                 dateEnd = endDateTimePicker.time
                 chip_date_end_add_event_fragment.text = getDateToString(endDateTimePicker.time)
             }
-            MapsFragment.requestCodeMapFragment -> {
+            requestCodeMapFragment -> {
                 data?.getStringExtra(ADDRESS_TAG)?.let {
                     chip_place_add_event_fragment.text = it
                 }

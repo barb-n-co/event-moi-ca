@@ -6,9 +6,6 @@ import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 
 class AddEventFragmentViewModel(
     private val userRepository: UserRepository,

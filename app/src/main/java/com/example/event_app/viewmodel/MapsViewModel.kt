@@ -14,7 +14,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
-class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(){
+class MapsViewModel(private val mapsRepository: MapsRepository) : BaseViewModel() {
 
     var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
@@ -30,7 +30,7 @@ class MapsViewModel (private val mapsRepository: MapsRepository): BaseViewModel(
 
     }
 
-    fun searchAdress(adr : String){
+    fun searchAdress(adr: String) {
         mapsRepository.getPositionWithAdress(adr)
     }
 

@@ -199,10 +199,8 @@ class ProfileFragment : BaseFragment() {
                 .load(viewModel.getStorageRef(user.photoUrl))
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
-                .centerInside()
+                .circleCrop()
                 .into(iv_photo_fragment_profile)
-
-            Timber.tag("TEST_1").d("pass")
         }
 
         tv_name_fragment_profile.text = user.name

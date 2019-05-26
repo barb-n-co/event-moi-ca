@@ -8,12 +8,15 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Commentaire
 import com.example.event_app.model.CommentaireItem
 import com.example.event_app.ui.fragment.CommentChoiceDialogFragment
 import com.example.event_app.ui.fragment.HomeFragment
+import com.example.event_app.utils.GlideApp
+import com.example.event_app.viewmodel.DetailPhotoViewModel
 import kotlinx.android.synthetic.main.item_comment.view.*
 import java.net.URLDecoder
 import java.text.DateFormat
@@ -21,12 +24,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CommentsAdapter(
+    private val fragmentViewModel: DetailPhotoViewModel,
     private val fragmentManager: FragmentManager,
     private val idUser: String,
     private val idOrganizer: String?,
     private val commentSelectedListener: (CommentaireItem, CommentChoice, String?) -> Unit,
     private val editCommentListener: (Commentaire) -> Unit
 ) : ListAdapter<CommentaireItem, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
@@ -83,6 +88,15 @@ class CommentsAdapter(
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_other_user_comment_item.visibility =
                         if (comment.reported == 0) GONE else VISIBLE
+                }
+                if (comment.profileImage.isNotEmpty()) {
+                    GlideApp
+                        .with(itemView.context)
+                        .load(fragmentViewModel.getStorageRef(comment.profileImage))
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .circleCrop()
+                        .into(itemView.iv_user_comment_item)
                 }
             }
 

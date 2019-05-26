@@ -28,7 +28,7 @@ class AddEventFragmentViewModel(
                             organizer = organizer, name = name,
                             place = place, description = description,
                             dateStart = startDateString, dateEnd = endDateString,
-                            latitude = latitude, longitude = longitude
+                            latitude = latitude, longitude = longitude, organizerPhoto = user.photoUrl
                         )
                     )
                 }

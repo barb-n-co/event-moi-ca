@@ -282,7 +282,8 @@ object EventRepository {
         val pushPath = commentsRef.child(photoId).push().key!!
         val author = user.name ?: ""
         val userId = user.id!!
-        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
+        val userProfileImage = user.photoUrl
+        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate, profileImage = userProfileImage)
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 

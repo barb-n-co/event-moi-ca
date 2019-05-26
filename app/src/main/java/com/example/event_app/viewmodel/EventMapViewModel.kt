@@ -11,6 +11,7 @@ import com.example.event_app.repository.UserRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.firebase.storage.StorageReference
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
@@ -54,6 +55,7 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
                                 it.idOrganizer,
                                 it.reportedPhotoCount,
                                 it.isEmptyEvent,
+                                it.organizerPhoto,
                                 it.latitude,
                                 it.longitude
                             )
@@ -66,6 +68,10 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
                         Timber.e(it)
                     }).addTo(disposeBag)
         }
+    }
+
+    fun getStorageRef(url: String): StorageReference {
+        return eventRepository.getStorageReferenceForUrl(url)
     }
 
     @SuppressLint("MissingPermission")

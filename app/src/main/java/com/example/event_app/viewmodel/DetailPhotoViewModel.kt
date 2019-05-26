@@ -35,6 +35,8 @@ class DetailPhotoViewModel(
     val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
+    val photoTaker: BehaviorSubject<String> = BehaviorSubject.create()
+
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
@@ -57,6 +59,17 @@ class DetailPhotoViewModel(
         }
     }
 
+    fun getPhotographProfilePicture(userId: String) {
+        userRepository.getUserById(userId).subscribe(
+            {
+                photoTaker.onNext(it.photoUrl)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
     private fun fetchComments(photoId: String) {
         Flowable.zip(
             eventsRepository.fetchCommentaires(photoId),
@@ -76,7 +89,8 @@ class DetailPhotoViewModel(
                     result.second.filter { like ->
                         like.commentId == it.commentId
                     },
-                    it.reported
+                    it.reported,
+                    it.profileImage
                 )
             }
         }.subscribe(

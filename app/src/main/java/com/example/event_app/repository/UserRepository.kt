@@ -10,6 +10,7 @@ import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -106,6 +107,12 @@ object UserRepository {
             }
         }
 
+    }
+
+    fun getUserById(userId: String): Maybe<User> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            usersRef.child(userId), User::class.java
+        )
     }
 
     private fun setNameFirebase(uid: String, name: String, email: String, photoUrl: String?) {

@@ -54,7 +54,8 @@
                 app:layout_constraintEnd_toEndOf="parent"/>
 
         <ImageView
-                android:layout_width="wrap_content"
+                android:id="@+id/iv_organizer_photo_item_event"
+                android:layout_width="30dp"
                 android:layout_height="0dp"
                 android:src="@drawable/ic_manager"
                 android:layout_marginEnd="8dp"
@@ -65,8 +66,9 @@
         <TextView
                 android:id="@+id/tv_organizer_myevents_item"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:layout_marginTop="8dp"
+                android:paddingTop="4dp"
                 style="@style/body"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/v_myevents_item"

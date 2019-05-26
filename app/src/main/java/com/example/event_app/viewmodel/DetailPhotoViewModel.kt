@@ -70,6 +70,10 @@ class DetailPhotoViewModel(
         ).addTo(disposeBag)
     }
 
+    fun getCurrentUser(): User {
+        return userRepository.currentUser.value!!
+    }
+
     private fun fetchComments(photoId: String) {
         Flowable.zip(
             eventsRepository.fetchCommentaires(photoId),

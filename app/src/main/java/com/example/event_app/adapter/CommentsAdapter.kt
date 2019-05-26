@@ -126,6 +126,7 @@ class CommentsAdapter(
         }
 
         private fun makeEditedCommentFrom(comment: CommentaireItem): Commentaire {
+            val user = fragmentViewModel.getCurrentUser()
             /** making a new object reference */
             val newComment = Commentaire(
                 comment.commentId,
@@ -133,7 +134,8 @@ class CommentsAdapter(
                 comment.authorId,
                 "",
                 comment.photoId,
-                ""
+                "",
+                profileImage = user.photoUrl
             )
             /** modify this reference */
             val date = Calendar.getInstance().time

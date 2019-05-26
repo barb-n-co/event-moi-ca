@@ -129,6 +129,9 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                 tv_auteur.text = photo.authorName
                 setMenu()
+
+                viewModel.getPhotographProfilePicture(photo.auteurId)
+
             },
             {
                 Timber.e(it)
@@ -136,6 +139,19 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 setMenu()
             })
             .addTo(viewDisposable)
+
+        viewModel.photoTaker.subscribe(
+            {
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(it))
+                    .circleCrop()
+                    .into(iv_icon_author_detail_photo_fragment)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
 
         viewModel.peopleWhoLike.subscribe(
             { list ->
@@ -167,6 +183,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 Timber.e(error)
             }
         ).addTo(viewDisposable)
+
+
     }
 
     private fun setActions() {

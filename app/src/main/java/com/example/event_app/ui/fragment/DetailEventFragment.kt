@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
@@ -30,6 +31,7 @@ import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
@@ -90,8 +92,24 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             }
         ).addTo(viewDisposable)
 
+        viewModel.organizerPhoto.subscribe(
+            {
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(it))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .into(iv_organizer_detail_fragment)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
         viewModel.event.subscribe(
             {
+                viewModel.getPhotographOrganizerPicture(it.idOrganizer)
                 tv_event_name_detail_fragment.text = it.nameEvent
                 tv_description_detail_fragment.text = it.description
                 tv_organizer_detail_fragment.text = it.nameOrganizer

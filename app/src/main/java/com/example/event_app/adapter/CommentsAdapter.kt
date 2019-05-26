@@ -28,6 +28,7 @@ class CommentsAdapter(
     private val editCommentListener: (Commentaire) -> Unit
 ) : ListAdapter<CommentaireItem, CommentsAdapter.CommentsViewHolder>(DiffCardCallback()) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
         return CommentsViewHolder(view)

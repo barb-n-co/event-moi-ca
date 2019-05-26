@@ -71,9 +71,9 @@
 
             <ImageView
                     android:id="@+id/iv_organizer_detail_fragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="42dp"
                     android:src="@drawable/ic_manager_green"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_organizer_detail_fragment"
@@ -94,9 +94,9 @@
 
             <ImageView
                     android:id="@+id/iv_address_detail_fragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="42dp"
                     android:src="@drawable/ic_localization"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_address_detail_fragment"
@@ -118,9 +118,9 @@
 
             <ImageView
                     android:id="@+id/iv_start_event_detail_fragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="42dp"
                     android:src="@drawable/ic_start"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_start_event_detail_fragment"
@@ -141,9 +141,9 @@
 
             <ImageView
                     android:id="@+id/iv_finish_event_detail_fragment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="48dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="42dp"
                     android:src="@drawable/ic_finish"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_finish_event_detail_fragment"

@@ -17,5 +17,6 @@ data class Event(
     var isEmptyEvent: Int = 0,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
-    var activate: Int = 1
+    var activate: Int = 1,
+    var organizerPhoto: String = ""
 ) : Parcelable

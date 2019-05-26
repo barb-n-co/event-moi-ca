@@ -89,7 +89,8 @@ class DetailPhotoViewModel(
                     result.second.filter { like ->
                         like.commentId == it.commentId
                     },
-                    it.reported
+                    it.reported,
+                    it.profileImage
                 )
             }
         }.subscribe(

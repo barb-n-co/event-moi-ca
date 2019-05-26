@@ -8,5 +8,6 @@ data class CommentaireItem(
     var photoId: String,
     var date: String,
     var likes: List<LikeComment>,
-    var reported: Int = 0
+    var reported: Int = 0,
+    var profileImage: String = ""
 )

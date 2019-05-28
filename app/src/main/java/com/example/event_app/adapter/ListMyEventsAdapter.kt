@@ -67,14 +67,15 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                     ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
                 itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_invited)
             }
-
-            GlideApp
-                .with(context)
-                .load(fragmentViewModel.getStorageRef(event.organizerPhoto))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .circleCrop()
-                .into(itemView.iv_organizer_photo_item_event)
+            if (event.organizerPhoto.isNotEmpty()) {
+                GlideApp
+                    .with(context)
+                    .load(fragmentViewModel.getStorageRef(event.organizerPhoto))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .into(itemView.iv_organizer_photo_item_event)
+            }
 
             itemView.setOnClickListener {
                 eventClickPublisher.onNext(event.idEvent)

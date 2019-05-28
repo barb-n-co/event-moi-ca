@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import durdinapps.rxfirebase2.DataSnapshotMapper
 import durdinapps.rxfirebase2.RxFirebaseAuth
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -25,32 +26,18 @@ object UserRepository {
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     private val usersRef: DatabaseReference = database.getReference(USERS)
+    private val ref: DatabaseReference = database.reference.child(USERS)
 
-    fun resetPassword(email: String) {
-        fireBaseAuth.sendPasswordResetEmail(email)
+    fun getUserById(userId: String): Maybe<User> {
+        return RxFirebaseDatabase.observeSingleValueEvent(
+            usersRef.child(userId), User::class.java
+        )
     }
 
     fun getAllUsers(): Observable<List<User>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             usersRef, DataSnapshotMapper.listOf(User::class.java)
         ).toObservable()
-    }
-
-    fun getUserNameFromFirebase() {
-        fireBaseAuth.currentUser?.uid?.let { it ->
-            RxFirebaseDatabase.observeSingleValueEvent(
-                usersRef.child(it)
-            ) { dataSnapshot ->
-                dataSnapshot.getValue(User::class.java)
-            }
-                .subscribe({ user ->
-                    user?.let {
-                        currentUser.onNext(it)
-                    }
-                }, {
-                    Timber.e(it)
-                })
-        }
     }
 
     fun logUser(email: String, password: String): Flowable<Boolean> {
@@ -62,12 +49,6 @@ object UserRepository {
                 authResult.user != null
             }
             .toFlowable()
-    }
-
-    fun deleteAccount(idUser: String) {
-        fireBaseAuth.currentUser?.delete()?.addOnCompleteListener {
-            usersRef.child(idUser).removeValue()
-        }
     }
 
     fun registerUser(email: String, password: String, name: String): Flowable<Boolean> {
@@ -111,10 +92,34 @@ object UserRepository {
 
     }
 
-    fun getUserById(userId: String): Maybe<User> {
-        return RxFirebaseDatabase.observeSingleValueEvent(
-            usersRef.child(userId), User::class.java
-        )
+    fun resetPassword(email: String) {
+        fireBaseAuth.sendPasswordResetEmail(email)
+    }
+
+    fun deleteUser() {
+        fireBaseAuth.currentUser?.delete()?.addOnCompleteListener {
+            Timber.d("user deleted")
+        }
+    }
+    fun deleteAccount(idUser: String): Completable {
+            return RxFirebaseDatabase.setValue(ref.child(idUser), null)
+    }
+
+    fun getUserNameFromFirebase() {
+        fireBaseAuth.currentUser?.uid?.let { it ->
+            RxFirebaseDatabase.observeSingleValueEvent(
+                usersRef.child(it)
+            ) { dataSnapshot ->
+                dataSnapshot.getValue(User::class.java)
+            }
+                .subscribe({ user ->
+                    user?.let {
+                        currentUser.onNext(it)
+                    }
+                }, {
+                    Timber.e(it)
+                })
+        }
     }
 
     private fun setNameFirebase(uid: String, name: String, email: String, photoUrl: String?) {

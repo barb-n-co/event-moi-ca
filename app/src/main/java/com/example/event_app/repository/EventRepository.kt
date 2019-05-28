@@ -44,9 +44,13 @@ object EventRepository {
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
 
+    //region FireStore
+
     fun getStorageReferenceForUrl(url: String): StorageReference {
         return ref.child(url)
     }
+
+    //end region
 
     //region Event
 

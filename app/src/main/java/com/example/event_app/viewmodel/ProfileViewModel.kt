@@ -38,6 +38,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
     fun deleteAccount() {
         userRepository.currentUser.value?.id?.let { idUser ->
             userRepository.deleteAccount(idUser)
+                .subscribe(
+                    {
+                        userRepository.deleteUser()
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
             eventRepository.deleteAllEventOfUser(idUser)
                 .subscribe(
                     {

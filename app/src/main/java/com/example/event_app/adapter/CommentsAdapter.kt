@@ -96,6 +96,7 @@ class CommentsAdapter(
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .circleCrop()
+                        .placeholder(R.drawable.ic_profile)
                         .into(itemView.iv_user_comment_item)
                 }
             }

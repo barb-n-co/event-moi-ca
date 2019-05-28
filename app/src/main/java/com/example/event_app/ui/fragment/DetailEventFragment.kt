@@ -100,6 +100,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_fragment)
             },
             {

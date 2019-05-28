@@ -200,6 +200,7 @@ class ProfileFragment : BaseFragment() {
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .circleCrop()
+                .placeholder(R.drawable.ic_profile)
                 .into(iv_photo_fragment_profile)
         }
 

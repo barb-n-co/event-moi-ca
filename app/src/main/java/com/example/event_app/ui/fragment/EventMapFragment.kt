@@ -123,16 +123,16 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
     private fun showBottomSheetDetails(event: EventItem) {
         context?.let {
-            if (event.organizerPhoto.isNotEmpty()) {
-                GlideApp
-                    .with(it)
-                    .load(viewModel.getStorageRef(event.organizerPhoto))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
-                    .into(iv_organizer_detail_bottom_sheet_map)
-            }
+
+            GlideApp
+                .with(it)
+                .load(viewModel.getStorageRef(event.organizerPhoto))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .circleCrop()
+                .placeholder(R.drawable.ic_profile)
+                .into(iv_organizer_detail_bottom_sheet_map)
+
         }
         tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
         tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer

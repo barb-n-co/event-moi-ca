@@ -89,16 +89,14 @@ class CommentsAdapter(
                     itemView.iv_reported_other_user_comment_item.visibility =
                         if (comment.reported == 0) GONE else VISIBLE
                 }
-                if (comment.profileImage.isNotEmpty()) {
-                    GlideApp
-                        .with(itemView.context)
-                        .load(fragmentViewModel.getStorageRef(comment.profileImage))
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .into(itemView.iv_user_comment_item)
-                }
+                GlideApp
+                    .with(itemView.context)
+                    .load(fragmentViewModel.getStorageRef(comment.profileImage))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .into(itemView.iv_user_comment_item)
             }
 
             itemView.setOnClickListener {
@@ -122,7 +120,6 @@ class CommentsAdapter(
                         }
                     })
                 dialogFragment.show(fragmentManager, HomeFragment.TAG)
-                true
             }
         }
 

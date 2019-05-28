@@ -2,6 +2,7 @@ package com.example.event_app.repository
 
 
 import android.content.Context
+import com.example.event_app.R
 import com.example.event_app.model.AddressMap
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
@@ -21,7 +22,7 @@ class MapsRepository(private val context: Context) {
     var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     init {
-        Places.initialize(context, "AIzaSyAIqjNxPVyTZ0pdjEnmdtQdbT_4UUbmD5w")
+        Places.initialize(context, context.getString(R.string.map_API_key))
         placesClient = Places.createClient(context)
     }
 
@@ -68,7 +69,7 @@ class MapsRepository(private val context: Context) {
             }
 
         }.addOnFailureListener { exception ->
-            Timber.e("Place not found: " + exception.localizedMessage)
+            Timber.e("Place not found: ${exception.localizedMessage}")
         }
     }
 }

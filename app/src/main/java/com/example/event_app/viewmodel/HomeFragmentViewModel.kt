@@ -81,9 +81,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     fun addInvitation(idEvent: String) {
         userRepository.currentUser.value?.let { user ->
             user.id?.let { id ->
-                user.name?.let { name ->
-                    eventsRepository.addInvitation(idEvent, id, name)
-                }
+                eventsRepository.addInvitation(idEvent, id)
             }
         }
     }

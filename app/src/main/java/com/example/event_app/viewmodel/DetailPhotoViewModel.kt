@@ -160,7 +160,6 @@ class DetailPhotoViewModel(
         eventsRepository.editCommentOfPhoto(comment)
             .subscribe(
                 {
-                    Timber.d("comment edited")
                     fetchComments(comment.photoId)
                 },
                 {
@@ -297,7 +296,6 @@ class DetailPhotoViewModel(
                     reportPhoto(eventId, photo, reportValue)
                         .subscribe(
                             {
-                                Timber.d("photo unreported ")
                                 messageDispatcher.onNext(message)
                                 if (reportValue == 1) {
                                     sendReportMessageToEventOwner(it.idOrganizer)
@@ -358,7 +356,6 @@ class DetailPhotoViewModel(
                     eventsRepository.deleteLike(user.id!!, photoId)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                Timber.d("like deleted")
                                 isPhotoAlreadyLiked = false
                                 userLike.onNext(isPhotoAlreadyLiked)
                             } else {
@@ -369,7 +366,6 @@ class DetailPhotoViewModel(
                     eventsRepository.setNewLike(user.id!!, photoId)
                         .subscribe(
                             {
-                                Timber.d("new like added")
                                 isPhotoAlreadyLiked = true
                                 userLike.onNext(isPhotoAlreadyLiked)
                             },

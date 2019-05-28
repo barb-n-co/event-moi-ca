@@ -35,7 +35,7 @@ class SplashScreenActivity : BaseActivity() {
         val user = viewModel.getCurrentUser()
         Handler().postDelayed({
             when {
-                user != null && Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                user != null && Intent.ACTION_SEND == action && type?.startsWith("image/") ?: false -> {
                     val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                     val shareGalleryIntent = Intent(this, ShareGalleryActivity::class.java)
                     shareGalleryIntent.putExtra("uri", imageUri)
@@ -44,7 +44,7 @@ class SplashScreenActivity : BaseActivity() {
                 user != null -> {
                     MainActivity.start(this)
                 }
-                Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                Intent.ACTION_SEND == action && type?.startsWith("image/") ?: false -> {
                     val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                     viewModel.createImageFile(this, imageUri)
                     val loginIntent = Intent(this, LoginActivity::class.java)

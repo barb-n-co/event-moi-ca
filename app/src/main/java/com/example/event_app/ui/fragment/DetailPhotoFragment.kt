@@ -177,7 +177,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.commentaires.subscribe(
             { commentList ->
-                Timber.tag("comments -- ").d(commentList.toString())
                 adapter?.submitList(commentList)
                 if (commentList.size > 0) {
                     rv_comments.visibility = View.VISIBLE
@@ -245,7 +244,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                         CommentChoice.DISLIKE -> {
                             photoId?.let {
                                 likeId?.let { id ->
-                                    viewModel.removeCommentLike(likeId, it)
+                                    viewModel.removeCommentLike(id, it)
                                 }
                             }
                         }

@@ -150,5 +150,10 @@
     <string name="cgu3">Ut nibh justo, tristique condimentum nunc vitae, faucibus hendrerit enim. Mauris enim lectus, feugiat quis risus at, sodales sodales nulla. Mauris at pretium lacus, et semper turpis. Maecenas nisi ex, semper ac turpis ut, elementum vulputate ligula. In blandit luctus nibh in facilisis. Suspendisse bibendum libero vel nunc ultrices, sed semper sem imperdiet. Integer vel purus eget felis tincidunt ultricies. Suspendisse sollicitudin mattis purus ut mollis. Donec placerat at sem ac ultrices. Nulla volutpat, risus a lacinia efficitur, lectus nulla fringilla eros, quis molestie magna lectus in ligula.</string>
     <string name="an_error_occured_please_try_later">Une erreur est survenue, merci de ressayer plus tard</string>
     <string name="image_shared_success">Votre image a été envoyé</string>
+    <string name="fileProvider">com.example.event_app.fileprovider</string>
+    <string name="passwords_does_not_match">Les deux mots de passe ne correspondent pas !</string>
+    <string name="error_occured_downloading_photo">Une erreur a eu lieu lors du téléchargement</string>
+    <string name="download_complete">Téléchargement terminé</string>
+    <string name="error_occured_leaving_event">Une erreur a eut lieu. Vous n\'avez pas quitté l\'évènement</string>
 
 </resources>

@@ -35,6 +35,7 @@ class FilterDialogFragment(
             UserEventState.ORGANIZER -> {
                 cb_filter_organizer_dialog_fragment.isChecked = true
             }
+            else -> {}
         }
 
         b_validate_dialog_fragment.setOnClickListener {
@@ -77,6 +78,7 @@ class FilterDialogFragment(
                     cb_filter_invitation_dialog_fragment.isChecked = false
                     stateSelectedListener(UserEventState.ORGANIZER)
                 }
+                else -> {}
             }
         }
     }

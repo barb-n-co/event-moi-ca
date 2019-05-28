@@ -42,7 +42,12 @@ class SignupFragment : BaseFragment() {
             val email = et_email_signup_fragment.text.toString()
             val password = et_password_signup_fragment.text.toString()
             val confirmPassword = et_confirm_password_signup_fragment.text.toString()
-            userRegister(email, password, name)
+            if (password == confirmPassword) {
+                userRegister(email, password, name)
+            } else {
+                Toast.makeText(context, getString(R.string.passwords_does_not_match), Toast.LENGTH_SHORT).show()
+            }
+
         }
         tv_cgu.setOnClickListener { openCGU() }
     }

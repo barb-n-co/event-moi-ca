@@ -22,9 +22,10 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
+        <!-- R.string.fileProvider  com.example.event_app.fileprovider-->
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="com.example.event_app.fileprovider"
+                android:authorities="@string/fileProvider"
                 android:exported="false"
                 android:grantUriPermissions="true">
             <meta-data

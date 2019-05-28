@@ -17,13 +17,14 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
+private const val USERS = "users"
 
 object UserRepository {
 
     var currentUser: BehaviorSubject<User> = BehaviorSubject.create()
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
-    val usersRef: DatabaseReference = database.getReference("users")
+    private val usersRef: DatabaseReference = database.getReference(USERS)
 
     fun resetPassword(email: String) {
         fireBaseAuth.sendPasswordResetEmail(email)

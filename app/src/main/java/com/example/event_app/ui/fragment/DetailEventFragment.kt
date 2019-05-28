@@ -53,9 +53,9 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     private val viewModel: DetailEventViewModel by instance(arg = this)
     private var eventId: String? = null
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
-    var popupWindow: PopupWindow? = null
+    private var popupWindow: PopupWindow? = null
     var idOrganizer = ""
-    var imageIdList = ArrayList<Photo>()
+    private var imageIdList = ArrayList<Photo>()
 
     companion object {
         const val TAG = "DETAIL_EVENT_FRAGMENT"
@@ -169,7 +169,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
                         NavHostFragment.findNavController(this).navigate(action)
                     }
-                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { buttonView, isChecked ->
+                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { _ , isChecked ->
                         if (isChecked) {
                             switch_activate_detail_event_fragment.text =
                                 getString(R.string.switch_activate_detail_event_fragment)
@@ -312,7 +312,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "erreur de traitement pour quitter l'évènement",
+                                        getString(R.string.error_occured_leaving_event),
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()
@@ -321,7 +321,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             }
 
                         } else {
-                            Toast.makeText(context, "erreur de traitement pour quitter l'évènement", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                getString(R.string.error_occured_leaving_event),
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                             Timber.e(task.exception?.localizedMessage)
                         }
@@ -418,7 +422,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             val photoFile: File? = try {
                 viewModel.createImageFile(context!!)
             } catch (ex: IOException) {
-                Toast.makeText(context, "Une erreur est arrivée lors du téléchargement de la photo", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    context,
+                    getString(R.string.error_occured_downloading_photo),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 null
             }
@@ -426,7 +434,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             photoFile?.also {
                 val photoURI: Uri = FileProvider.getUriForFile(
                     context!!,
-                    "com.example.event_app.fileprovider",
+                    getString(R.string.fileProvider),
                     it
                 )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)

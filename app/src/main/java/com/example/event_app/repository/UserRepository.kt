@@ -25,8 +25,7 @@ object UserRepository {
     var currentUser: BehaviorSubject<User> = BehaviorSubject.create()
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
-    private val usersRef: DatabaseReference = database.getReference(USERS)
-    private val ref: DatabaseReference = database.reference.child(USERS)
+    private val usersRef: DatabaseReference = database.reference.child(USERS)
 
     fun getUserById(userId: String): Maybe<User> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -102,7 +101,7 @@ object UserRepository {
         }
     }
     fun deleteAccount(idUser: String): Completable {
-            return RxFirebaseDatabase.setValue(ref.child(idUser), null)
+            return RxFirebaseDatabase.setValue(usersRef.child(idUser), null)
     }
 
     fun getUserNameFromFirebase() {

@@ -77,13 +77,14 @@ object UserRepository {
                     val user = User(
                         firebaseUser.uid,
                         name,
-                        firebaseUser.email
+                        firebaseUser.email,
+                        "${authResult.user.uid}/${authResult.user.uid}.jpeg"
                     )
                     val userAuth = fireBaseAuth.currentUser
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(name).build()
                     userAuth?.updateProfile(profileUpdates)?.addOnCompleteListener {
-                        setNameFirebase(firebaseUser.uid, name, email, null)
+                        setNameFirebase(firebaseUser.uid, name, email, "${authResult.user.uid}/${authResult.user.uid}.jpeg")
                     }
                     currentUser.onNext(user)
 

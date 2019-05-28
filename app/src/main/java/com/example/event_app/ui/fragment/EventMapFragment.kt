@@ -130,6 +130,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_bottom_sheet_map)
             }
         }

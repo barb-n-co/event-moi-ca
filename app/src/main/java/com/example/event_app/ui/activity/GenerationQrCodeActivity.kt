@@ -63,21 +63,10 @@ class GenerationQrCodeActivity : BaseActivity() {
                     )
                 )
             ) {
-                val bitmapPath = MediaStore.Images.Media.insertImage(
-                    contentResolver,
-                    bitmap,
-                    "Invitation",
-                    null
-                )
-                val bitmapUri = Uri.parse(bitmapPath)
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/png"
-                intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
-                startActivity(Intent.createChooser(intent, "Share"))
+                share()
             } else {
                 requestPermissions()
             }
-
 
             true
         }
@@ -86,11 +75,25 @@ class GenerationQrCodeActivity : BaseActivity() {
         }
     }
 
+    private fun share() {
+        val bitmapPath = MediaStore.Images.Media.insertImage(
+            contentResolver,
+            bitmap,
+            "Invitation",
+            null
+        )
+        val bitmapUri = Uri.parse(bitmapPath)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/png"
+        intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
+        startActivity(Intent.createChooser(intent, "Share"))
+    }
+
     private fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, this)
+        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_IMPORT, this)
     }
 
     private fun encodeAsBitmap(str: String): Bitmap? {

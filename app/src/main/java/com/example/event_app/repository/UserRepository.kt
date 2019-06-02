@@ -26,6 +26,7 @@ object UserRepository {
     var fireBaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     private val usersRef: DatabaseReference = database.reference.child(USERS)
+    private val tokenRef: DatabaseReference = database.reference.child("tokens")
 
     fun getUserById(userId: String): Maybe<User> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -37,6 +38,24 @@ object UserRepository {
         return RxFirebaseDatabase.observeSingleValueEvent(
             usersRef, DataSnapshotMapper.listOf(User::class.java)
         ).toObservable()
+    }
+
+    fun sentNewTokenToDb() {
+        MyFirebaseMessagingService.token?.let { token ->
+            currentUser.value?.id?.let {
+                RxFirebaseDatabase.setValue(tokenRef.child(it), listOf(token))
+                    .subscribe(
+                        {
+                            Timber.d("token added to DB")
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    )
+            }
+        }
+
+
     }
 
     fun logUser(email: String, password: String): Flowable<Boolean> {

@@ -17,24 +17,20 @@ import timber.log.Timber
 
 class NotificationRepository(private val context: Context) {
 
-    private val CHANNEL_ID = "notif_event_moi_ca"
     private val messageRef = FirebaseDatabase.getInstance().getReference("messages")
-    private var currentUserId: String = UserRepository.currentUser.value?.id ?: ""
 
-    fun sendMessageToSpecificChannel(eventOwner: String) {
-        createNotificationChannel()
-        messageRef.push().setValue(Message(context.getString(R.string.notification_message_title), eventOwner))
-        Timber.d("message sent")
+    fun sendMessageToSpecificChannel(eventOwner: String, eventId: String) {
+        messageRef.push().setValue(Message(context.getString(R.string.notification_message_title), eventOwner, eventId))
+        Timber.d("message push to db")
     }
 
-    private fun createNotificationChannel() {
+    fun createNotificationChannel(channelId: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = CHANNEL_ID
             val descriptionText = context.getString(R.string.notification_channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(channelId, channelId, importance).apply {
                 description = descriptionText
             }
             // Register the channel with the system
@@ -48,32 +44,33 @@ class NotificationRepository(private val context: Context) {
         notificationTitle: String,
         notificationBody: String,
         dataTitle: String,
-        dataMessage: String,
+        dataEventOwner: String,
+        dataEventId: String,
         context: Context
     ) {
 
-        if (currentUserId == dataMessage) {
-            val intent = Intent(context, SplashScreenActivity::class.java)
-            intent.putExtra("title", dataTitle)
-            intent.putExtra("message", dataMessage)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(
-                context, 0, intent,
-                PendingIntent.FLAG_ONE_SHOT
-            )
+        val intent = Intent(context, SplashScreenActivity::class.java)
+        intent.putExtra("title", dataTitle)
+        intent.putExtra("eventOwner", dataEventOwner)
+        intent.putExtra("eventId", dataEventId)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        Timber.tag("subscribed").d(dataEventId)
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT
+        )
 
-            val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.logo_event_moi_ca_notif)
-                .setColor(Color.GREEN)
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationBody)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
+        val notificationBuilder = NotificationCompat.Builder(context, dataEventOwner)
+            .setSmallIcon(R.drawable.logo_event_moi_ca_notif)
+            .setColor(Color.GREEN)
+            .setContentTitle(notificationTitle)
+            .setContentText(notificationBody)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
 
-            with(NotificationManagerCompat.from(context)) {
-                notify(1, notificationBuilder.build())
-            }
+        with(NotificationManagerCompat.from(context)) {
+            notify(1, notificationBuilder.build())
         }
     }
 

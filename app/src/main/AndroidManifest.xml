@@ -35,8 +35,10 @@
 
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="@string/map_API_key"/>
-
+                android:value="@string/GOOGLE_MAP_API_KEY"/>
+        <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_icon"
                 android:resource="@drawable/logo_event_moi_ca_notif" />

@@ -14,11 +14,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
+import com.example.event_app.repository.MyFirebaseMessagingService
 import com.example.event_app.ui.fragment.*
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
@@ -109,6 +111,7 @@ class MainActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         initView()
 
+
         viewModel.user.subscribe(
             {
                 if (!isHelloDisplayed) {
@@ -121,6 +124,7 @@ class MainActivity : BaseActivity() {
                         .show()
                     isHelloDisplayed = true
                 }
+
             },
             {
                 Timber.e(it)
@@ -290,6 +294,27 @@ class MainActivity : BaseActivity() {
     fun displayDetailPhotoMenuRestricted(value: Boolean) {
         downloadActionMenu?.isVisible = value
         reportPhotoActionMenu?.isVisible = value
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.sentNewToken()
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Timber.w("getInstanceId failed%s", task.exception)
+                    return@addOnCompleteListener
+                }
+
+                // Get new Instance ID token
+                val token = task.result?.token
+
+                Timber.d(token)
+                token?.let {
+                    MyFirebaseMessagingService.token = token
+                }
+
+            }
     }
 
     override fun onBackPressed() {

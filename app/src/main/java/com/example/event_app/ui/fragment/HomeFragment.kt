@@ -49,6 +49,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
         setVisibilityNavBar(true)
+
         setFab()
 
         shimmer = shimmer_view_container

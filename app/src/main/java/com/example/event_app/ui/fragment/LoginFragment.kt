@@ -94,6 +94,7 @@ class LoginFragment : BaseFragment() {
                     val shareGalleryIntent = Intent(context, ShareGalleryActivity::class.java)
                     startActivity(shareGalleryIntent)
                 } else if (it) {
+                    viewModel.initNotificationChannel()
                     MainActivity.start(activity!!)
                 }
             },

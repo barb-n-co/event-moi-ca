@@ -298,7 +298,7 @@ class DetailPhotoViewModel(
                             {
                                 messageDispatcher.onNext(message)
                                 if (reportValue == 1) {
-                                    sendReportMessageToEventOwner(it.idOrganizer)
+                                    sendReportMessageToEventOwner(it.idOrganizer, eventId)
                                 }
                             },
                             {
@@ -390,8 +390,8 @@ class DetailPhotoViewModel(
         }
     }
 
-    private fun sendReportMessageToEventOwner(eventOwner: String) {
-        notificationRepository.sendMessageToSpecificChannel(eventOwner)
+    private fun sendReportMessageToEventOwner(eventOwner: String, eventId: String) {
+        notificationRepository.sendMessageToSpecificChannel(eventOwner, eventId)
     }
 
     fun getNumberOfLike(list: List<LikeItem>?) {

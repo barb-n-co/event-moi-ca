@@ -2,7 +2,7 @@ package com.example.event_app.repository
 
 
 import android.content.Context
-import com.example.event_app.R
+import com.example.event_app.BuildConfig
 import com.example.event_app.model.AddressMap
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
@@ -22,7 +22,7 @@ class MapsRepository(private val context: Context) {
     var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
 
     init {
-        Places.initialize(context, context.getString(R.string.map_API_key))
+        Places.initialize(context, BuildConfig.GOOGLE_MAP_API_KEY)
         placesClient = Places.createClient(context)
     }
 

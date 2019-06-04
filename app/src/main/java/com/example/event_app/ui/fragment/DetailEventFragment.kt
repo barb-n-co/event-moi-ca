@@ -100,7 +100,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
+                    .placeholder(R.drawable.ic_manager_orange)
                     .into(iv_organizer_detail_fragment)
             },
             {
@@ -409,6 +409,18 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             viewModel.getAllPictures(id, weakContext.get()!!, eventName)
                         }
                     }
+                    R.id.action_edit_event -> {
+                        eventId?.let { id ->
+                            val eventName = tv_event_name_detail_fragment.text.toString()
+                            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
+                        }
+                    }
+                    R.id.action_delete_event -> {
+                        eventId?.let { id ->
+                            val eventName = tv_event_name_detail_fragment.text.toString()
+                            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
+                        }
+                    }
                 }
             }
         })
@@ -457,6 +469,18 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
     }
 
+    override fun editEvent() {
+        eventId?.let {
+            GenerationQrCodeActivity.start(activity as MainActivity, it)
+        }
+    }
+
+    override fun deleteEvent() {
+        eventId?.let {
+            GenerationQrCodeActivity.start(activity as MainActivity, it)
+        }
+    }
+
     private fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -479,6 +503,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onResume() {
         super.onResume()
         displayQrCodeMenu(true)
+        displayEditEventMenu(true)
+        displayDeleteEventMenu(true)
         eventId?.let { notNullId ->
             viewModel.getParticipant(notNullId)
         }
@@ -487,6 +513,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onStop() {
         super.onStop()
         displayQrCodeMenu(false)
+        displayEditEventMenu(false)
+        displayDeleteEventMenu(false)
     }
 
     override fun onDestroyView() {
@@ -499,4 +527,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
 interface DetailEventInterface {
     fun loadQrCode()
+    fun editEvent()
+    fun deleteEvent()
 }

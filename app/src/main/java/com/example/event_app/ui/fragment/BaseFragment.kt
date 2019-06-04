@@ -72,6 +72,14 @@ abstract class BaseFragment : Fragment(), KodeinAware {
         (activity as MainActivity).displayQrCodeMenu(value)
     }
 
+    protected fun displayEditEventMenu(value: Boolean) {
+        (activity as MainActivity).displayEditEventMenu(value)
+    }
+
+    protected fun displayDeleteEventMenu(value: Boolean) {
+        (activity as MainActivity).displayDeleteEventMenu(value)
+    }
+
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
     }

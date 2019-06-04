@@ -45,7 +45,7 @@
                     android:id="@+id/iv_icon_author_detail_photo_fragment"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_manager_green"
+                    android:src="@drawable/ic_manager_orange"
                     android:layout_marginStart="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_auteur"
@@ -54,7 +54,7 @@
             <TextView
                     android:id="@+id/tv_auteur"
                     tools:text="auteur"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/black_grey"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -84,7 +84,7 @@
                     android:paddingEnd="4dp"
                     android:paddingStart="4dp"
                     tools:text="100"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/black_grey"
                     android:textAlignment="center"
                     android:gravity="center_vertical"
                     app:layout_constraintStart_toEndOf="@id/iv_like"
@@ -127,12 +127,22 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rv_comments"/>
 
+            <View
+                    android:id="@+id/view3_background_detail_photo_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:background="@color/black_grey"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/view2_detail_photo_fragment"/>
+
             <EditText
                     android:id="@+id/et_comments"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:inputType="textAutoComplete"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/dark_orange"
                     android:textColorHint="@color/colorPrimary"
                     android:hint="@string/add_comment_to_photo"
                     android:ems="10"

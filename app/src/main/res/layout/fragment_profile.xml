@@ -35,7 +35,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     tools:text="Tristan Reffay"
-                    style="@style/Title"
+                    style="@style/TitleBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/iv_photo_fragment_profile"/>
@@ -48,7 +48,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     tools:text="tristan.reffay@gmail.com"
-                    style="@style/Subtitle"
+                    style="@style/SubtitleBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_name_fragment_profile"/>
@@ -73,7 +73,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:text="Invitation: 0"
-                    style="@style/body"
+                    style="@style/bodyBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/view_1_profile_fragment"/>
@@ -86,7 +86,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:text="Participation: 0"
-                    style="@style/body"
+                    style="@style/bodyBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_event_invitation_fragment_profile"/>
@@ -99,7 +99,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:text="Organisateur: 0"
-                    style="@style/body"
+                    style="@style/bodyBlack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_event_participate_fragment_profile"/>

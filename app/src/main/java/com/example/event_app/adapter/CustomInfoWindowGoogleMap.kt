@@ -23,7 +23,7 @@ class CustomInfoWindowGoogleMap(val context: Context) : GoogleMap.InfoWindowAdap
             if (it.organizer == 1 || it.accepted == 1) {
                 if (it.organizer == 1) {
                     mInfoView?.chip_user_state_info_window_map?.chipBackgroundColor =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_green))
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_orange))
                     mInfoView?.chip_user_state_info_window_map?.text = context.getString(R.string.tv_state_organizer)
                 } else {
                     mInfoView?.chip_user_state_info_window_map?.chipBackgroundColor =

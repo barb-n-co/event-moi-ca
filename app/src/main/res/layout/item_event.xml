@@ -8,8 +8,6 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
-        android:outlineSpotShadowColor="@color/colorPrimary"
-        android:outlineAmbientShadowColor="@color/colorPrimary"
         android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout

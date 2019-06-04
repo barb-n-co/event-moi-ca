@@ -16,7 +16,21 @@
             android:icon="@drawable/ic_load_qrcode"
             android:title="@string/title_qr_code"
             android:menuCategory="alternative"
-            app:showAsAction="always"/>
+            app:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/action_edit_event"
+            android:icon="@drawable/ic_edit"
+            android:title="@string/b_edit_detail_event_fragment"
+            android:menuCategory="alternative"
+            app:showAsAction="ifRoom"/>
+
+    <item
+            android:id="@+id/action_delete_event"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/b_delete_detail_event_fragment"
+            android:menuCategory="alternative"
+            app:showAsAction="ifRoom"/>
 
     <item
             android:id="@+id/action_delete_photo"

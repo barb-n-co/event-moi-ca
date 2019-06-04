@@ -36,6 +36,8 @@ class MainActivity : BaseActivity() {
     private val viewModel: MainActivityViewModel by instance(arg = this)
     private var filterButtonMenu: MenuItem? = null
     private var qrCodeButtonMenu: MenuItem? = null
+    private var editEventButtonMenu: MenuItem? = null
+    private var deleteEventButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -163,6 +165,8 @@ class MainActivity : BaseActivity() {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu.findItem(R.id.action_filter)
         qrCodeButtonMenu = menu.findItem(R.id.action_qr_code)
+        editEventButtonMenu = menu.findItem(R.id.action_edit_event)
+        deleteEventButtonMenu = menu.findItem(R.id.action_delete_event)
         downloadActionMenu = menu.findItem(R.id.action_download_photo)
         deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
         reportPhotoActionMenu = menu.findItem(R.id.action_report)
@@ -234,6 +238,22 @@ class MainActivity : BaseActivity() {
             }
             true
         }
+        R.id.action_edit_event -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailEventInterface) {
+                frg.editEvent()
+            }
+            true
+        }
+        R.id.action_delete_event -> {
+            val container = supportFragmentManager.findFragmentById(R.id.content_home)
+            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+            if (frg is DetailEventInterface) {
+                frg.deleteEvent()
+            }
+            true
+        }
         else -> {
             super.onOptionsItemSelected(item)
         }
@@ -270,6 +290,14 @@ class MainActivity : BaseActivity() {
 
     fun displayQrCodeMenu(value: Boolean) {
         qrCodeButtonMenu?.isVisible = value
+    }
+
+    fun displayEditEventMenu(value: Boolean) {
+        editEventButtonMenu?.isVisible = value
+    }
+
+    fun displayDeleteEventMenu(value: Boolean) {
+        deleteEventButtonMenu?.isVisible = value
     }
 
     override fun onSupportNavigateUp(): Boolean {

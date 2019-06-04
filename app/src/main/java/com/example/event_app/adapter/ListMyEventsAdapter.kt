@@ -53,7 +53,7 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                 itemView.b_refuse_myevents_item.visibility = GONE
                 if (event.organizer == 1) {
                     itemView.chip_user_state_myevents_item.chipBackgroundColor =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_green))
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_orange))
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_organizer)
                 } else {
                     itemView.chip_user_state_myevents_item.chipBackgroundColor =

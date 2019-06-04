@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -106,8 +107,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.userLike.subscribe(
             { liked ->
-                if (liked) iv_like.setColorFilter(Color.parseColor(COLOR_PRIMARY))
-                else iv_like.setColorFilter(Color.WHITE)
+                if (liked) iv_like.setColorFilter(ContextCompat.getColor(requireContext(), R.color.dark_orange))
+                else iv_like.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black_grey))
             },
             {
                 Timber.e(it)

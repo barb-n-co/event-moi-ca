@@ -1,5 +1,6 @@
 package com.example.event_app.ui.activity
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.event_app.R
+import com.example.event_app.manager.PermissionManager
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
@@ -55,17 +57,43 @@ class GenerationQrCodeActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_share -> {
-            val bitmapPath = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Invitation", null)
-            val bitmapUri = Uri.parse(bitmapPath)
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "image/png"
-            intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
-            startActivity(Intent.createChooser(intent, "Share"))
+            if (permissionManager.checkPermissions(
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                )
+            ) {
+                share()
+            } else {
+                requestPermissions()
+            }
+
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun share() {
+        val bitmapPath = MediaStore.Images.Media.insertImage(
+            contentResolver,
+            bitmap,
+            "Invitation",
+            null
+        )
+        val bitmapUri = Uri.parse(bitmapPath)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/png"
+        intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
+        startActivity(Intent.createChooser(intent, "Share"))
+    }
+
+    private fun requestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_IMPORT, this)
     }
 
     private fun encodeAsBitmap(str: String): Bitmap? {

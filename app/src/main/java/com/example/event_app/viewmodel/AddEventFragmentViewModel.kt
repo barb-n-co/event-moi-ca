@@ -5,7 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.Observable
+import timber.log.Timber
 
 class AddEventFragmentViewModel(
     private val userRepository: UserRepository,
@@ -28,9 +32,10 @@ class AddEventFragmentViewModel(
                             organizer = organizer, name = name,
                             place = place, description = description,
                             dateStart = startDateString, dateEnd = endDateString,
-                            latitude = latitude, longitude = longitude
+                            latitude = latitude, longitude = longitude, organizerPhoto = user.photoUrl
                         )
                     )
+                    initMessageReceiving(idEvent)
                 }
 
             }
@@ -39,6 +44,33 @@ class AddEventFragmentViewModel(
 
     fun getEventInfo(eventId: String): Observable<Event> {
         return eventsRepository.getEventDetail(eventId)
+    }
+
+    private fun initMessageReceiving(eventId: String) {
+
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Timber.w(task.exception, "getInstanceId failed")
+                    return@OnCompleteListener
+                }
+
+                // Get new Instance ID token
+                val token = task.result?.token
+
+                // Log and toast
+                val msg = "message with token = $token"
+                Timber.d(msg)
+            })
+
+        FirebaseMessaging.getInstance().subscribeToTopic(eventId)
+            .addOnCompleteListener { task ->
+                var msg = "subscribed to $eventId!!!"
+                if (!task.isSuccessful) {
+                    msg = "failed to subscribed"
+                }
+                Timber.d("message for subscribing: $msg")
+            }
     }
 
     class Factory(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :

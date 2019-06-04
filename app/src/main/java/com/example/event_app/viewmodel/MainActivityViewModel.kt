@@ -25,6 +25,10 @@ class MainActivityViewModel(private val userRepository: UserRepository, private 
         ).addTo(disposeBag)
     }
 
+    fun sentNewToken() {
+        userRepository.sentNewTokenToDb()
+    }
+
     class Factory(private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

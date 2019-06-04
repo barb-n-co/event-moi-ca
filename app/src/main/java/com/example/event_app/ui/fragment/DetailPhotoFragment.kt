@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
 import com.example.event_app.model.CommentChoice
@@ -122,6 +123,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 GlideApp
                     .with(context!!)
                     .load(viewModel.getStorageRef(photoURL))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .centerInside()
                     .into(iv_photo)
 
@@ -129,6 +132,9 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                 tv_auteur.text = photo.authorName
                 setMenu()
+
+                viewModel.getPhotographProfilePicture(photo.auteurId)
+
             },
             {
                 Timber.e(it)
@@ -136,6 +142,21 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 setMenu()
             })
             .addTo(viewDisposable)
+
+        viewModel.photoTaker.subscribe(
+            {
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(it))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .into(iv_icon_author_detail_photo_fragment)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
 
         viewModel.peopleWhoLike.subscribe(
             { list ->
@@ -156,7 +177,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.commentaires.subscribe(
             { commentList ->
-                Timber.tag("comments -- ").d(commentList.toString())
                 adapter?.submitList(commentList)
                 if (commentList.size > 0) {
                     rv_comments.visibility = View.VISIBLE
@@ -167,6 +187,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 Timber.e(error)
             }
         ).addTo(viewDisposable)
+
+
     }
 
     private fun setActions() {
@@ -200,6 +222,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private fun initAdapter(view: View) {
         UserRepository.currentUser.value?.id?.let { userId ->
             adapter = CommentsAdapter(
+                viewModel,
                 requireFragmentManager(),
                 userId,
                 idOrganizer,
@@ -221,7 +244,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                         CommentChoice.DISLIKE -> {
                             photoId?.let {
                                 likeId?.let { id ->
-                                    viewModel.removeCommentLike(likeId, it)
+                                    viewModel.removeCommentLike(id, it)
                                 }
                             }
                         }

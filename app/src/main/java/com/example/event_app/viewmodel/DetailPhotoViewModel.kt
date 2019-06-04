@@ -35,6 +35,8 @@ class DetailPhotoViewModel(
     val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
+    val photoTaker: BehaviorSubject<String> = BehaviorSubject.create()
+
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
@@ -57,6 +59,21 @@ class DetailPhotoViewModel(
         }
     }
 
+    fun getPhotographProfilePicture(userId: String) {
+        userRepository.getUserById(userId).subscribe(
+            {
+                photoTaker.onNext(it.photoUrl)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun getCurrentUser(): User {
+        return userRepository.currentUser.value!!
+    }
+
     private fun fetchComments(photoId: String) {
         Flowable.zip(
             eventsRepository.fetchCommentaires(photoId),
@@ -76,7 +93,8 @@ class DetailPhotoViewModel(
                     result.second.filter { like ->
                         like.commentId == it.commentId
                     },
-                    it.reported
+                    it.reported,
+                    it.profileImage
                 )
             }
         }.subscribe(
@@ -142,7 +160,6 @@ class DetailPhotoViewModel(
         eventsRepository.editCommentOfPhoto(comment)
             .subscribe(
                 {
-                    Timber.d("comment edited")
                     fetchComments(comment.photoId)
                 },
                 {
@@ -279,10 +296,9 @@ class DetailPhotoViewModel(
                     reportPhoto(eventId, photo, reportValue)
                         .subscribe(
                             {
-                                Timber.d("photo unreported ")
                                 messageDispatcher.onNext(message)
                                 if (reportValue == 1) {
-                                    sendReportMessageToEventOwner(it.idOrganizer)
+                                    sendReportMessageToEventOwner(it.idOrganizer, eventId)
                                 }
                             },
                             {
@@ -340,7 +356,6 @@ class DetailPhotoViewModel(
                     eventsRepository.deleteLike(user.id!!, photoId)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                Timber.d("like deleted")
                                 isPhotoAlreadyLiked = false
                                 userLike.onNext(isPhotoAlreadyLiked)
                             } else {
@@ -351,7 +366,6 @@ class DetailPhotoViewModel(
                     eventsRepository.setNewLike(user.id!!, photoId)
                         .subscribe(
                             {
-                                Timber.d("new like added")
                                 isPhotoAlreadyLiked = true
                                 userLike.onNext(isPhotoAlreadyLiked)
                             },
@@ -376,8 +390,8 @@ class DetailPhotoViewModel(
         }
     }
 
-    private fun sendReportMessageToEventOwner(eventOwner: String) {
-        notificationRepository.sendMessageToSpecificChannel(eventOwner)
+    private fun sendReportMessageToEventOwner(eventOwner: String, eventId: String) {
+        notificationRepository.sendMessageToSpecificChannel(eventOwner, eventId)
     }
 
     fun getNumberOfLike(list: List<LikeItem>?) {

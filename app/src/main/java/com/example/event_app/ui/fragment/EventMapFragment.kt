@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
 import com.example.event_app.model.EventItem
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.EventMapViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -120,6 +122,20 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
     }
 
     private fun showBottomSheetDetails(event: EventItem) {
+        context?.let {
+
+            if (event.organizerPhoto.isNotEmpty()) {
+                GlideApp
+                    .with(it)
+                    .load(viewModel.getStorageRef(event.organizerPhoto))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .into(iv_organizer_detail_bottom_sheet_map)
+            }
+
+        }
         tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
         tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer
         tv_address_detail_bottom_sheet_map.text = event.place

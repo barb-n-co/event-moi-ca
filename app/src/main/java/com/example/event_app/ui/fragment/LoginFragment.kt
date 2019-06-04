@@ -66,9 +66,9 @@ class LoginFragment : BaseFragment() {
 
             alertDialog.setPositiveButton(
                 getString(R.string.b_validate_dialog)
-            ) { dialog, which ->
+            ) { _ , _ ->
                 val email = input.text.toString()
-                if (email.length == 0) {
+                if (email.isEmpty()) {
                     Toast.makeText(
                         activity!!,
                         getString(R.string.t_empty_email_reset_password_dialog_fragment),
@@ -81,7 +81,7 @@ class LoginFragment : BaseFragment() {
 
             alertDialog.setNegativeButton(
                 getString(R.string.b_cancel_dialog)
-            ) { dialog, which -> dialog.cancel() }
+            ) { dialog, _ -> dialog.cancel() }
 
             alertDialog.show()
         }
@@ -94,6 +94,7 @@ class LoginFragment : BaseFragment() {
                     val shareGalleryIntent = Intent(context, ShareGalleryActivity::class.java)
                     startActivity(shareGalleryIntent)
                 } else if (it) {
+                    viewModel.initNotificationChannel()
                     MainActivity.start(activity!!)
                 }
             },

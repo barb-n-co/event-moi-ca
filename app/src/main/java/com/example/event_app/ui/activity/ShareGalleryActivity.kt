@@ -31,11 +31,9 @@ class ShareGalleryActivity : BaseActivity() {
 
         viewModel.eventList.subscribe(
             {
-                Timber.tag("TEST_").d(it.toString())
                 initAdapter(it)
             },
             {
-                Timber.tag("TEST_").d(it.toString())
                 Timber.e(it)
             })
             .addTo(viewDisposable)

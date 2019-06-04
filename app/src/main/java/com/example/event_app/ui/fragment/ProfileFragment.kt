@@ -100,7 +100,6 @@ class ProfileFragment : BaseFragment() {
 
             PermissionManager.CAPTURE_PHOTO -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    Timber.tag("trytrytry").d(returnIntent?.extras.toString())
                     val capturedBitmap = viewModel.getBitmapWithPath()
                     userId?.let { userId ->
                         viewModel.putImageWithBitmap(capturedBitmap, userId, false)
@@ -148,7 +147,7 @@ class ProfileFragment : BaseFragment() {
             photoFile?.also {
                 val photoURI: Uri = FileProvider.getUriForFile(
                     context!!,
-                    "com.example.event_app.fileprovider",
+                    getString(R.string.fileProvider),
                     it
                 )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
@@ -170,8 +169,8 @@ class ProfileFragment : BaseFragment() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(R.string.tv_title_dialog_logout)
             .setMessage(R.string.tv_message_dialog_logout)
-            .setNegativeButton(R.string.b_cancel_dialog) { dialoginterface, i -> }
-            .setPositiveButton(R.string.b_validate_dialog) { dialoginterface, i ->
+            .setNegativeButton(R.string.b_cancel_dialog) { _ , _ -> }
+            .setPositiveButton(R.string.b_validate_dialog) { _ , _ ->
                 viewModel.logout()
                 LoginActivity.start(activity!!)
                 activity!!.finish()
@@ -182,8 +181,8 @@ class ProfileFragment : BaseFragment() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(R.string.tv_title_dialog_delete_account)
             .setMessage(R.string.tv_message_dialog_delete_account)
-            .setNegativeButton(R.string.b_cancel_dialog) { dialoginterface, i -> }
-            .setPositiveButton(R.string.b_validate_dialog) { dialoginterface, i ->
+            .setNegativeButton(R.string.b_cancel_dialog) { _ , _ -> }
+            .setPositiveButton(R.string.b_validate_dialog) { _ , _ ->
                 viewModel.deleteAccount()
                 LoginActivity.start(activity!!)
                 activity!!.finish()
@@ -193,17 +192,14 @@ class ProfileFragment : BaseFragment() {
     private fun initUser(user: User) {
         userId = user.id
 
-        if (user.photoUrl.isNotEmpty()) {
-            GlideApp
-                .with(context!!)
-                .load(viewModel.getStorageRef(user.photoUrl))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .centerInside()
-                .into(iv_photo_fragment_profile)
-
-            Timber.tag("TEST_1").d("pass")
-        }
+        GlideApp
+            .with(context!!)
+            .load(viewModel.getStorageRef(user.photoUrl))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .circleCrop()
+            .placeholder(R.drawable.ic_profile)
+            .into(iv_photo_fragment_profile)
 
         tv_name_fragment_profile.text = user.name
         tv_email_fragment_profile.text = user.email

@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
@@ -30,6 +31,7 @@ import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
@@ -51,9 +53,9 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     private val viewModel: DetailEventViewModel by instance(arg = this)
     private var eventId: String? = null
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
-    var popupWindow: PopupWindow? = null
+    private var popupWindow: PopupWindow? = null
     var idOrganizer = ""
-    var imageIdList = ArrayList<Photo>()
+    private var imageIdList = ArrayList<Photo>()
 
     companion object {
         const val TAG = "DETAIL_EVENT_FRAGMENT"
@@ -90,8 +92,25 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             }
         ).addTo(viewDisposable)
 
+        viewModel.organizerPhoto.subscribe(
+            {
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(it))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .into(iv_organizer_detail_fragment)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
         viewModel.event.subscribe(
             {
+                viewModel.getPhotographOrganizerPicture(it.idOrganizer)
                 tv_event_name_detail_fragment.text = it.nameEvent
                 tv_description_detail_fragment.text = it.description
                 tv_organizer_detail_fragment.text = it.nameOrganizer
@@ -150,7 +169,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
                         NavHostFragment.findNavController(this).navigate(action)
                     }
-                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { buttonView, isChecked ->
+                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { _ , isChecked ->
                         if (isChecked) {
                             switch_activate_detail_event_fragment.text =
                                 getString(R.string.switch_activate_detail_event_fragment)
@@ -293,7 +312,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "erreur de traitement pour quitter l'évènement",
+                                        getString(R.string.error_occured_leaving_event),
                                         Toast.LENGTH_SHORT
                                     )
                                         .show()
@@ -302,7 +321,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             }
 
                         } else {
-                            Toast.makeText(context, "erreur de traitement pour quitter l'évènement", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                getString(R.string.error_occured_leaving_event),
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                             Timber.e(task.exception?.localizedMessage)
                         }
@@ -399,7 +422,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             val photoFile: File? = try {
                 viewModel.createImageFile(context!!)
             } catch (ex: IOException) {
-                Toast.makeText(context, "Une erreur est arrivée lors du téléchargement de la photo", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    context,
+                    getString(R.string.error_occured_downloading_photo),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 null
             }
@@ -407,7 +434,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             photoFile?.also {
                 val photoURI: Uri = FileProvider.getUriForFile(
                     context!!,
-                    "com.example.event_app.fileprovider",
+                    getString(R.string.fileProvider),
                     it
                 )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)

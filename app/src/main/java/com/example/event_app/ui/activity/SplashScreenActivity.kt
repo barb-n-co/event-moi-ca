@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.viewmodel.SplashScreenViewModel
 import org.kodein.di.generic.instance
+import timber.log.Timber
 
 
 class SplashScreenActivity : BaseActivity() {
@@ -28,6 +29,8 @@ class SplashScreenActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
+        Timber.tag("NOTIF_11").d(intent.getStringExtra("eventOwner"))
+
         intentReceived = intent
         val type = intentReceived.type
         val action = intentReceived.action
@@ -35,7 +38,7 @@ class SplashScreenActivity : BaseActivity() {
         val user = viewModel.getCurrentUser()
         Handler().postDelayed({
             when {
-                user != null && Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                user != null && Intent.ACTION_SEND == action && type?.startsWith("image/") ?: false -> {
                     val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                     val shareGalleryIntent = Intent(this, ShareGalleryActivity::class.java)
                     shareGalleryIntent.putExtra("uri", imageUri)
@@ -44,7 +47,7 @@ class SplashScreenActivity : BaseActivity() {
                 user != null -> {
                     MainActivity.start(this)
                 }
-                Intent.ACTION_SEND == action && type.startsWith("image/") -> {
+                Intent.ACTION_SEND == action && type?.startsWith("image/") ?: false -> {
                     val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                     viewModel.createImageFile(this, imageUri)
                     val loginIntent = Intent(this, LoginActivity::class.java)
@@ -56,7 +59,7 @@ class SplashScreenActivity : BaseActivity() {
             }
         }, 2000L)
 
-        viewModel.initMessageReceiving()
+        //viewModel.initMessageReceiving()
     }
 
 

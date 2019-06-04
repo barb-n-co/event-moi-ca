@@ -8,6 +8,7 @@ import com.example.event_app.model.MyEvents
 import com.example.event_app.model.UserEventState
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
+import com.google.firebase.storage.StorageReference
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
@@ -57,7 +58,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                             it.description,
                             it.idOrganizer,
                             it.reportedPhotoCount,
-                            it.isEmptyEvent
+                            it.isEmptyEvent,
+                            it.organizerPhoto
                         )
                     }
                 }.filterNotNull()
@@ -72,12 +74,14 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
         }
     }
 
+    fun getStorageRef(url: String): StorageReference {
+        return eventsRepository.getStorageReferenceForUrl(url)
+    }
+
     fun addInvitation(idEvent: String) {
         userRepository.currentUser.value?.let { user ->
             user.id?.let { id ->
-                user.name?.let { name ->
-                    eventsRepository.addInvitation(idEvent, id, name)
-                }
+                eventsRepository.addInvitation(idEvent, id)
             }
         }
     }

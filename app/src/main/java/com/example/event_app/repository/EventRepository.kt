@@ -19,25 +19,38 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+private const val BUCKET = "gs://event-moi-ca.appspot.com"
+private const val PHOTOS = "photos"
+private const val EVENTS = "events"
+private const val USER_EVENTS = "user-events"
+private const val EVENT_PARTICIPANT = "event-participants"
+private const val COMMENTS = "commentaires"
+private const val LIKES = "likes"
+private const val COMMENTS_LIKES = "comment-likes"
+
 object EventRepository {
 
-    private val db = FirebaseStorage.getInstance("gs://event-moi-ca.appspot.com")
+    private val db = FirebaseStorage.getInstance(BUCKET)
     val ref = db.reference
     private val database = FirebaseDatabase.getInstance()
 
-    private val allPictures = database.reference.child("photos")
-    private val eventsRef = database.reference.child("events")
-    private val myEventsRef = database.reference.child("user-events")
-    private val eventParticipantsRef = database.reference.child("event-participants")
-    private val commentsRef = database.reference.child("commentaires")
-    private val likesRef = database.reference.child("likes")
-    private val commentLikesRef = database.reference.child("comment-likes")
+    private val allPictures = database.reference.child(PHOTOS)
+    private val eventsRef = database.reference.child(EVENTS)
+    private val myEventsRef = database.reference.child(USER_EVENTS)
+    private val eventParticipantsRef = database.reference.child(EVENT_PARTICIPANT)
+    private val commentsRef = database.reference.child(COMMENTS)
+    private val likesRef = database.reference.child(LIKES)
+    private val commentLikesRef = database.reference.child(COMMENTS_LIKES)
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
+
+    //region FireStore
 
     fun getStorageReferenceForUrl(url: String): StorageReference {
         return ref.child(url)
     }
+
+    //end region
 
     //region Event
 
@@ -108,9 +121,8 @@ object EventRepository {
 
     // region Invitation
 
-    fun addInvitation(idEvent: String, idUser: String, nameUser: String) {
+    fun addInvitation(idEvent: String, idUser: String) {
         myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
-        //eventParticipantsRef.child(idEvent).child(idUser).setValue(EventParticipant(idUser, nameUser, 0, 0))
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {
@@ -130,7 +142,7 @@ object EventRepository {
         }
     }
 
-    fun removePaticipant(eventId: String): Task<Void> {
+    fun removeParticipant(eventId: String): Task<Void> {
         return eventParticipantsRef.child(eventId).removeValue()
     }
 
@@ -240,13 +252,8 @@ object EventRepository {
     }
 
     fun pushPictureReport(eventId: String, photo: Photo, reportValue: Int): Completable {
-        return if (photo.id != null) {
-            val updatedPhoto = photo
-            updatedPhoto.isReported = reportValue
-            RxFirebaseDatabase.updateChildren(allPictures.child(eventId), mapOf(Pair(photo.id, updatedPhoto)))
-        } else {
-            Completable.error(Throwable("error: photo id is null"))
-        }
+        photo.isReported = reportValue
+        return RxFirebaseDatabase.updateChildren(allPictures.child(eventId), mapOf(Pair(photo.id, photo)))
     }
 
     fun deletePhotoFromFireStore(photoUrl: String): Completable {
@@ -282,7 +289,8 @@ object EventRepository {
         val pushPath = commentsRef.child(photoId).push().key!!
         val author = user.name ?: ""
         val userId = user.id!!
-        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate)
+        val userProfileImage = user.photoUrl
+        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate, profileImage = userProfileImage)
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 

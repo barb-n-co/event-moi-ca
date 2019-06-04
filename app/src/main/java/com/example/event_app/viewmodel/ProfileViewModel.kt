@@ -38,6 +38,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
     fun deleteAccount() {
         userRepository.currentUser.value?.id?.let { idUser ->
             userRepository.deleteAccount(idUser)
+                .subscribe(
+                    {
+                        userRepository.deleteUser()
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                )
             eventRepository.deleteAllEventOfUser(idUser)
                 .subscribe(
                     {
@@ -51,18 +59,18 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
     }
 
     fun getNumberEventUser() {
-        userRepository.currentUser.value?.id?.let { idUser ->
+        userRepository.currentUser.value?.id?.let {
             eventRepository.myEvents.subscribe(
-                {
+                { myEventsList ->
                     val numberEvent = NumberEvent(0, 0, 0)
-                    it.forEach {
-                        if (it.isEmtyEvent == 1) {
+                    myEventsList.forEach { myEvent ->
+                        if (myEvent.isEmtyEvent == 1) {
                             // do nothing -> don't count this event
-                        } else if (it.accepted == 0 && it.organizer == 0) {
+                        } else if (myEvent.accepted == 0 && myEvent.organizer == 0) {
                             numberEvent.invitation += 1
-                        } else if (it.accepted == 1 && it.organizer == 0) {
+                        } else if (myEvent.accepted == 1 && myEvent.organizer == 0) {
                             numberEvent.participate += 1
-                        } else if (it.organizer == 1) {
+                        } else if (myEvent.organizer == 1) {
                             numberEvent.organizer += 1
                         }
                     }
@@ -98,9 +106,9 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath

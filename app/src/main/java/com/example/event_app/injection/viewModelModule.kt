@@ -43,11 +43,11 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     }
 
     bind<LoginViewModel>() with factory { activity: FragmentActivity ->
-        val factory = LoginViewModel.Factory(instance(), instance())
+        val factory = LoginViewModel.Factory(instance(), instance(), instance())
         ViewModelProvider(activity, factory).get(LoginViewModel::class.java)
     }
 
-    bind<LoginViewModel.Factory>() with provider { LoginViewModel.Factory(instance(), instance()) }
+    bind<LoginViewModel.Factory>() with provider { LoginViewModel.Factory(instance(), instance(), instance()) }
     bind<LoginViewModel>() with factory { fragment: Fragment ->
         ViewModelProvider(fragment, instance<LoginViewModel.Factory>())
             .get(LoginViewModel::class.java)

@@ -21,6 +21,8 @@ import java.util.*
 
 class SplashScreenViewModel(private val userRepository: UserRepository) : BaseViewModel() {
 
+    private val EVENT_TOPIC = "notif_event_moi_ca"
+
     fun getCurrentUser(): FirebaseUser? {
         val user = userRepository.fireBaseAuth.currentUser
         user?.let {
@@ -46,7 +48,7 @@ class SplashScreenViewModel(private val userRepository: UserRepository) : BaseVi
                 Timber.d(msg)
             })
 
-        FirebaseMessaging.getInstance().subscribeToTopic("notif_event_moi_ca")
+        FirebaseMessaging.getInstance().subscribeToTopic(EVENT_TOPIC)
             .addOnCompleteListener { task ->
                 var msg = "subscribed !!!"
                 if (!task.isSuccessful) {
@@ -62,17 +64,17 @@ class SplashScreenViewModel(private val userRepository: UserRepository) : BaseVi
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
         ).apply {
             val enter = context.contentResolver.openInputStream(uri)
             val out = FileOutputStream(this)
             val buf = ByteArray(1024)
-            var len = enter.read(buf)
+            var len = enter?.read(buf) ?: 0
             while (len > 0) {
                 out.write(buf, 0, len)
-                len = enter.read(buf)
+                len = enter?.read(buf) ?: 0
             }
             out.close()
             enter!!.close()

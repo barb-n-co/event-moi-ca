@@ -14,12 +14,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.example.event_app.R
 import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -44,6 +46,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
     val eventLoaded: BehaviorSubject<Event> = BehaviorSubject.create()
     val loading: PublishSubject<Boolean> = PublishSubject.create()
+    var organizerPhoto: BehaviorSubject<String> = BehaviorSubject.create()
     lateinit var currentPhotoPath: String
 
     init {
@@ -122,9 +125,9 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
+            "JPEG_${timeStamp}_", 
+            ".jpg", 
+            storageDir 
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
@@ -133,7 +136,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     fun changeActivationEvent(state: Boolean) {
         eventLoaded.value?.let {
-            var newEvent = it.apply {
+            val newEvent = it.apply {
                 this.activate = if (state) 1 else 0
             }
             eventsRepository.addEvent(it.idOrganizer, it.organizer, newEvent)
@@ -169,6 +172,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.first.idOrganizer,
                     response.first.reportedPhotoCount,
                     response.first.isEmptyEvent,
+                    response.first.organizerPhoto,
                     response.first.latitude,
                     response.first.longitude,
                     response.first.activate
@@ -186,6 +190,21 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         }
         getParticipant(eventId)
+    }
+
+    fun getPhotographOrganizerPicture(userId: String) {
+        userRepository.getUserById(userId).subscribe(
+            {
+                organizerPhoto.onNext(it.photoUrl)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun getStorageRef(url: String): StorageReference {
+        return eventsRepository.getStorageReferenceForUrl(url)
     }
 
     fun getParticipant(eventId: String) {
@@ -236,8 +255,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
                                     super.onLoadFailed(errorDrawable)
                                     Timber.e("an error append $errorDrawable")
-                                    Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT)
-                                        .show()
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.error_occured_downloading_photo), Toast.LENGTH_SHORT
+                                    ).show()
                                 }
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
@@ -247,10 +268,17 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                         number.add(path)
                                     }
                                     if (number.size == photoList.size) {
-                                        Toast.makeText(context, "Download finished", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.download_complete),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     } else {
-                                        Toast.makeText(context, "An error append during download", Toast.LENGTH_SHORT)
-                                            .show()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.error_occured_downloading_photo),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
 
@@ -318,7 +346,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             eventsRepository.removeUserEvent(it, idEvent)
         }
 
-        return eventsRepository.removePaticipant(idEvent)
+        return eventsRepository.removeParticipant(idEvent)
     }
 
     private fun removeEventsReference(idEvent: String) {

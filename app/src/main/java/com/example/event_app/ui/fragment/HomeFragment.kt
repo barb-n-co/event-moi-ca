@@ -49,12 +49,13 @@ class HomeFragment : BaseFragment(), HomeInterface {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
         setVisibilityNavBar(true)
+
         setFab()
 
         shimmer = shimmer_view_container
         weakContext = WeakReference(context!!)
 
-        val adapter = ListMyEventsAdapter(weakContext.get()!!)
+        val adapter = ListMyEventsAdapter(weakContext.get()!!, viewModel)
         val mLayoutManager = LinearLayoutManager(context)
         rv_event_home_fragment.layoutManager = mLayoutManager
         rv_event_home_fragment.itemAnimator = DefaultItemAnimator()

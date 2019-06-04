@@ -44,7 +44,7 @@ class ListParticipantsAdapter(
 
         fun bindUser(user: User) {
             v.tv_participants.text = user.name
-            if (user.id == idOrga) {
+            if (user.id == idOrga || !isNotAnOrga) {
                 v.iv_remove.visibility = View.GONE
             }
             v.iv_remove.setOnClickListener {

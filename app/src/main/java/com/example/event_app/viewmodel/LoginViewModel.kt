@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
 import com.example.event_app.repository.EventRepository
+import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
 import io.reactivex.Flowable
 
-class LoginViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
-    BaseViewModel() {
+class LoginViewModel(
+    private val userRepository: UserRepository,
+    private val eventRepository: EventRepository,
+    private val notificationRepository: NotificationRepository
+) : BaseViewModel() {
 
     fun logIn(email: String, password: String): Flowable<Boolean> {
         return userRepository.logUser(email, password)
@@ -30,15 +34,24 @@ class LoginViewModel(private val userRepository: UserRepository, private val eve
         userRepository.currentUser.value?.id?.let {
             val event = Event(isEmptyEvent = 1, idEvent = "empty")
             eventRepository.addEvent(it, "", event)
+            notificationRepository.createNotificationChannel(it)
         }
 
     }
 
-    class Factory(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
+    fun initNotificationChannel() {
+        userRepository.currentUser.value?.id?.let {
+            notificationRepository.createNotificationChannel(it)
+        }
+    }
+
+    class Factory(private val userRepository: UserRepository,
+                  private val eventRepository: EventRepository,
+                  private val notificationRepository: NotificationRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return LoginViewModel(userRepository, eventRepository) as T
+            return LoginViewModel(userRepository, eventRepository, notificationRepository) as T
         }
     }
 }

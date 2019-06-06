@@ -63,15 +63,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
         swiperefresh_fragment_home.isRefreshing = false
 
-        viewModel.loading.subscribe(
-            {
-                pb_home_fragment.visibility = if (it) VISIBLE else GONE
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
         adapter.acceptClickPublisher.subscribe(
             {
                 viewModel.acceptInvitation(it)
@@ -108,6 +99,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 } else {
                     displayEvents(adapter, eventList)
                 }
+                displayLoader(false)
                 swiperefresh_fragment_home.isRefreshing = false
             },
             {
@@ -131,7 +123,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
     }
 
     private fun setFab() {
-        fabmenu_home.addOnMenuItemClickListener { miniFab, label, itemId ->
+        fabmenu_home.addOnMenuItemClickListener { _, _, itemId ->
             when (itemId) {
                 R.id.action_scan_qrcode -> {
                     requestCameraPermission()
@@ -178,7 +170,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         setTitleToolbar(getString(R.string.title_home))
         shimmer.startShimmer()
         handler.postDelayed(shimmerRunnable, 1000L)
-        pb_home_fragment.visibility = VISIBLE
     }
 
     override fun onPause() {

@@ -29,7 +29,6 @@ class DetailPhotoViewModel(
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
     val commentaires: PublishSubject<List<CommentaireItem>> = PublishSubject.create()
-    val peopleWhoLike: BehaviorSubject<List<LikeItem>> = BehaviorSubject.create()
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val menuListener: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
@@ -340,7 +339,12 @@ class DetailPhotoViewModel(
     private fun getNumberOfLikes(photoId: String) {
         eventsRepository.getLikesFromPhoto(photoId).subscribe(
             {
-                peopleWhoLike.onNext(it)
+                it.find { item -> item.userId == userRepository.currentUser.value?.id }?.let {
+                    isPhotoAlreadyLiked = true
+                    userLike.onNext(true)
+                    isPhotoAlreadyLiked = true
+                } ?: userLike.onNext(false)
+                numberOfLikes.onNext(it.size.toString())
             },
             {
                 Timber.e(it)
@@ -349,35 +353,28 @@ class DetailPhotoViewModel(
     }
 
     fun addLikes(photoId: String) {
-        userRepository.currentUser.value?.let { user ->
-            if (user.id != null && user.name != null) {
-
-                if (isPhotoAlreadyLiked) {
-                    eventsRepository.deleteLike(user.id!!, photoId)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                isPhotoAlreadyLiked = false
-                                userLike.onNext(isPhotoAlreadyLiked)
-                            } else {
-                                Timber.e(it.exception)
-                            }
+        userRepository.currentUser.value?.id?.let {
+            if (isPhotoAlreadyLiked) {
+                eventsRepository.deleteLike(it, photoId)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            isPhotoAlreadyLiked = false
+                        } else {
+                            Timber.e(it.exception)
                         }
-                } else {
-                    eventsRepository.setNewLike(user.id!!, photoId)
-                        .subscribe(
-                            {
-                                isPhotoAlreadyLiked = true
-                                userLike.onNext(isPhotoAlreadyLiked)
-                            },
-                            {
-                                Timber.e(it)
-                            }
-                        )
-                }
-
+                    }
+            } else {
+                eventsRepository.setNewLike(it, photoId)
+                    .subscribe(
+                        {
+                            isPhotoAlreadyLiked = true
+                        },
+                        {
+                            Timber.e(it)
+                        }
+                    ).addTo(disposeBag)
             }
         }
-
     }
 
     private fun deleteLikesForPhoto(photoId: String) {
@@ -392,18 +389,6 @@ class DetailPhotoViewModel(
 
     private fun sendReportMessageToEventOwner(eventOwner: String, eventId: String) {
         notificationRepository.sendMessageToSpecificChannel(eventOwner, eventId)
-    }
-
-    fun getNumberOfLike(list: List<LikeItem>?) {
-        var number = 0
-        list?.forEach { item ->
-            number++
-            if (item.userId == UserRepository.currentUser.value?.id) {
-                isPhotoAlreadyLiked = true
-                userLike.onNext(true)
-            }
-        }
-        numberOfLikes.onNext(number.toString())
     }
 
     class Factory(

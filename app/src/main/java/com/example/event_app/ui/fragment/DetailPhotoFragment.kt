@@ -121,14 +121,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 photoURL = photo.url
                 photoAuthorId = photo.auteurId
 
-                GlideApp
-                    .with(context!!)
-                    .load(viewModel.getStorageRef(photoURL))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .centerInside()
-                    .into(iv_photo)
-
                 tv_like.text = photo.like.toString()
 
                 tv_auteur.text = photo.authorName
@@ -136,6 +128,13 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                 viewModel.getPhotographProfilePicture(photo.auteurId)
 
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(photoURL))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .centerInside()
+                    .into(iv_photo)
             },
             {
                 Timber.e(it)
@@ -153,15 +152,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     .skipMemoryCache(true)
                     .circleCrop()
                     .into(iv_icon_author_detail_photo_fragment)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
-        viewModel.peopleWhoLike.subscribe(
-            { list ->
-                viewModel.getNumberOfLike(list)
             },
             {
                 Timber.e(it)

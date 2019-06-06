@@ -80,8 +80,16 @@ abstract class BaseFragment : Fragment(), KodeinAware {
         (activity as MainActivity).displayDeleteEventMenu(value)
     }
 
+    protected fun displayQuitEventMenu(value: Boolean) {
+        (activity as MainActivity).displayQuitEventMenu(value)
+    }
+
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
+    }
+
+    protected fun displayLoader(value: Boolean) {
+        (activity as MainActivity).displayLoader(value)
     }
 
 }

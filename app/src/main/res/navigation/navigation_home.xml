@@ -14,13 +14,17 @@
         <action
                 android:id="@+id/action_my_home_fragment_to_add_event_fragment"
                 app:destination="@id/add_event_fragment"
-                app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+                app:enterAnim="@anim/transition_bottom_to_top"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/transition_top_to_bottom_exit"/>
         <action
                 android:id="@+id/action_my_home_fragment_to_detail_event_fragment"
-                app:destination="@id/detail_event_fragment"/>
+                app:destination="@id/detail_event_fragment"
+                app:popEnterAnim="@anim/fade_in"
+                app:enterAnim="@anim/transition_right_to_left"
+                app:exitAnim="@anim/fade_out"
+                app:popExitAnim="@anim/transition_left_to_right_exit"/>
     </fragment>
 
     <fragment
@@ -40,10 +44,18 @@
                 app:argType="string"/>
         <action
                 android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
-                app:destination="@id/detailPhotoFragment"/>
+                app:destination="@id/detailPhotoFragment"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"/>
         <action
                 android:id="@+id/action_detail_event_fragment_to_EditDetailEventFragment"
-                app:destination="@id/EditDetailEventFragment"/>
+                app:destination="@id/EditDetailEventFragment"
+                app:enterAnim="@anim/transition_bottom_to_top"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/transition_top_to_bottom_exit"/>
     </fragment>
 
     <fragment

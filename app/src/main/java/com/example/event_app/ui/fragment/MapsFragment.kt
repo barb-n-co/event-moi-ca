@@ -9,16 +9,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.utils.getLatLng
-import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.MapsViewModel
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.util.*
+
+
 
 
 class MapsFragment : BaseFragment(), OnMapReadyCallback {
@@ -54,11 +60,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
             fragmentManager?.popBackStack()
         }
 
-        iv_search_menu.setOnClickListener {
-            viewModel.searchAdress(et_search_menu.text.toString())
-            view.hideKeyboard()
-        }
-
         viewModel.mapAdress.subscribe(
             { addressMap ->
                 btn_maps.visibility = View.VISIBLE
@@ -70,7 +71,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
                 }
 
                 btn_maps.setOnClickListener {
-                    btn_maps.visibility = View.INVISIBLE
+                    btn_maps.visibility = View.GONE
                     val intent = viewModel.createIntentWithExtra(addressMap, getString(R.string.chip_adresse))
                     targetFragment?.onActivityResult(targetRequestCode, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
@@ -81,6 +82,21 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
             }
 
         ).addTo(viewDisposable)
+
+        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
+
+        autocompleteFragment?.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG))
+
+        autocompleteFragment?.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                viewModel.searchAdress("${place.address}")
+            }
+
+            override fun onError(status: Status) {
+                Timber.i( "An error occurred: $status")
+            }
+        })
+
     }
 
     private fun initMap() {

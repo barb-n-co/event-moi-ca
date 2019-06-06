@@ -7,7 +7,6 @@ import com.example.event_app.model.AddressMap
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -30,16 +29,7 @@ class MapsRepository(private val context: Context) {
     fun getPositionWithAdress(address: String) {
         val token = AutocompleteSessionToken.newInstance()
 
-
-        val filters = ArrayList<TypeFilter>()
-        filters.add(TypeFilter.ADDRESS)
-        filters.add(TypeFilter.CITIES)
-        filters.add(TypeFilter.ESTABLISHMENT)
-        filters.add(TypeFilter.GEOCODE)
-        filters.add(TypeFilter.REGIONS)
-
         val request = FindAutocompletePredictionsRequest.builder()
-            .setTypeFilter(TypeFilter.ADDRESS)
             .setSessionToken(token)
             .setQuery(address)
             .build()

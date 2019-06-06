@@ -131,8 +131,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 GlideApp
                     .with(context!!)
                     .load(viewModel.getStorageRef(photoURL))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .centerInside()
                     .into(iv_photo)
             },

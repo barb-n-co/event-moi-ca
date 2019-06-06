@@ -11,6 +11,8 @@ import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
 import com.example.event_app.model.EventItem
+import com.example.event_app.model.spannable
+import com.example.event_app.model.url
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.EventMapViewModel
@@ -138,11 +140,20 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         }
         tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
         tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer
-        tv_address_detail_bottom_sheet_map.text = event.place
+        tv_address_detail_bottom_sheet_map.text = spannable { url("", event.place) }//event.place
         tv_start_event_detail_bottom_sheet_map.text = event.dateStart
         tv_finish_event_detail_bottom_sheet_map.text = event.dateEnd
         tv_description_detail_bottom_sheet_map.text = event.description
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+
+        tv_address_detail_bottom_sheet_map.setOnClickListener {
+            val query = tv_start_event_detail_bottom_sheet_map.text.toString()
+            val address = getString(R.string.map_query, query)
+            if (query.isNotEmpty()) {
+                startActivity(viewModel.createMapIntent(address))
+            }
+
+        }
     }
 
 

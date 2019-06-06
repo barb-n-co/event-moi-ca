@@ -1,6 +1,9 @@
 package com.example.event_app.viewmodel
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
@@ -109,6 +112,13 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
 
         return LatLngBounds(LatLng(latitudeMin, longitudeMin), LatLng(latitudeMax, longitudeMax))
     }
+
+    fun createMapIntent(address: String): Intent {
+        return Uri.parse(address).let { location ->
+            Intent(Intent.ACTION_VIEW, location)
+        }
+    }
+
 
     class Factory(private val eventRepository: EventRepository, private val userRepository: UserRepository) :
         ViewModelProvider.Factory {

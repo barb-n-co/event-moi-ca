@@ -34,6 +34,7 @@ class ListParticipantDialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         val adapter = ListParticipantsAdapter(idOrganizer, isNotAnOrga)
         rv_listParticipants.layoutManager = LinearLayoutManager(context)
         rv_listParticipants.adapter = adapter

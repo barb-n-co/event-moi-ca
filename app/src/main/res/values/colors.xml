@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#ffa000</color>
     <color name="colorAccent">#ffab00</color>
 
-    <color name="dark_orange">#ff8f00</color>
+    <color name="dark_orange">#FF7700</color>
+    <color name="light_orange">#FFC227</color>
     <color name="dark_selection_green">#005738</color>
     <color name="blue">#0000b3</color>
     <color name="black">#000000</color>

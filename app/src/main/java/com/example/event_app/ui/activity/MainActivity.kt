@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
 import com.example.event_app.repository.MyFirebaseMessagingService
@@ -112,9 +113,14 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         initView()
-
+        setupNavigation()
         currentController = navControllerHome
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
+
+    private fun setupNavigation() {
+        val navController = NavHostFragment.findNavController(parent_host_fragment)
+        navigation.setupWithNavController(navController)
     }
 
     private fun initView() {
@@ -284,7 +290,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun displayLoader(value: Boolean) {
-        pb_main_activity.visibility = if(value) View.VISIBLE else View.INVISIBLE
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -333,7 +339,7 @@ class MainActivity : BaseActivity() {
 
         val container = supportFragmentManager.findFragmentById(R.id.content_home)
         val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-        if(frg is HomeFragment){
+        if(homeWrapper.visibility == View.VISIBLE){
             displayLoader(true)
         }
     }

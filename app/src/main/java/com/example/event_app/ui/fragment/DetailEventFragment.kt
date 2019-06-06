@@ -143,6 +143,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     setFab(it.activate != 0)
                     displayDeleteEventMenu(true)
                     displayEditEventMenu(true)
+                    displayQrCodeMenu(true)
                     if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
                         switch_activate_detail_event_fragment.text =

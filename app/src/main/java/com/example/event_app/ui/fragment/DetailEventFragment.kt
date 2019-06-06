@@ -100,7 +100,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
+                    .placeholder(R.drawable.ic_manager_orange)
                     .into(iv_organizer_detail_fragment)
             },
             {
@@ -127,33 +127,22 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 initAdapter(it.idEvent)
 
                 if (it.organizer != 1) {
-                    b_edit_detail_event_fragment.visibility = GONE
                     switch_activate_detail_event_fragment.visibility = GONE
                     if (it.accepted != 1) {
-                        rv_listImage.visibility = GONE
                         fabmenu_detail_event.visibility = GONE
                         iv_alert_not_accepted_event.visibility = VISIBLE
                         not_already_accepted_alert.visibility = VISIBLE
-                        b_exit_detail_event_fragment.visibility = GONE
 
                     } else {
-                        rv_listImage.visibility = VISIBLE
                         fabmenu_detail_event.visibility = VISIBLE
-                        b_exit_detail_event_fragment.text = getString(R.string.b_exit_detail_event_fragment)
-                        b_exit_detail_event_fragment.visibility = VISIBLE
-                        b_exit_detail_event_fragment.setOnClickListener {
-                            actionExitEvent()
-                        }
+                        displayQuitEventMenu(true)
                         setFab(it.activate != 0)
                     }
 
                 } else {
                     setFab(it.activate != 0)
-                    b_exit_detail_event_fragment.text = getString(R.string.b_delete_detail_event_fragment)
-                    b_exit_detail_event_fragment.visibility = VISIBLE
-                    b_exit_detail_event_fragment.setOnClickListener {
-                        actionDeleteEvent()
-                    }
+                    displayDeleteEventMenu(true)
+                    displayEditEventMenu(true)
                     if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
                         switch_activate_detail_event_fragment.text =
@@ -163,13 +152,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                         switch_activate_detail_event_fragment.text =
                             getString(R.string.switch_activate_detail_event_fragment)
                     }
-                    b_edit_detail_event_fragment.visibility = VISIBLE
-                    b_edit_detail_event_fragment.setOnClickListener { _ ->
-                        val action =
-                            DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it.idEvent)
-                        NavHostFragment.findNavController(this).navigate(action)
-                    }
-                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { _ , isChecked ->
+                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             switch_activate_detail_event_fragment.text =
                                 getString(R.string.switch_activate_detail_event_fragment)
@@ -278,35 +261,32 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         ).addTo(viewDisposable)
     }
 
-    private fun actionDeleteEvent() {
+    private fun actionDeleteEvent(eventId: String) {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
             .setMessage(getString(R.string.tv_delete_event_message_detail_event_fragment))
             .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { _, _ -> }
             .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { _, _ ->
-                eventId?.let {
-                    viewModel.deleteEvent(it).addOnCompleteListener {
-                        fragmentManager?.popBackStack()
-                        Toast.makeText(
-                            activity!!,
-                            getString(R.string.tv_delete_event_toast_detail_event_fragment),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                viewModel.deleteEvent(eventId).addOnCompleteListener {
+                    fragmentManager?.popBackStack()
+                    Toast.makeText(
+                        activity!!,
+                        getString(R.string.tv_delete_event_toast_detail_event_fragment),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }.show()
     }
 
-    private fun actionExitEvent() {
+    private fun actionExitEvent(eventId: String) {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_dialogTitle_detail_event_fragment))
             .setMessage(getString(R.string.tv_dialogMessage_detail_event_fragment))
             .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { _, _ -> }
             .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { _, _ ->
-                eventId?.let {
-                    viewModel.exitEvent(it)?.addOnCompleteListener { task ->
+                    viewModel.exitEvent(eventId)?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            viewModel.exitMyEvent(it)?.addOnCompleteListener { task2 ->
+                            viewModel.exitMyEvent(eventId)?.addOnCompleteListener { task2 ->
                                 if (task2.isSuccessful) {
                                     fragmentManager?.popBackStack()
                                 } else {
@@ -336,7 +316,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                         getString(R.string.exit_event_toast_detail_event_fragment),
                         Toast.LENGTH_SHORT
                     ).show()
-                }
             }.show()
     }
 
@@ -457,6 +436,26 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
     }
 
+    override fun editEvent() {
+        eventId?.let {
+            val action =
+                DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it)
+            NavHostFragment.findNavController(this).navigate(action)
+        }
+    }
+
+    override fun deleteEvent() {
+        eventId?.let {
+            actionDeleteEvent(it)
+        }
+    }
+
+    override fun quitEvent() {
+        eventId?.let {
+            actionExitEvent(it)
+        }
+    }
+
     private fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.CAMERA,
@@ -478,7 +477,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     override fun onResume() {
         super.onResume()
-        displayQrCodeMenu(true)
         eventId?.let { notNullId ->
             viewModel.getParticipant(notNullId)
         }
@@ -487,6 +485,9 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onStop() {
         super.onStop()
         displayQrCodeMenu(false)
+        displayEditEventMenu(false)
+        displayDeleteEventMenu(false)
+        displayQuitEventMenu(false)
     }
 
     override fun onDestroyView() {
@@ -499,4 +500,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
 interface DetailEventInterface {
     fun loadQrCode()
+    fun editEvent()
+    fun deleteEvent()
+    fun quitEvent()
 }

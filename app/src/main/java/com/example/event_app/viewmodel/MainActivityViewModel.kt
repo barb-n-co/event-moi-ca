@@ -12,19 +12,6 @@ import timber.log.Timber
 class MainActivityViewModel(private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
     BaseViewModel() {
 
-    var user: BehaviorSubject<User> = BehaviorSubject.create()
-
-    fun getCurrentUser() {
-        userRepository.currentUser.subscribe(
-            {
-                user.onNext(it)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(disposeBag)
-    }
-
     fun sentNewToken() {
         userRepository.sentNewTokenToDb()
     }

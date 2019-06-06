@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -106,8 +107,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.userLike.subscribe(
             { liked ->
-                if (liked) iv_like.setColorFilter(Color.parseColor(COLOR_PRIMARY))
-                else iv_like.setColorFilter(Color.WHITE)
+                if (liked) iv_like.setColorFilter(ContextCompat.getColor(requireContext(), R.color.dark_orange))
+                else iv_like.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black_grey))
             },
             {
                 Timber.e(it)
@@ -120,12 +121,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 photoURL = photo.url
                 photoAuthorId = photo.auteurId
 
-                GlideApp
-                    .with(context!!)
-                    .load(viewModel.getStorageRef(photoURL))
-                    .centerInside()
-                    .into(iv_photo)
-
                 tv_like.text = photo.like.toString()
 
                 tv_auteur.text = photo.authorName
@@ -133,6 +128,11 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
                 viewModel.getPhotographProfilePicture(photo.auteurId)
 
+                GlideApp
+                    .with(context!!)
+                    .load(viewModel.getStorageRef(photoURL))
+                    .centerInside()
+                    .into(iv_photo)
             },
             {
                 Timber.e(it)
@@ -150,15 +150,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     .skipMemoryCache(true)
                     .circleCrop()
                     .into(iv_icon_author_detail_photo_fragment)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
-        viewModel.peopleWhoLike.subscribe(
-            { list ->
-                viewModel.getNumberOfLike(list)
             },
             {
                 Timber.e(it)

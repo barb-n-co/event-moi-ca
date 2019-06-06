@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00e68a</color>
-    <color name="colorPrimaryDark">#00b36b</color>
-    <color name="colorAccent">#00e68a</color>
+    <color name="colorPrimary">#ffab00</color>
+    <color name="colorPrimaryDark">#ffa000</color>
+    <color name="colorAccent">#ffab00</color>
 
-    <color name="dark_green">#006600</color>
+    <color name="dark_orange">#ff8f00</color>
     <color name="dark_selection_green">#005738</color>
     <color name="blue">#0000b3</color>
     <color name="black">#000000</color>
@@ -15,5 +15,5 @@
     <color name="black_grey">#262626</color>
     <color name="error">#A32222</color>
 
-    <color name="background">#333333</color>
+    <color name="background">#ffffff</color>
 </resources>

@@ -20,7 +20,6 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     BaseViewModel() {
 
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
-    val loading: PublishSubject<Boolean> = PublishSubject.create()
     var stateUserEvent = UserEventState.NOTHING
 
     fun getMyEvents() {
@@ -68,8 +67,6 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
             },
                 {
                     Timber.e(it)
-                }, {
-                    loading.onNext(false)
                 }).addTo(disposeBag)
         }
     }

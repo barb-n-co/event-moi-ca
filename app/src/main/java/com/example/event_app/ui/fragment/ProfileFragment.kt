@@ -192,6 +192,9 @@ class ProfileFragment : BaseFragment() {
     private fun initUser(user: User) {
         userId = user.id
 
+        tv_name_fragment_profile.text = user.name
+        tv_email_fragment_profile.text = user.email
+
         GlideApp
             .with(context!!)
             .load(viewModel.getStorageRef(user.photoUrl))
@@ -200,9 +203,6 @@ class ProfileFragment : BaseFragment() {
             .circleCrop()
             .placeholder(R.drawable.ic_profile)
             .into(iv_photo_fragment_profile)
-
-        tv_name_fragment_profile.text = user.name
-        tv_email_fragment_profile.text = user.email
     }
 
     private fun initNumberEvent(numberEvent: NumberEvent) {
@@ -222,8 +222,8 @@ class ProfileFragment : BaseFragment() {
         permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         viewModel.getCurrentUser()
         viewModel.getNumberEventUser()
     }

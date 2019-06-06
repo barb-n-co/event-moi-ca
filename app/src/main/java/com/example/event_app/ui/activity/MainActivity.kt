@@ -36,6 +36,9 @@ class MainActivity : BaseActivity() {
     private val viewModel: MainActivityViewModel by instance(arg = this)
     private var filterButtonMenu: MenuItem? = null
     private var qrCodeButtonMenu: MenuItem? = null
+    private var editEventButtonMenu: MenuItem? = null
+    private var deleteEventButtonMenu: MenuItem? = null
+    private var quitEventButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -45,7 +48,6 @@ class MainActivity : BaseActivity() {
     private lateinit var profileWrapper: FrameLayout
     private lateinit var eventMapWrapper: FrameLayout
     private var isMapOpenned = false
-    private var isHelloDisplayed = false
 
 
     companion object {
@@ -111,28 +113,6 @@ class MainActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         initView()
 
-
-        viewModel.user.subscribe(
-            {
-                if (!isHelloDisplayed) {
-                    Snackbar
-                        .make(
-                            main_constraint_layout,
-                            getString(R.string.toast_welcome_user_main_activity, it.name),
-                            Snackbar.LENGTH_SHORT
-                        )
-                        .show()
-                    isHelloDisplayed = true
-                }
-
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
-        viewModel.getCurrentUser()
-
         currentController = navControllerHome
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
@@ -163,6 +143,9 @@ class MainActivity : BaseActivity() {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu.findItem(R.id.action_filter)
         qrCodeButtonMenu = menu.findItem(R.id.action_qr_code)
+        editEventButtonMenu = menu.findItem(R.id.action_edit_event)
+        deleteEventButtonMenu = menu.findItem(R.id.action_delete_event)
+        quitEventButtonMenu = menu.findItem(R.id.action_quit_event)
         downloadActionMenu = menu.findItem(R.id.action_download_photo)
         deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
         reportPhotoActionMenu = menu.findItem(R.id.action_report)
@@ -182,60 +165,76 @@ class MainActivity : BaseActivity() {
         }
         displayQrCodeMenu(false)
         displayDetailPhotoActions(false)
+        displayQuitEventMenu(false)
+        displayDeleteEventMenu(false)
+        displayEditEventMenu(false)
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_filter -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is HomeInterface) {
-                frg.openFilter()
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        val container = supportFragmentManager.findFragmentById(R.id.content_home)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+
+        return when (item?.itemId) {
+            R.id.action_filter -> {
+                if (frg is HomeInterface) {
+                    frg.openFilter()
+                }
+                true
             }
-            true
-        }
-        R.id.action_report -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoInterface) {
-                frg.reportAction()
+            R.id.action_report -> {
+                if (frg is DetailPhotoInterface) {
+                    frg.reportAction()
+                }
+                true
             }
-            true
-        }
-        R.id.action_delete_photo -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoInterface) {
-                frg.deleteAction()
+            R.id.action_delete_photo -> {
+                if (frg is DetailPhotoInterface) {
+                    frg.deleteAction()
+                }
+                true
             }
-            true
-        }
-        R.id.action_download_photo -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoInterface) {
-                frg.downloadAction()
+            R.id.action_download_photo -> {
+                if (frg is DetailPhotoInterface) {
+                    frg.downloadAction()
+                }
+                true
             }
-            true
-        }
-        R.id.action_validate_photo -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailPhotoInterface) {
-                frg.authorizeAction()
+            R.id.action_validate_photo -> {
+                if (frg is DetailPhotoInterface) {
+                    frg.authorizeAction()
+                }
+                true
             }
-            true
-        }
-        R.id.action_qr_code -> {
-            val container = supportFragmentManager.findFragmentById(R.id.content_home)
-            val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-            if (frg is DetailEventInterface) {
-                frg.loadQrCode()
+            R.id.action_qr_code -> {
+                if (frg is DetailEventInterface) {
+                    frg.loadQrCode()
+                }
+                true
             }
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
+            R.id.action_edit_event -> {
+                if (frg is DetailEventInterface) {
+                    frg.editEvent()
+                }
+                true
+            }
+            R.id.action_delete_event -> {
+                if (frg is DetailEventInterface) {
+                    frg.deleteEvent()
+                }
+                true
+            }
+            R.id.action_quit_event -> {
+                if (frg is DetailEventInterface) {
+                    frg.quitEvent()
+                }
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 
@@ -270,6 +269,22 @@ class MainActivity : BaseActivity() {
 
     fun displayQrCodeMenu(value: Boolean) {
         qrCodeButtonMenu?.isVisible = value
+    }
+
+    fun displayEditEventMenu(value: Boolean) {
+        editEventButtonMenu?.isVisible = value
+    }
+
+    fun displayDeleteEventMenu(value: Boolean) {
+        deleteEventButtonMenu?.isVisible = value
+    }
+
+    fun displayQuitEventMenu(value: Boolean) {
+        quitEventButtonMenu?.isVisible = value
+    }
+
+    fun displayLoader(value: Boolean) {
+        pb_main_activity.visibility = if(value) View.VISIBLE else View.INVISIBLE
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -315,6 +330,12 @@ class MainActivity : BaseActivity() {
                 }
 
             }
+
+        val container = supportFragmentManager.findFragmentById(R.id.content_home)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        if(frg is HomeFragment){
+            displayLoader(true)
+        }
     }
 
     override fun onBackPressed() {
@@ -336,7 +357,6 @@ class MainActivity : BaseActivity() {
     fun isMapOpen(value: Boolean) {
         isMapOpenned = value
     }
-
 
 }
 

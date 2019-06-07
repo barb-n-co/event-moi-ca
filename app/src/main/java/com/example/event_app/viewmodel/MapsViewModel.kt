@@ -16,12 +16,12 @@ import timber.log.Timber
 
 class MapsViewModel(private val mapsRepository: MapsRepository) : BaseViewModel() {
 
-    var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
+    var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
 
-    fun searchAdress() {
-        mapsRepository.mapAdress.subscribe(
+    fun observeAddressResults() {
+        mapsRepository.mapAddress.subscribe(
             {
-                mapAdress.onNext(it)
+                mapAddress.onNext(it)
             },
             {
                 Timber.e(it)
@@ -30,18 +30,18 @@ class MapsViewModel(private val mapsRepository: MapsRepository) : BaseViewModel(
 
     }
 
-    fun searchAdress(adr: String) {
-        mapsRepository.getPositionWithAdress(adr)
+    fun searchAddress(adr: String) {
+        mapsRepository.buildRequestWithAddress(adr)
     }
 
     fun createMarker(latLng: LatLng, addressMap: AddressMap): MarkerOptions {
         return MarkerOptions()
             .position(latLng)
-            .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_map2))
             .title(addressMap.address)
     }
 
-    fun createIntentWithExtra(addressMap: AddressMap, placeHolder: String): Intent {
+    fun createAddressIntent(addressMap: AddressMap, placeHolder: String): Intent {
         val intent = Intent()
         intent.putExtra(AddEventFragment.ADDRESS_TAG, addressMap.address ?: placeHolder)
         intent.putExtra(AddEventFragment.LAT_TAG, addressMap.lat ?: 0.0)

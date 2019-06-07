@@ -19,9 +19,7 @@ import com.example.event_app.ui.fragment.*
 import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.iid.FirebaseInstanceId
-import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -317,7 +315,7 @@ class MainActivity : BaseActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Timber.w("getInstanceId failed%s", task.exception)
+                    Timber.w(task.exception, "getInstanceId failed%s")
                     return@addOnCompleteListener
                 }
 
@@ -344,7 +342,7 @@ class MainActivity : BaseActivity() {
                 .let { if (it.popBackStack().not()) finish() }
                 .or { finish() }
         } else {
-            MapsFragment.popBack()
+            AddAddressMapFragment.popBack()
             isMapOpenned = false
         }
 

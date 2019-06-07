@@ -25,10 +25,10 @@ class EditDetailEventFragment : BaseFragment() {
 
     var dateStart: Date? = null
     var dateEnd: Date? = null
-    var startDateTimePicker: Calendar = Calendar.getInstance()
-    var endDateTimePicker: Calendar = Calendar.getInstance()
-    var latitude: Double = 0.0
-    var longitude: Double = 0.0
+    private var startDateTimePicker: Calendar = Calendar.getInstance()
+    private var endDateTimePicker: Calendar = Calendar.getInstance()
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private val viewModel: AddEventFragmentViewModel by instance(arg = this)
 
     companion object {
@@ -62,7 +62,7 @@ class EditDetailEventFragment : BaseFragment() {
         }
 
         chip_place_edit_event_fragment.setOnClickListener {
-            val fragment = MapsFragment.newInstance()
+            val fragment = AddAddressMapFragment.newInstance()
             fragment.setTargetFragment(this, requestCodeMapFragment)
 
             fragmentManager?.beginTransaction()
@@ -114,7 +114,7 @@ class EditDetailEventFragment : BaseFragment() {
             startTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar
                 startDateTimePicker.set(HOUR_OF_DAY, calendar.get(HOUR_OF_DAY))
-                startDateTimePicker.set(Calendar.MINUTE, calendar.get(MINUTE))
+                startDateTimePicker.set(MINUTE, calendar.get(MINUTE))
                 dateStart = startDateTimePicker.time
                 chip_date_start_edit_event_fragment.text = getDateToString(startDateTimePicker.time)
             }
@@ -194,12 +194,12 @@ class EditDetailEventFragment : BaseFragment() {
     }
 
     private fun getDateToString(date: Date?): String {
-        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.FRANCE)
+        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.getDefault())
         return if (date != null) df.format(date) else "Erreur test"
     }
 
     private fun getDateOfString(date: String): Date {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm")
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.getDefault())
         return dateFormat.parse(date)
     }
 }

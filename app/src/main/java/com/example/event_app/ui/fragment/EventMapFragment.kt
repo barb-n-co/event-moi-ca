@@ -140,7 +140,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         }
         tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
         tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer
-        tv_address_detail_bottom_sheet_map.text = spannable { url("", event.place) }//event.place
+        tv_address_detail_bottom_sheet_map.text = spannable { url("", event.place) }
         tv_start_event_detail_bottom_sheet_map.text = event.dateStart
         tv_finish_event_detail_bottom_sheet_map.text = event.dateEnd
         tv_description_detail_bottom_sheet_map.text = event.description

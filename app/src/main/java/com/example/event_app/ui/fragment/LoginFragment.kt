@@ -25,7 +25,6 @@ class LoginFragment : BaseFragment() {
     private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
-        const val TAG = "LOGINFRAGMENT"
         fun newInstance(): LoginFragment = LoginFragment()
     }
 
@@ -61,6 +60,7 @@ class LoginFragment : BaseFragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
+            input.hint = "E-Mail"
             input.layoutParams = lp
             alertDialog.setView(input)
 

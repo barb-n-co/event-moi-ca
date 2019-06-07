@@ -13,7 +13,6 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class HomeFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
@@ -24,7 +23,6 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
-            //eventsRepository.fetchMyEvents(idUser)
             Observable.combineLatest(
                 eventsRepository.fetchEvents(),
                 eventsRepository.fetchMyEvents(idUser),
@@ -33,13 +31,13 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                 }).map { response ->
                 response.second.filter {
                     when {
-                        stateUserEvent.equals(UserEventState.NOTHING) -> true
-                        stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
-                        stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
-                        stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
+                        stateUserEvent == UserEventState.NOTHING -> true
+                        stateUserEvent == UserEventState.INVITATION && it.organizer == 0 && it.accepted == 0 -> true
+                        stateUserEvent == UserEventState.PARTICIPATE && it.organizer == 0 && it.accepted == 1 -> true
+                        stateUserEvent == UserEventState.ORGANIZER && it.organizer == 1 && it.accepted == 1 -> true
                         else -> false
                     }
-                }.map { myEvents ->
+                }.mapNotNull { myEvents ->
                     val item = response.first.find { events ->
                         events.idEvent == myEvents.idEvent
                     }
@@ -61,7 +59,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
                             it.organizerPhoto
                         )
                     }
-                }.filterNotNull()
+                }
             }.subscribe({
                 myEventList.onNext(it)
             },

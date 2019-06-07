@@ -12,7 +12,7 @@
             android:layout_height="match_parent"
             app:shimmer_auto_start="true"
             app:shimmer_duration="2000"
-            app:shimmer_base_alpha="0.9"
+            app:shimmer_base_alpha="0.85"
             >
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

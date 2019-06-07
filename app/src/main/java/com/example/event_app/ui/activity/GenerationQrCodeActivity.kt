@@ -22,8 +22,7 @@ import kotlinx.android.synthetic.main.activity_generation_qrcode.*
 class GenerationQrCodeActivity : BaseActivity() {
 
     private val QRcodeWidth = 500
-    private val IMAGE_DIRECTORY = "/QRcodeDemonuts"
-    var bitmap: Bitmap? = null
+    private var bitmap: Bitmap? = null
 
     companion object {
         const val ExtraCardId = "ExtraCardId"

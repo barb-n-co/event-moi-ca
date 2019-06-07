@@ -76,7 +76,7 @@
 
     <fragment
             android:id="@+id/MapsFragment"
-            android:name="com.example.event_app.ui.fragment.MapsFragment"
+            android:name="com.example.event_app.ui.fragment.AddAddressMapFragment"
             android:label="MapsOrganizerFragment"
             tools:layout="@layout/fragment_maps"/>
 

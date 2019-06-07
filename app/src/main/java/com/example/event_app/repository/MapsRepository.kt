@@ -15,10 +15,9 @@ import timber.log.Timber
 import java.util.*
 
 
-class MapsRepository(private val context: Context) {
-    var placesClient: PlacesClient
-    var i: Int = 0
-    var mapAdress: PublishSubject<AddressMap> = PublishSubject.create()
+class MapsRepository(context: Context) {
+    private var placesClient: PlacesClient
+    var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
 
     init {
         Places.initialize(context, BuildConfig.GOOGLE_MAP_API_KEY)
@@ -26,7 +25,7 @@ class MapsRepository(private val context: Context) {
     }
 
 
-    fun getPositionWithAdress(address: String) {
+    fun buildRequestWithAddress(address: String) {
         val token = AutocompleteSessionToken.newInstance()
 
         val request = FindAutocompletePredictionsRequest.builder()
@@ -38,13 +37,13 @@ class MapsRepository(private val context: Context) {
             val placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
             if (response.autocompletePredictions.isNotEmpty()) {
 
-                val request = FetchPlaceRequest.builder(
+                val placeRequest = FetchPlaceRequest.builder(
                     response.autocompletePredictions.first().placeId,
                     placeFields
                 )
                     .build()
-                placesClient.fetchPlace(request).addOnSuccessListener { response ->
-                    response.place.let { place ->
+                placesClient.fetchPlace(placeRequest).addOnSuccessListener { placeResponse ->
+                    placeResponse.place.let { place ->
 
                         val addressmap = AddressMap(
                             place.id,
@@ -53,7 +52,7 @@ class MapsRepository(private val context: Context) {
                             place.latLng?.latitude,
                             place.latLng?.longitude
                         )
-                        mapAdress.onNext(addressmap)
+                        mapAddress.onNext(addressmap)
                     }
                 }
             }

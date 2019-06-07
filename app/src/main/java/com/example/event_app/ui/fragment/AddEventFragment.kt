@@ -20,12 +20,12 @@ import java.util.Calendar.MINUTE
 class AddEventFragment : BaseFragment() {
 
 
-    var dateStart: Date? = null
+    private var dateStart: Date? = null
     var dateEnd: Date? = null
-    var startDateTimePicker: Calendar = Calendar.getInstance()
-    var endDateTimePicker: Calendar = Calendar.getInstance()
-    var latitude: Double = 0.0
-    var longitude: Double = 0.0
+    private var startDateTimePicker: Calendar = Calendar.getInstance()
+    private var endDateTimePicker: Calendar = Calendar.getInstance()
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private val viewModel: AddEventFragmentViewModel by instance(arg = this)
 
     companion object {
@@ -55,7 +55,7 @@ class AddEventFragment : BaseFragment() {
         setTitleToolbar(getString(R.string.toolbar_add_event_fragment_add_event))
 
         chip_place_add_event_fragment.setOnClickListener {
-            val fragment = MapsFragment.newInstance()
+            val fragment = AddAddressMapFragment.newInstance()
             fragment.setTargetFragment(this, requestCodeMapFragment)
 
             fragmentManager?.beginTransaction()
@@ -131,7 +131,7 @@ class AddEventFragment : BaseFragment() {
             startTimeCode -> {
                 val calendar = data?.extras?.get("args") as Calendar
                 startDateTimePicker.set(HOUR_OF_DAY, calendar.get(HOUR_OF_DAY))
-                startDateTimePicker.set(Calendar.MINUTE, calendar.get(MINUTE))
+                startDateTimePicker.set(MINUTE, calendar.get(MINUTE))
                 dateStart = startDateTimePicker.time
                 chip_date_start_add_event_fragment.text = getDateToString(startDateTimePicker.time)
             }

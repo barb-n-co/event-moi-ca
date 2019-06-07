@@ -44,7 +44,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
-    val eventLoaded: BehaviorSubject<Event> = BehaviorSubject.create()
+    private var eventLoaded: Event? = null
     val loading: PublishSubject<Boolean> = PublishSubject.create()
     var organizerPhoto: BehaviorSubject<String> = BehaviorSubject.create()
     lateinit var currentPhotoPath: String
@@ -135,7 +135,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun changeActivationEvent(state: Boolean) {
-        eventLoaded.value?.let {
+        eventLoaded?.let {
             val newEvent = it.apply {
                 this.activate = if (state) 1 else 0
             }
@@ -157,7 +157,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 }).doOnSubscribe {
                 loading.onNext(true)
             }.map { response ->
-                eventLoaded.onNext(response.first)
+                eventLoaded = response.first
                 EventItem(
                     response.first.idEvent,
                     response.first.name,

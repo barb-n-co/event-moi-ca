@@ -51,7 +51,7 @@ class AddEventFragmentViewModel(
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Timber.w(task.exception, "getInstanceId failed")
+                    Timber.w(task.exception, "getInstanceId failed%s")
                     return@OnCompleteListener
                 }
 

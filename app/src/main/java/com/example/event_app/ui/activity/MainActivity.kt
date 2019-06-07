@@ -7,18 +7,19 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
 import com.example.event_app.repository.MyFirebaseMessagingService
-import com.example.event_app.ui.fragment.*
-import com.example.event_app.utils.or
+import com.example.event_app.ui.fragment.DetailEventInterface
+import com.example.event_app.ui.fragment.DetailPhotoInterface
+import com.example.event_app.ui.fragment.HomeFragment
+import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.viewmodel.MainActivityViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
@@ -56,85 +57,16 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        var returnValue = false
-
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                currentController = navControllerHome
-                homeWrapper.visibility = View.VISIBLE
-                profileWrapper.visibility = View.INVISIBLE
-                eventMapWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(true)
-                supportActionBar?.setTitle(R.string.title_home)
-
-                returnValue = true
-            }
-            R.id.navigation_profile -> {
-
-                currentController = navControllerProfile
-
-                homeWrapper.visibility = View.INVISIBLE
-                profileWrapper.visibility = View.VISIBLE
-                eventMapWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(false)
-                supportActionBar?.setTitle(R.string.title_profile)
-
-                returnValue = true
-            }
-            R.id.navigation_event_map -> {
-
-                currentController = navControllerEventMap
-
-                eventMapWrapper.visibility = View.VISIBLE
-                homeWrapper.visibility = View.INVISIBLE
-                profileWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(false)
-                supportActionBar?.setTitle(R.string.title_event_map)
-
-                val container = supportFragmentManager.findFragmentById(R.id.content_event_map)
-                val frg = container?.childFragmentManager?.findFragmentById(R.id.content_event_map)
-                if (frg is EventMapFragmentInterface) {
-                    frg.displayMapItems()
-                }
-            }
-        }
-        return@OnNavigationItemSelectedListener returnValue
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        initView()
-
-        currentController = navControllerHome
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        setupNavigation()
     }
 
-    private fun initView() {
-        navControllerHome = (supportFragmentManager
-            .findFragmentById(R.id.content_home) as NavHostFragment)
-            .navController
-
-        navControllerProfile = (supportFragmentManager
-            .findFragmentById(R.id.content_profile) as NavHostFragment)
-            .navController
-
-        navControllerEventMap = (supportFragmentManager
-            .findFragmentById(R.id.content_event_map) as NavHostFragment)
-            .navController
-
-        homeWrapper = content_home_wrapper
-        profileWrapper = content_profile_wrapper
-        eventMapWrapper = content_event_map_wrapper
-    }
-
-    override fun supportNavigateUpTo(upIntent: Intent) {
-        currentController.navigateUp()
+    private fun setupNavigation() {
+        val navController = NavHostFragment.findNavController(parent_host_fragment)
+        navigation.setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -154,8 +86,8 @@ class MainActivity : BaseActivity() {
         photoDetailActionList.add(reportPhotoActionMenu)
         photoDetailActionList.add(authorizePhotoActionMenu)
 
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
         if (frg is HomeFragment) {
             displayFilterMenu(true)
         } else {
@@ -172,8 +104,8 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
 
         return when (item?.itemId) {
             R.id.action_filter -> {
@@ -242,8 +174,8 @@ class MainActivity : BaseActivity() {
             ScannerQrCodeActivity.QrCodeRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.getStringExtra(ScannerQrCodeActivity.QrCodeKey)?.let {
-                        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-                        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+                        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+                        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
                         if (frg is HomeInterface) {
                             frg.getInvitation(it)
                         }
@@ -281,15 +213,6 @@ class MainActivity : BaseActivity() {
         quitEventButtonMenu?.isVisible = value
     }
 
-    fun displayLoader(value: Boolean) {
-        pb_main_activity.visibility = if(value) View.VISIBLE else View.INVISIBLE
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        currentController.navigateUp()
-        return true
-    }
-
     fun displayDetailPhotoActions(value: Boolean) {
         photoDetailActionList.forEach {
             it?.isVisible = value
@@ -315,7 +238,7 @@ class MainActivity : BaseActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Timber.w(task.exception, "getInstanceId failed%s")
+                    Timber.w("getInstanceId failed%s",task.exception.toString())
                     return@addOnCompleteListener
                 }
 
@@ -328,24 +251,6 @@ class MainActivity : BaseActivity() {
                 }
 
             }
-
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-        if(frg is HomeFragment){
-            displayLoader(true)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (!isMapOpenned) {
-            currentController
-                .let { if (it.popBackStack().not()) finish() }
-                .or { finish() }
-        } else {
-            AddAddressMapFragment.popBack()
-            isMapOpenned = false
-        }
-
     }
 
     private fun openQrCode() {
@@ -354,6 +259,19 @@ class MainActivity : BaseActivity() {
 
     fun isMapOpen(value: Boolean) {
         isMapOpenned = value
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onBackPressed() {
+        if(supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0 > 0){
+            NavHostFragment.findNavController(parent_host_fragment).popBackStack()
+        } else {
+            super.onBackPressed()
+        }
     }
 
 }

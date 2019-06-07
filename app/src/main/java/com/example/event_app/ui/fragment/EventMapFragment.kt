@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
@@ -31,7 +32,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInterface {
+class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -130,6 +131,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
                 GlideApp
                     .with(it)
                     .load(viewModel.getStorageRef(event.organizerPhoto))
+                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
@@ -173,12 +175,9 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
     }
 
-    override fun displayMapItems() {
+    override fun onResume() {
+        super.onResume()
         displayEventsOnMap()
     }
-
 }
 
-interface EventMapFragmentInterface {
-    fun displayMapItems()
-}

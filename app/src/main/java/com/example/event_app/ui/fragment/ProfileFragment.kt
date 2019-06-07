@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
@@ -192,6 +193,7 @@ class ProfileFragment : BaseFragment() {
         GlideApp
             .with(context!!)
             .load(viewModel.getStorageRef(user.photoUrl))
+            .transition(GenericTransitionOptions.with(R.anim.fade_in))
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
             .circleCrop()

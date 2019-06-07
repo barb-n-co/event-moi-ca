@@ -35,7 +35,7 @@ abstract class BaseFragment : Fragment(), KodeinAware {
     }
 
     protected fun setDisplayHomeAsUpEnabled(value: Boolean) {
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(value)
+        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(value)
     }
 
     protected fun closeMainActivity() {
@@ -87,9 +87,4 @@ abstract class BaseFragment : Fragment(), KodeinAware {
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
     }
-
-    protected fun displayLoader(value: Boolean) {
-        (activity as MainActivity).displayLoader(value)
-    }
-
 }

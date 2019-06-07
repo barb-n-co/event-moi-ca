@@ -142,7 +142,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 tv_address_detail_fragment.text = spannable { url("", it.place) }
                 tv_start_event_detail_fragment.text = it.dateStart
                 tv_finish_event_detail_fragment.text = it.dateEnd
-                setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
 
                 root_layout.visibility = VISIBLE
@@ -460,6 +459,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         if (requestCode == PERMISSION_IMPORT && grantResults.size == 2) {
             takePhotoByGallery()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setTitleToolbar(getString(R.string.title_detail_event))
     }
 
     override fun onStop() {

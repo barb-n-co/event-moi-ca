@@ -6,22 +6,18 @@
         android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
-            android:id="@+id/idCardView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginTop="5dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:cardCornerRadius="4dp">
-
-        <fragment
-                android:id="@+id/autocomplete_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fragmentSharedElementEnterTransition="@anim/fade_in"
-                android:fragmentSharedElementReturnTransition="@anim/fade_out"
-                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-                />
+        android:id="@+id/idCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="4dp">
+            <fragment android:id="@+id/autocomplete_fragment"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            />
     </androidx.cardview.widget.CardView>
 
     <FrameLayout

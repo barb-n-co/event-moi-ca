@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#ffa000</color>
     <color name="colorAccent">#ffab00</color>
 
-    <color name="dark_orange">#ff8f00</color>
+    <color name="dark_orange">#FF7700</color>
+    <color name="light_orange">#FFD027</color>
     <color name="dark_selection_green">#005738</color>
     <color name="blue">#0000b3</color>
     <color name="black">#000000</color>
@@ -12,6 +13,7 @@
     <color name="green">#7cb342</color>
     <color name="orange">#ffa000</color>
     <color name="grey">#777777</color>
+    <color name="light_grey">#D5D5D5</color>
     <color name="black_grey">#262626</color>
     <color name="error">#A32222</color>
 

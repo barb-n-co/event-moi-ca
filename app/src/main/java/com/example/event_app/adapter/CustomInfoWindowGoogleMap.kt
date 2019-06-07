@@ -27,12 +27,12 @@ class CustomInfoWindowGoogleMap(val context: Context) : GoogleMap.InfoWindowAdap
                     mInfoView?.chip_user_state_info_window_map?.text = context.getString(R.string.tv_state_organizer)
                 } else {
                     mInfoView?.chip_user_state_info_window_map?.chipBackgroundColor =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
                     mInfoView?.chip_user_state_info_window_map?.text = context.getString(R.string.tv_state_participate)
                 }
             } else {
                 mInfoView?.chip_user_state_info_window_map?.chipBackgroundColor =
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_orange))
                 mInfoView?.chip_user_state_info_window_map?.text = context.getString(R.string.tv_state_invited)
             }
         }

@@ -35,7 +35,7 @@
                 android:text="Accepted"
                 android:clickable="false"
                 app:chipBackgroundColor="@color/colorPrimary"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/tv_name_myevents_item"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

@@ -49,7 +49,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
         setVisibilityNavBar(true)
-
         setFab()
 
         shimmer = shimmer_view_container
@@ -106,8 +105,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 swiperefresh_fragment_home.isRefreshing = false
             })
             .addTo(viewDisposable)
-
-        viewModel.getMyEvents()
     }
 
     private fun displayEvents(adapter: ListMyEventsAdapter, eventList: List<EventItem>?) {
@@ -170,6 +167,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
         setTitleToolbar(getString(R.string.title_home))
         shimmer.startShimmer()
         handler.postDelayed(shimmerRunnable, 1000L)
+        viewModel.getMyEvents()
     }
 
     override fun onPause() {

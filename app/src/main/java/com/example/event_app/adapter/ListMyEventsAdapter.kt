@@ -58,14 +58,14 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_organizer)
                 } else {
                     itemView.chip_user_state_myevents_item.chipBackgroundColor =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.green))
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_participate)
                 }
             } else {
                 itemView.b_accept_myevents_item.visibility = VISIBLE
                 itemView.b_refuse_myevents_item.visibility = VISIBLE
                 itemView.chip_user_state_myevents_item.chipBackgroundColor =
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorPrimary))
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_orange))
                 itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_invited)
             }
             if (event.organizerPhoto.isNotEmpty()) {
@@ -76,6 +76,7 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
+                    .placeholder(R.drawable.ic_manager)
                     .into(itemView.iv_organizer_photo_item_event)
             }
 

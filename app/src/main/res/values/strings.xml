@@ -2,7 +2,8 @@
     <string name="app_name">Event Moi Ça</string>
 
     <!-- Title -->
-    <string name="title_home">Évènements</string>
+    <string name="title_home">Événements</string>
+    <string name="title_detail_event">Détail d\'un événement</string>
     <string name="title_profile">Profil</string>
     <string name="title_event_map">Carte</string>
     <string name="title_qr_code">QR CODE</string>

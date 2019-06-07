@@ -90,7 +90,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
                             val position = LatLng(event.latitude, event.longitude)
                             val marker = googleEventMap.addMarker(
                                 MarkerOptions().position(position)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.map_pin))
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_map2))
                             )
                             marker.tag = event
                             val region = viewModel.setRegion(it)

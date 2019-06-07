@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -25,8 +26,16 @@ class SplashScreenViewModel(private val userRepository: UserRepository) : BaseVi
 
     fun getCurrentUser(): FirebaseUser? {
         val user = userRepository.fireBaseAuth.currentUser
-        user?.let {
-            userRepository.currentUser.onNext(User(it.uid, it.displayName, it.email))
+        user?.let { fireAuthUser ->
+            userRepository.getUserById(fireAuthUser.uid)
+                .subscribe(
+                    {
+                        userRepository.currentUser.onNext(User(it.id, it.name, it.email, it.photoUrl))
+                    },
+                    {
+                        Timber.e(it)
+                    }
+                ).addTo(disposeBag)
         }
         return user
     }

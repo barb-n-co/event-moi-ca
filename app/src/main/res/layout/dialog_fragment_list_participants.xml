@@ -6,8 +6,7 @@
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#FFF">
+        android:background="@color/black_grey">
 
     <View
             android:layout_width="match_parent"
@@ -23,6 +22,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_cancel"
+            android:tint="@color/black"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -31,8 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/TitleListParticipants"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
+            android:paddingBottom="16dp"
             android:textAlignment="center"
             style="@style/SubtitleBlack"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,8 +41,12 @@
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_listParticipants"
             tools:listitem="@layout/item_participant"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_list_participants_popup"/>

@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
@@ -32,6 +33,7 @@ import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
@@ -55,7 +57,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var popupWindow: PopupWindow? = null
     var idOrganizer = ""
-    private var imageIdList = ArrayList<Photo>()
 
     companion object {
         const val TAG = "DETAIL_EVENT_FRAGMENT"
@@ -75,32 +76,56 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         setVisibilityNavBar(false)
 
         weakContext = WeakReference<Context>(context)
-        adapter = CustomAdapter(0)
 
         eventId = arguments?.let {
             DetailEventFragmentArgs.fromBundle(it).eventId
         }
 
-        requestPermissions()
+        adapter = CustomAdapter()
+        val mGrid = GridLayoutManager(context, 3)
+        rv_listImage.layoutManager = mGrid
+        rv_listImage.adapter = adapter
+        ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
 
-        viewModel.loading.subscribe(
-            {
-                pb_detail_event_fragment.visibility = if (it) VISIBLE else GONE
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
+        eventId?.let {
+
+            viewModel.getEventInfo(it)
+            viewModel.getParticipant(it)
+
+            adapter.photosClickPublisher.subscribe(
+                { photoId ->
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
+                        it,
+                        photoId,
+                        idOrganizer
+                    )
+                    NavHostFragment.findNavController(this).navigate(action)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(viewDisposable)
+
+            viewModel.initPhotoEventListener(it).subscribe(
+                { photoList ->
+                    adapter.submitList(photoList)
+                },
+                {
+                    Timber.e(it)
+                }
+            ).addTo(viewDisposable)
+        }
 
         viewModel.organizerPhoto.subscribe(
             {
                 GlideApp
                     .with(context!!)
                     .load(viewModel.getStorageRef(it))
+                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_manager_orange)
+                    .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_fragment)
             },
             {
@@ -110,7 +135,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         viewModel.event.subscribe(
             {
-                viewModel.getPhotographOrganizerPicture(it.idOrganizer)
                 tv_event_name_detail_fragment.text = it.nameEvent
                 tv_description_detail_fragment.text = it.description
                 tv_organizer_detail_fragment.text = it.nameOrganizer
@@ -118,13 +142,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 tv_address_detail_fragment.text = spannable { url("", it.place) }
                 tv_start_event_detail_fragment.text = it.dateStart
                 tv_finish_event_detail_fragment.text = it.dateEnd
-                setTitleToolbar(it.nameEvent)
                 idOrganizer = it.idOrganizer
 
                 root_layout.visibility = VISIBLE
 
-                adapter = CustomAdapter(it.organizer)
-                initAdapter(it.idEvent)
+                //adapter.isOrganizerClickPublisher.onNext(it.organizer)
 
                 if (it.organizer != 1) {
                     switch_activate_detail_event_fragment.visibility = GONE
@@ -143,6 +165,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     setFab(it.activate != 0)
                     displayDeleteEventMenu(true)
                     displayEditEventMenu(true)
+                    displayQrCodeMenu(true)
                     if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
                         switch_activate_detail_event_fragment.text =
@@ -194,11 +217,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         }
 
-        eventId?.let { notNullId ->
-            viewModel.getEventInfo(notNullId)
-            viewModel.getParticipant(notNullId)
-        }
-
         tv_listParticipant.setOnClickListener { openPopUp() }
 
     }
@@ -227,38 +245,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 }
             }
         }
-    }
-
-    private fun initAdapter(eventId: String) {
-
-        val mGrid = GridLayoutManager(context, 3)
-        rv_listImage.layoutManager = mGrid
-        rv_listImage.adapter = adapter
-        ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
-        adapter.photosClickPublisher.subscribe(
-            { photoId ->
-                val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
-                    eventId,
-                    photoId,
-                    idOrganizer
-                )
-                NavHostFragment.findNavController(this).navigate(action)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
-        adapter.submitList(imageIdList)
-
-        viewModel.initPhotoEventListener(eventId).subscribe(
-            { photoList ->
-                adapter.submitList(photoList)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
     }
 
     private fun actionDeleteEvent(eventId: String) {
@@ -477,9 +463,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     override fun onResume() {
         super.onResume()
-        eventId?.let { notNullId ->
-            viewModel.getParticipant(notNullId)
-        }
+        setTitleToolbar(getString(R.string.title_detail_event))
     }
 
     override fun onStop() {
@@ -494,7 +478,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         weakContext.clear()
         popupWindow?.dismiss()
         super.onDestroyView()
-
     }
 }
 

@@ -14,7 +14,9 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,6 +45,7 @@ object EventRepository {
     private val commentLikesRef = database.reference.child(COMMENTS_LIKES)
 
     val myEvents: BehaviorSubject<List<MyEvents>> = BehaviorSubject.create()
+    val myEventsItem: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
 
     //region FireStore
 
@@ -53,6 +56,58 @@ object EventRepository {
     //end region
 
     //region Event
+
+    fun fetchEventsItem(idUser: String, stateUserEvent: UserEventState): Observable<List<EventItem>> {
+        val obs = Observable.combineLatest(
+            fetchEvents(),
+            fetchMyEvents(idUser),
+            BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
+                Pair(t1, t2)
+            }).map { response ->
+            response.second.filter {
+                when {
+                    stateUserEvent.equals(UserEventState.NOTHING) -> true
+                    stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
+                    stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
+                    stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
+                    else -> false
+                }
+            }.map { myEvents ->
+                val item = response.first.find { events ->
+                    events.idEvent == myEvents.idEvent
+                }
+                item?.let {
+                    EventItem(
+                        it.idEvent,
+                        it.name,
+                        idUser,
+                        it.organizer,
+                        it.place,
+                        it.dateStart,
+                        it.dateEnd,
+                        myEvents.accepted,
+                        myEvents.organizer,
+                        it.description,
+                        it.idOrganizer,
+                        it.reportedPhotoCount,
+                        it.isEmptyEvent,
+                        it.organizerPhoto
+                    )
+                }
+            }.filterNotNull()
+        }
+
+        obs.subscribe(
+            {
+                myEventsItem.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        )
+
+        return obs
+    }
 
     fun fetchEvents(): Observable<List<Event>> {
         return RxFirebaseDatabase.observeSingleValueEvent(
@@ -290,7 +345,8 @@ object EventRepository {
         val author = user.name ?: ""
         val userId = user.id!!
         val userProfileImage = user.photoUrl
-        val newComment = Commentaire(pushPath, author, userId, comment, photoId, newDate, profileImage = userProfileImage)
+        val newComment =
+            Commentaire(pushPath, author, userId, comment, photoId, newDate, profileImage = userProfileImage)
         return RxFirebaseDatabase.setValue(commentsRef.child(photoId).child(pushPath), newComment)
     }
 

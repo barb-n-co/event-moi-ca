@@ -19,14 +19,12 @@ class CommentChoiceDialogFragment(
     private val commentChoiceListener: (CommentChoice) -> Unit
 ) : DialogFragment() {
 
-    val likeState = if (alreadyLike) CommentChoice.DISLIKE else CommentChoice.LIKE
+    private val likeState = if (alreadyLike) CommentChoice.DISLIKE else CommentChoice.LIKE
 
-    private val listChoices: List<CommentChoice> = if (commentAuthor) {
-        listOf(CommentChoice.DELETE, CommentChoice.EDIT, likeState)
-    } else if (organizer) {
-        listOf(CommentChoice.DELETE, likeState)
-    } else {
-        listOf(CommentChoice.REPORT, likeState)
+    private val listChoices: List<CommentChoice> = when {
+        commentAuthor -> listOf(CommentChoice.DELETE, CommentChoice.EDIT, likeState)
+        organizer -> listOf(CommentChoice.DELETE, likeState)
+        else -> listOf(CommentChoice.REPORT, likeState)
     }
 
 

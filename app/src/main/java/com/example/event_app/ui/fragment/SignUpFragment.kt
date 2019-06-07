@@ -14,14 +14,13 @@ import kotlinx.android.synthetic.main.fragment_signup.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-class SignupFragment : BaseFragment() {
+class SignUpFragment : BaseFragment() {
 
 
     private val viewModel: LoginViewModel by instance(arg = this)
 
     companion object {
-        const val TAG = "SIGNUPFRAGMENT"
-        fun newInstance(): SignupFragment = SignupFragment()
+        fun newInstance(): SignUpFragment = SignUpFragment()
     }
 
     override fun onCreateView(
@@ -36,14 +35,14 @@ class SignupFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         b_signup_fragment.setOnClickListener {
-            val firstname = et_firstname_signup_fragment.text.toString()
-            val lastname = et_lastname_signup_fragment.text.toString()
-            val name = "$firstname $lastname"
+            val firstName = et_firstname_signup_fragment.text.toString()
+            val lastName = et_lastname_signup_fragment.text.toString()
+            val fullName = "$firstName $lastName"
             val email = et_email_signup_fragment.text.toString()
             val password = et_password_signup_fragment.text.toString()
             val confirmPassword = et_confirm_password_signup_fragment.text.toString()
             if (password == confirmPassword) {
-                userRegister(email, password, name)
+                userRegister(email, password, fullName)
             } else {
                 Toast.makeText(context, getString(R.string.passwords_does_not_match), Toast.LENGTH_SHORT).show()
             }

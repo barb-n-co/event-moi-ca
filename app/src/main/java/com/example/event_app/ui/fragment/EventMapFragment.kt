@@ -32,7 +32,7 @@ import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInterface {
+class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -142,7 +142,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
         }
         tv_event_name_detail_bottom_sheet_map.text = event.nameEvent
         tv_organizer_detail_bottom_sheet_map.text = event.nameOrganizer
-        tv_address_detail_bottom_sheet_map.text = spannable { url("", event.place) }//event.place
+        tv_address_detail_bottom_sheet_map.text = spannable { url("", event.place) }
         tv_start_event_detail_bottom_sheet_map.text = event.dateStart
         tv_finish_event_detail_bottom_sheet_map.text = event.dateEnd
         tv_description_detail_bottom_sheet_map.text = event.description
@@ -175,12 +175,9 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback, EventMapFragmentInt
 
     }
 
-    override fun displayMapItems() {
+    override fun onResume() {
+        super.onResume()
         displayEventsOnMap()
     }
-
 }
 
-interface EventMapFragmentInterface {
-    fun displayMapItems()
-}

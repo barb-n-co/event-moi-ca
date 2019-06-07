@@ -27,13 +27,13 @@ import java.util.*
 
 
 
-class MapsFragment : BaseFragment(), OnMapReadyCallback {
+class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
 
     private val viewModel: MapsViewModel by instance(arg = this)
     private lateinit var mMap: GoogleMap
 
     companion object {
-        fun newInstance(): MapsFragment = MapsFragment()
+        fun newInstance(): AddAddressMapFragment = AddAddressMapFragment()
 
         var fragmentManager: FragmentManager? = null
         fun popBack() {
@@ -52,15 +52,15 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        MapsFragment.fragmentManager = fragmentManager
+        AddAddressMapFragment.fragmentManager = fragmentManager
         initMap()
-        viewModel.searchAdress()
+        viewModel.observeAddressResults()
 
         iv_back_menu_maps.setOnClickListener {
             fragmentManager?.popBackStack()
         }
 
-        viewModel.mapAdress.subscribe(
+        viewModel.mapAddress.subscribe(
             { addressMap ->
                 btn_maps.visibility = View.VISIBLE
                 val latLng = addressMap.getLatLng()
@@ -72,7 +72,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
                 btn_maps.setOnClickListener {
                     btn_maps.visibility = View.GONE
-                    val intent = viewModel.createIntentWithExtra(addressMap, getString(R.string.chip_adresse))
+                    val intent = viewModel.createAddressIntent(addressMap, getString(R.string.chip_adresse))
                     targetFragment?.onActivityResult(targetRequestCode, RESULT_OK, intent)
                     fragmentManager?.popBackStack()
                 }
@@ -89,7 +89,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback {
 
         autocompleteFragment?.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                viewModel.searchAdress("${place.address}")
+                viewModel.searchAddress("${place.address}")
             }
 
             override fun onError(status: Status) {

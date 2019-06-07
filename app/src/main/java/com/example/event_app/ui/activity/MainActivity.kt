@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
@@ -16,13 +15,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
 import com.example.event_app.repository.MyFirebaseMessagingService
-import com.example.event_app.ui.fragment.*
-import com.example.event_app.utils.or
+import com.example.event_app.ui.fragment.DetailEventInterface
+import com.example.event_app.ui.fragment.DetailPhotoInterface
+import com.example.event_app.ui.fragment.HomeFragment
+import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.viewmodel.MainActivityViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.iid.FirebaseInstanceId
-import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -240,7 +238,7 @@ class MainActivity : BaseActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Timber.w("getInstanceId failed%s", task.exception)
+                    Timber.w("getInstanceId failed%s",task.exception.toString())
                     return@addOnCompleteListener
                 }
 

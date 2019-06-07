@@ -1,7 +1,6 @@
 package com.example.event_app.ui.fragment
 
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
-private const val COLOR_PRIMARY = "#00e68a"
 
 class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
@@ -167,7 +165,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         viewModel.commentaires.subscribe(
             { commentList ->
                 adapter?.submitList(commentList)
-                if (commentList.size > 0) {
+                if (commentList.isNotEmpty()) {
                     rv_comments.visibility = View.VISIBLE
                 } else rv_comments.visibility = View.GONE
 

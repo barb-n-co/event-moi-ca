@@ -6,10 +6,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swiperefresh_fragment_home"
+    <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:shimmer_auto_start="true"
+            app:shimmer_duration="2000"
+            app:shimmer_base_alpha="0.9"
+            >
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swiperefresh_fragment_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -28,6 +37,9 @@
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 
     <androidx.constraintlayout.widget.Group
             android:id="@+id/g_no_item_home_fragment"

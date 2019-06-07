@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentActivity
 import com.example.event_app.R
 import com.example.event_app.viewmodel.SplashScreenViewModel
 import org.kodein.di.generic.instance
-import timber.log.Timber
 
 
 class SplashScreenActivity : BaseActivity() {
@@ -28,8 +27,6 @@ class SplashScreenActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
-
-        Timber.tag("NOTIF_11").d(intent.getStringExtra("eventOwner"))
 
         intentReceived = intent
         val type = intentReceived.type
@@ -59,7 +56,6 @@ class SplashScreenActivity : BaseActivity() {
             }
         }, 2000L)
 
-        //viewModel.initMessageReceiving()
     }
 
 

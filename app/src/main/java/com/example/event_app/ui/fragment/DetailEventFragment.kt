@@ -51,7 +51,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     private lateinit var weakContext: WeakReference<Context>
     private lateinit var adapter: CustomAdapter
-    lateinit var participants: List<User>
+    private lateinit var participants: List<User>
     private val viewModel: DetailEventViewModel by instance(arg = this)
     private var eventId: String? = null
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
@@ -59,7 +59,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     var idOrganizer = ""
 
     companion object {
-        const val TAG = "DETAIL_EVENT_FRAGMENT"
         fun newInstance(): DetailEventFragment = DetailEventFragment()
     }
 
@@ -314,7 +313,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 removeUser(it)
             },
             idOrganizer = idOrganizer,
-            isNotAnOrga = idOrganizer == UserRepository.currentUser.value?.id,
+            isNotAnOrganizer = idOrganizer == UserRepository.currentUser.value?.id,
             participants = participants
         )
         popup.show(requireFragmentManager(), "listParticipant")

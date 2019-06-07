@@ -20,7 +20,7 @@ import timber.log.Timber
 class ListParticipantDialogFragment(
     private val deleteSelectedListener: (String) -> Unit,
     private val idOrganizer: String,
-    private val isNotAnOrga: Boolean,
+    private val isNotAnOrganizer: Boolean,
     private val participants: List<User>
 ) : DialogFragment() {
 
@@ -35,7 +35,7 @@ class ListParticipantDialogFragment(
         super.onViewCreated(view, savedInstanceState)
 
 
-        val adapter = ListParticipantsAdapter(idOrganizer, isNotAnOrga)
+        val adapter = ListParticipantsAdapter(idOrganizer, isNotAnOrganizer)
         rv_listParticipants.layoutManager = LinearLayoutManager(context)
         rv_listParticipants.adapter = adapter
         val itemDecor = DividerItemDecoration(context, VERTICAL)

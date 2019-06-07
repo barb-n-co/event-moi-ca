@@ -31,11 +31,9 @@ import java.io.IOException
 class ProfileFragment : BaseFragment() {
 
     private val viewModel: ProfileViewModel by instance(arg = this)
-    lateinit var alertDialog: AlertDialog
     private var userId: String? = null
 
     companion object {
-        const val TAG = "PROFILERAGMENT"
         fun newInstance(): ProfileFragment = ProfileFragment()
     }
 
@@ -58,10 +56,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         iv_photo_fragment_profile.setOnClickListener {
-
             openPopUp()
-
-
         }
 
         viewModel.user.subscribe(
@@ -112,7 +107,6 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun openPopUp() {
-
         val popup = ProfilePhotoSourceDialogFragment(
             choiceSelectedListener = {
                 if (permissionManager.checkPermissions(

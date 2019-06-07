@@ -14,9 +14,9 @@ class FilterDialogFragment(
     private val filterState: UserEventState
 ) : BottomSheetDialogFragment() {
 
-    var cbInvitation: Boolean = false
-    var cbParticipate: Boolean = false
-    var cbOrganizer: Boolean = false
+    private var cbInvitation: Boolean = false
+    private var cbParticipate: Boolean = false
+    private var cbOrganizer: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.dialog_fragment_filter, container, false)

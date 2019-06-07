@@ -13,8 +13,8 @@ class ScannerQrCodeActivity : BaseActivity(), ZXingScannerView.ResultHandler {
     private lateinit var mScannerView: ZXingScannerView
 
     companion object {
-        val QrCodeRequestCode = 10
-        val QrCodeKey = "QrCodeResponse"
+        const val QrCodeRequestCode = 10
+        const val QrCodeKey = "QrCodeResponse"
 
         fun start(fromActivity: FragmentActivity) {
             fromActivity.startActivityForResult(

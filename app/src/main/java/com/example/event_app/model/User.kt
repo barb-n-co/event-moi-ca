@@ -1,6 +1,8 @@
 package com.example.event_app.model
 
 import android.os.Parcelable
+import com.google.android.gms.auth.api.signin.internal.Storage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

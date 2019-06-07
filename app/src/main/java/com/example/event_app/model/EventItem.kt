@@ -1,5 +1,7 @@
 package com.example.event_app.model
 
+import com.google.firebase.storage.StorageReference
+
 class EventItem(
     val idEvent: String,
     val nameEvent: String,
@@ -17,6 +19,6 @@ class EventItem(
     var organizerPhoto: String = "",
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
-    var activate: Int = 1
-
+    var activate: Int = 1,
+    var organizerPhotoReference: StorageReference? = null
 )

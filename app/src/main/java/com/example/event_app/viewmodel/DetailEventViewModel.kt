@@ -176,11 +176,11 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.first.organizerPhoto,
                     response.first.latitude,
                     response.first.longitude,
-                    response.first.activate
+                    response.first.activate,
+                    eventsRepository.getStorageReferenceForUrl(response.first.organizerPhoto)
                 )
 
             }.subscribe({
-                getPhotographOrganizerPicture(it.idUser)
                 event.onNext(it)
             },
                 {
@@ -192,18 +192,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
         }
         getParticipant(eventId)
-    }
-
-    fun getPhotographOrganizerPicture(userId: String) {
-        userRepository.getUserById(userId)
-            .subscribe(
-            {
-                organizerPhoto.onNext(it.photoUrl)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(disposeBag)
     }
 
     fun getStorageRef(url: String): StorageReference {

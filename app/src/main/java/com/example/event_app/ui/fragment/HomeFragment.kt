@@ -8,9 +8,11 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
 import com.example.event_app.model.EventItem
@@ -26,12 +28,7 @@ import java.lang.ref.WeakReference
 class HomeFragment : BaseFragment(), HomeInterface {
 
     private val viewModel: HomeFragmentViewModel by instance(arg = this)
-    private lateinit var shimmer: ShimmerFrameLayout
     private lateinit var weakContext: WeakReference<Context>
-    private val handler = Handler()
-    private val shimmerRunnable: Runnable = Runnable {
-        //viewModel.getMyEvents()
-    }
 
     companion object {
         const val TAG = "HOMEFRAGMENT"
@@ -51,13 +48,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         setVisibilityNavBar(true)
         setFab()
 
-        shimmer = shimmer_view_container
         weakContext = WeakReference(context!!)
 
         val adapter = ListMyEventsAdapter(weakContext.get()!!, viewModel)
         val mLayoutManager = LinearLayoutManager(context)
         rv_event_home_fragment.layoutManager = mLayoutManager
-        rv_event_home_fragment.itemAnimator = DefaultItemAnimator()
         rv_event_home_fragment.adapter = adapter
 
         swiperefresh_fragment_home.isRefreshing = false
@@ -87,8 +82,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
         ).addTo(viewDisposable)
 
         swiperefresh_fragment_home.setOnRefreshListener {
-            shimmer.startShimmer()
-            handler.postDelayed(shimmerRunnable, 1000L)
+            viewModel.getMyEvents()
         }
 
         viewModel.myEventList.subscribe(
@@ -111,7 +105,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         rv_event_home_fragment.visibility = VISIBLE
         g_no_item_home_fragment.visibility = GONE
         adapter.submitList(eventList)
-        shimmer.stopShimmer()
     }
 
     private fun showPlaceHolder() {
@@ -160,14 +153,12 @@ class HomeFragment : BaseFragment(), HomeInterface {
         super.onResume()
         setTitleToolbar(getString(R.string.title_home))
         displayFilterMenu(true)
+        viewModel.getMyEvents()
     }
 
     override fun onStart() {
         super.onStart()
         setTitleToolbar(getString(R.string.title_home))
-        shimmer.startShimmer()
-        handler.postDelayed(shimmerRunnable, 1000L)
-        viewModel.getMyEvents()
     }
 
     override fun onPause() {
@@ -177,7 +168,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
 
     override fun onDestroyView() {
         weakContext.clear()
-        handler.removeCallbacks(shimmerRunnable)
         super.onDestroyView()
     }
 

@@ -116,23 +116,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             ).addTo(viewDisposable)
         }
 
-        viewModel.organizerPhoto.subscribe(
-            {
-                GlideApp
-                    .with(context!!)
-                    .load(viewModel.getStorageRef(it))
-                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
-                    .into(iv_organizer_detail_fragment)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(viewDisposable)
-
         viewModel.event.subscribe(
             {
                 tv_event_name_detail_fragment.text = it.nameEvent
@@ -143,6 +126,16 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 tv_start_event_detail_fragment.text = it.dateStart
                 tv_finish_event_detail_fragment.text = it.dateEnd
                 idOrganizer = it.idOrganizer
+
+                GlideApp
+                    .with(context!!)
+                    .load(it.organizerPhotoReference)
+                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .into(iv_organizer_detail_fragment)
 
                 root_layout.visibility = VISIBLE
 

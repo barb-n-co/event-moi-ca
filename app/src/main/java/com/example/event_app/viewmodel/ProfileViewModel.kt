@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
+import com.example.event_app.model.UserProfile
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.google.firebase.storage.StorageReference
@@ -27,9 +28,28 @@ import java.util.*
 class ProfileViewModel(private val userRepository: UserRepository, private val eventRepository: EventRepository) :
     BaseViewModel() {
 
-    var user: BehaviorSubject<User> = BehaviorSubject.create()
+    var user: BehaviorSubject<UserProfile> = BehaviorSubject.create()
     var eventCount: BehaviorSubject<NumberEvent> = BehaviorSubject.create()
     lateinit var currentPhotoPath: String
+
+    init {
+        userRepository.currentUser.subscribe(
+            {
+                user.onNext(UserProfile(
+                    it.id,
+                    it.name,
+                    it.email,
+                    it.photoUrl,
+                    eventRepository.getStorageReferenceForUrl(it.photoUrl)
+                ))
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+
+        getNumberEventUser()
+    }
 
     fun logout() {
         userRepository.fireBaseAuth.signOut()
@@ -81,23 +101,6 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                 }
             ).addTo(disposeBag)
         }
-    }
-
-    fun getCurrentUser() {
-        userRepository.getUserNameFromFirebase()
-        userRepository.currentUser.subscribe(
-            {
-                user.onNext(it)
-            },
-            {
-                Timber.e(it)
-            }
-        ).addTo(disposeBag)
-
-    }
-
-    fun getStorageRef(url: String): StorageReference {
-        return eventRepository.getStorageReferenceForUrl(url)
     }
 
     @Throws(IOException::class)

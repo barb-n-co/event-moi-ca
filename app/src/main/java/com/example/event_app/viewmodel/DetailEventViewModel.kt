@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.event_app.R
@@ -46,7 +47,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
     val eventLoaded: BehaviorSubject<Event> = BehaviorSubject.create()
     val loading: PublishSubject<Boolean> = PublishSubject.create()
-    var organizerPhoto: BehaviorSubject<String> = BehaviorSubject.create()
+    var organizerPhoto: PublishSubject<String> = PublishSubject.create()
     lateinit var currentPhotoPath: String
 
     init {
@@ -179,6 +180,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                 )
 
             }.subscribe({
+                getPhotographOrganizerPicture(it.idUser)
                 event.onNext(it)
             },
                 {
@@ -193,7 +195,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     }
 
     fun getPhotographOrganizerPicture(userId: String) {
-        userRepository.getUserById(userId).subscribe(
+        userRepository.getUserById(userId)
+            .subscribe(
             {
                 organizerPhoto.onNext(it.photoUrl)
             },
@@ -250,6 +253,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                         GlideApp.with(context)
                             .asBitmap()
                             .load(eventsRepository.getStorageReferenceForUrl(photo.url))
+                            .transition(GenericTransitionOptions.with(R.anim.fade_in))
                             .into(object : CustomTarget<Bitmap>() {
 
                                 override fun onLoadFailed(errorDrawable: Drawable?) {

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.ListEventAdapter
 import com.example.event_app.model.EventItem
@@ -41,9 +42,9 @@ class ShareGalleryActivity : BaseActivity() {
         viewModel.getMyEvents()
 
         if (SplashScreenActivity.sharedPhotoPath != null) {
-            GlideApp.with(this).load(SplashScreenActivity.sharedPhotoPath).into(iv_imageToShare)
+            GlideApp.with(this).load(SplashScreenActivity.sharedPhotoPath).transition(GenericTransitionOptions.with(R.anim.fade_in)).into(iv_imageToShare)
         } else if (uri != null && uri.toString().isNotEmpty()) {
-            GlideApp.with(this).load(uri).into(iv_imageToShare)
+            GlideApp.with(this).load(uri).transition(GenericTransitionOptions.with(R.anim.fade_in)).into(iv_imageToShare)
         } else {
             Toast.makeText(
                 this,

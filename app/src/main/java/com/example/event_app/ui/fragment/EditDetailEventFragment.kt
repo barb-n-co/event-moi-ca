@@ -72,7 +72,7 @@ class EditDetailEventFragment : BaseFragment() {
                     R.anim.fade_in,
                     R.anim.transition_top_to_bottom_exit
                 )
-                ?.add(R.id.content_home, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
+                ?.add(R.id.parent_host_fragment, fragment, fragment::class.java.name)?.addToBackStack(null)?.commit()
             fragmentMapIsOpen(true)
         }
 

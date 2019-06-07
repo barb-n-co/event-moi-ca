@@ -4,10 +4,10 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/navigation_home"
-        app:startDestination="@id/my_home_fragment">
+        app:startDestination="@id/navigation_home">
 
     <fragment
-            android:id="@+id/my_home_fragment"
+            android:id="@+id/navigation_home"
             android:name="com.example.event_app.ui.fragment.HomeFragment"
             android:label="MyHomeFragment"
             tools:layout="@layout/fragment_home">
@@ -17,14 +17,16 @@
                 app:enterAnim="@anim/transition_bottom_to_top"
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/transition_top_to_bottom_exit"/>
+                app:popExitAnim="@anim/transition_top_to_bottom_exit"
+                />
         <action
                 android:id="@+id/action_my_home_fragment_to_detail_event_fragment"
                 app:destination="@id/detail_event_fragment"
                 app:enterAnim="@anim/transition_right_to_left"
                 app:popExitAnim="@anim/transition_left_to_right_exit"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"/>
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                />
     </fragment>
 
     <fragment
@@ -45,17 +47,18 @@
         <action
                 android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
                 app:destination="@id/detailPhotoFragment"
-                app:enterAnim="@anim/transition_right_to_left"
-                app:popExitAnim="@anim/transition_left_to_right_exit"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"/>
+                app:enterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"/>
         <action
                 android:id="@+id/action_detail_event_fragment_to_EditDetailEventFragment"
                 app:destination="@id/EditDetailEventFragment"
                 app:enterAnim="@anim/transition_bottom_to_top"
                 app:exitAnim="@anim/fade_out"
                 app:popEnterAnim="@anim/fade_in"
-                app:popExitAnim="@anim/transition_top_to_bottom_exit"/>
+                app:popExitAnim="@anim/transition_top_to_bottom_exit"
+                />
     </fragment>
 
     <fragment
@@ -91,14 +94,14 @@
     </fragment>
 
     <fragment
-            android:id="@+id/my_profile_fragment"
+            android:id="@+id/navigation_profile"
             android:name="com.example.event_app.ui.fragment.ProfileFragment"
             android:label="MyProfileFragment"
             tools:layout="@layout/fragment_profile">
     </fragment>
 
     <fragment
-            android:id="@+id/event_map_fragment"
+            android:id="@+id/navigation_event_map"
             android:name="com.example.event_app.ui.fragment.EventMapFragment"
             android:label="EventMapFragment"
             tools:layout="@layout/fragment_event_map">

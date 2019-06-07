@@ -30,62 +30,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-            android:id="@+id/content_home_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/view_main_activity"
-            app:layout_constraintTop_toBottomOf="@id/app_bar">
-
-        <fragment
-                android:id="@+id/content_home"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:defaultNavHost="true"
-                app:navGraph="@navigation/navigation_home"/>
-
-    </FrameLayout>
-
-    <FrameLayout
-            android:id="@+id/content_profile_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="invisible"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@id/app_bar"
-            app:layout_constraintBottom_toTopOf="@id/view_main_activity">
-
-        <fragment
-                android:id="@+id/content_profile"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:defaultNavHost="false"
-                app:navGraph="@navigation/navigation_profile"/>
-    </FrameLayout>
-
-    <FrameLayout
-            android:id="@+id/content_event_map_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:visibility="invisible"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@id/app_bar"
-            app:layout_constraintBottom_toTopOf="@id/view_main_activity">
-
-        <fragment
-                android:id="@+id/content_event_map"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:defaultNavHost="false"
-                app:navGraph="@navigation/navigation_event_map"/>
-    </FrameLayout>
-
-
     <androidx.constraintlayout.widget.Group
             android:id="@+id/g_navBar_mainActivity"
             android:layout_width="wrap_content"

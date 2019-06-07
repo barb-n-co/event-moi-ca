@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.model.EventItem
@@ -71,6 +72,7 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                 GlideApp
                     .with(context)
                     .load(fragmentViewModel.getStorageRef(event.organizerPhoto))
+                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .circleCrop()

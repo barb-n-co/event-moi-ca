@@ -30,7 +30,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
     private lateinit var weakContext: WeakReference<Context>
     private val handler = Handler()
     private val shimmerRunnable: Runnable = Runnable {
-        viewModel.getMyEvents()
+        //viewModel.getMyEvents()
     }
 
     companion object {
@@ -99,7 +99,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
                 } else {
                     displayEvents(adapter, eventList)
                 }
-                displayLoader(false)
                 swiperefresh_fragment_home.isRefreshing = false
             },
             {
@@ -108,6 +107,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
             })
             .addTo(viewDisposable)
 
+        viewModel.getMyEvents()
     }
 
     private fun displayEvents(adapter: ListMyEventsAdapter, eventList: List<EventItem>?) {

@@ -59,90 +59,16 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        var returnValue = false
-
-        when (item.itemId) {
-            R.id.navigation_home -> {
-                currentController = navControllerHome
-                homeWrapper.visibility = View.VISIBLE
-                profileWrapper.visibility = View.INVISIBLE
-                eventMapWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(true)
-                supportActionBar?.setTitle(R.string.title_home)
-
-                returnValue = true
-            }
-            R.id.navigation_profile -> {
-
-                currentController = navControllerProfile
-
-                homeWrapper.visibility = View.INVISIBLE
-                profileWrapper.visibility = View.VISIBLE
-                eventMapWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(false)
-                supportActionBar?.setTitle(R.string.title_profile)
-
-                returnValue = true
-            }
-            R.id.navigation_event_map -> {
-
-                currentController = navControllerEventMap
-
-                eventMapWrapper.visibility = View.VISIBLE
-                homeWrapper.visibility = View.INVISIBLE
-                profileWrapper.visibility = View.INVISIBLE
-                app_bar.visibility = View.VISIBLE
-                displayFilterMenu(false)
-                supportActionBar?.setTitle(R.string.title_event_map)
-
-                val container = supportFragmentManager.findFragmentById(R.id.content_event_map)
-                val frg = container?.childFragmentManager?.findFragmentById(R.id.content_event_map)
-                if (frg is EventMapFragmentInterface) {
-                    frg.displayMapItems()
-                }
-            }
-        }
-        return@OnNavigationItemSelectedListener returnValue
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        initView()
         setupNavigation()
-        currentController = navControllerHome
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
     private fun setupNavigation() {
         val navController = NavHostFragment.findNavController(parent_host_fragment)
         navigation.setupWithNavController(navController)
-    }
-
-    private fun initView() {
-        navControllerHome = (supportFragmentManager
-            .findFragmentById(R.id.content_home) as NavHostFragment)
-            .navController
-
-        navControllerProfile = (supportFragmentManager
-            .findFragmentById(R.id.content_profile) as NavHostFragment)
-            .navController
-
-        navControllerEventMap = (supportFragmentManager
-            .findFragmentById(R.id.content_event_map) as NavHostFragment)
-            .navController
-
-        homeWrapper = content_home_wrapper
-        profileWrapper = content_profile_wrapper
-        eventMapWrapper = content_event_map_wrapper
-    }
-
-    override fun supportNavigateUpTo(upIntent: Intent) {
-        currentController.navigateUp()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -162,8 +88,8 @@ class MainActivity : BaseActivity() {
         photoDetailActionList.add(reportPhotoActionMenu)
         photoDetailActionList.add(authorizePhotoActionMenu)
 
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
         if (frg is HomeFragment) {
             displayFilterMenu(true)
         } else {
@@ -180,8 +106,8 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
 
         return when (item?.itemId) {
             R.id.action_filter -> {
@@ -250,8 +176,8 @@ class MainActivity : BaseActivity() {
             ScannerQrCodeActivity.QrCodeRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.getStringExtra(ScannerQrCodeActivity.QrCodeKey)?.let {
-                        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-                        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
+                        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+                        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
                         if (frg is HomeInterface) {
                             frg.getInvitation(it)
                         }
@@ -287,15 +213,6 @@ class MainActivity : BaseActivity() {
 
     fun displayQuitEventMenu(value: Boolean) {
         quitEventButtonMenu?.isVisible = value
-    }
-
-    fun displayLoader(value: Boolean) {
-
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        currentController.navigateUp()
-        return true
     }
 
     fun displayDetailPhotoActions(value: Boolean) {
@@ -336,24 +253,6 @@ class MainActivity : BaseActivity() {
                 }
 
             }
-
-        val container = supportFragmentManager.findFragmentById(R.id.content_home)
-        val frg = container?.childFragmentManager?.findFragmentById(R.id.content_home)
-        if(homeWrapper.visibility == View.VISIBLE){
-            displayLoader(true)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (!isMapOpenned) {
-            currentController
-                .let { if (it.popBackStack().not()) finish() }
-                .or { finish() }
-        } else {
-            MapsFragment.popBack()
-            isMapOpenned = false
-        }
-
     }
 
     private fun openQrCode() {
@@ -362,6 +261,19 @@ class MainActivity : BaseActivity() {
 
     fun isMapOpen(value: Boolean) {
         isMapOpenned = value
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onBackPressed() {
+        if(supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0 > 0){
+            NavHostFragment.findNavController(parent_host_fragment).popBackStack()
+        } else {
+            super.onBackPressed()
+        }
     }
 
 }

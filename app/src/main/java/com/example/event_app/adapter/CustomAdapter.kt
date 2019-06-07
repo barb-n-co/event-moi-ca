@@ -8,18 +8,22 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.utils.GlideApp
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.list_pic_event.view.*
+import timber.log.Timber
 
 
-class CustomAdapter(private val isOrganizer: Int) :
+class CustomAdapter() :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
     val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
+    val isOrganizerClickPublisher: BehaviorSubject<Int> = BehaviorSubject.createDefault(0)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindPhoto(getItem(position))
@@ -42,14 +46,20 @@ class CustomAdapter(private val isOrganizer: Int) :
 
     inner class ViewHolder(private var v: View, private val photosClickPublisher: PublishSubject<String>) :
         RecyclerView.ViewHolder(v) {
-        private var iv: ImageView? = v.findViewById(R.id.image_item)
         private var photo: Photo? = null
 
         fun bindPhoto(photo: Photo) {
 
-            if (photo.isReported == 1 && isOrganizer == 1) {
-                v.report_tag.visibility = VISIBLE
-            }
+            isOrganizerClickPublisher.subscribe(
+                {
+                    if(photo.isReported == 1){
+                        v.report_tag.visibility = VISIBLE
+                    }
+                },
+                {
+                    Timber.e(it)
+                }
+            )
 
             v.setOnClickListener {
                 photo.id.let {
@@ -59,7 +69,7 @@ class CustomAdapter(private val isOrganizer: Int) :
             photo.url.let { path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
-                GlideApp.with(v.context).load(storageReference).override(300, 300).centerCrop().into(iv!!)
+                GlideApp.with(v.context).load(storageReference).override(300, 300).transition(GenericTransitionOptions.with(R.anim.fade_in)).centerCrop().into(v.image_item)
             }
         }
     }

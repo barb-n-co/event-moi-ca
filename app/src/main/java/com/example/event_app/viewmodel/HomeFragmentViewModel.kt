@@ -19,55 +19,30 @@ import timber.log.Timber
 class HomeFragmentViewModel(private val userRepository: UserRepository, private val eventsRepository: EventRepository) :
     BaseViewModel() {
 
-    val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
+    val myEventList: PublishSubject<List<EventItem>> = PublishSubject.create()
     var stateUserEvent = UserEventState.NOTHING
+
+    init {
+        eventsRepository.myEventsItem.subscribe(
+            {
+                myEventList.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
-            //eventsRepository.fetchMyEvents(idUser)
-            Observable.combineLatest(
-                eventsRepository.fetchEvents(),
-                eventsRepository.fetchMyEvents(idUser),
-                BiFunction<List<Event>, List<MyEvents>, Pair<List<Event>, List<MyEvents>>> { t1, t2 ->
-                    Pair(t1, t2)
-                }).map { response ->
-                response.second.filter {
-                    when {
-                        stateUserEvent.equals(UserEventState.NOTHING) -> true
-                        stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
-                        stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
-                        stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
-                        else -> false
-                    }
-                }.map { myEvents ->
-                    val item = response.first.find { events ->
-                        events.idEvent == myEvents.idEvent
-                    }
-                    item?.let {
-                        EventItem(
-                            it.idEvent,
-                            it.name,
-                            idUser,
-                            it.organizer,
-                            it.place,
-                            it.dateStart,
-                            it.dateEnd,
-                            myEvents.accepted,
-                            myEvents.organizer,
-                            it.description,
-                            it.idOrganizer,
-                            it.reportedPhotoCount,
-                            it.isEmptyEvent,
-                            it.organizerPhoto
-                        )
-                    }
-                }.filterNotNull()
-            }.subscribe({
-                myEventList.onNext(it)
-            },
+            eventsRepository.fetchEventsItem(idUser, stateUserEvent).subscribe(
+                {
+                    myEventList.onNext(it)
+                },
                 {
                     Timber.e(it)
-                }).addTo(disposeBag)
+                }
+            ).addTo(disposeBag)
         }
     }
 

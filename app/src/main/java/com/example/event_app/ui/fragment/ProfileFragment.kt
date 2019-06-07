@@ -12,11 +12,16 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import com.bumptech.glide.GenericTransitionOptions
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.MediaStoreSignature
+import com.bumptech.glide.signature.ObjectKey
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.User
+import com.example.event_app.model.UserProfile
 import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
@@ -184,7 +189,7 @@ class ProfileFragment : BaseFragment() {
             }.show()
     }
 
-    private fun initUser(user: User) {
+    private fun initUser(user: UserProfile) {
         userId = user.id
 
         tv_name_fragment_profile.text = user.name
@@ -192,10 +197,9 @@ class ProfileFragment : BaseFragment() {
 
         GlideApp
             .with(context!!)
-            .load(viewModel.getStorageRef(user.photoUrl))
+            .load(user.photoReference)
             .transition(GenericTransitionOptions.with(R.anim.fade_in))
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
+            .signature(MediaStoreSignature("", user.photoReference?.metadata.hashCode().toLong(), 0))
             .circleCrop()
             .placeholder(R.drawable.ic_profile)
             .into(iv_photo_fragment_profile)
@@ -216,11 +220,5 @@ class ProfileFragment : BaseFragment() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getCurrentUser()
-        viewModel.getNumberEventUser()
     }
 }

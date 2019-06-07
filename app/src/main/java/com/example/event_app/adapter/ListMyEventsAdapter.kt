@@ -68,13 +68,13 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
                     ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_orange))
                 itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_invited)
             }
-            if (event.organizerPhoto.isNotEmpty()) {
+            event.organizerPhotoReference?.let {
                 GlideApp
                     .with(context)
-                    .load(fragmentViewModel.getStorageRef(event.organizerPhoto))
+                    .load(it)
                     .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
+                    /*.diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)*/
                     .circleCrop()
                     .placeholder(R.drawable.ic_manager)
                     .into(itemView.iv_organizer_photo_item_event)

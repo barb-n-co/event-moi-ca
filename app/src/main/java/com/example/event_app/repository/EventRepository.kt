@@ -94,7 +94,11 @@ object EventRepository {
                         it.organizerPhoto
                     )
                 }
-            }.filterNotNull()
+            }.filterNotNull().map {
+                    it.apply {
+                        this.organizerPhotoReference = getStorageReferenceForUrl(it.organizerPhoto)
+                    }
+            }
         }
 
         obs.subscribe(

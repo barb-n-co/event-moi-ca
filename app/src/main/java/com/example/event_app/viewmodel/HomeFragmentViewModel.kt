@@ -35,7 +35,8 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
-            eventsRepository.fetchEventsItem(idUser, stateUserEvent).subscribe(
+            eventsRepository.fetchEventsItem(idUser, stateUserEvent)
+                .subscribe(
                 {
                     myEventList.onNext(it)
                 },

@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.ui.activity.ShareGalleryActivity
@@ -51,39 +48,48 @@ class LoginFragment : BaseFragment() {
         }
 
         b_reset_password_signin_fragment.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(activity!!)
-            alertDialog.setTitle(getString(R.string.tv_title_reset_password_fragment))
-            alertDialog.setMessage(getString(R.string.tv_message_reset_password_fragment))
-
-            val input = EditText(activity!!)
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            input.hint = "E-Mail"
-            input.layoutParams = lp
-            alertDialog.setView(input)
-
-            alertDialog.setPositiveButton(
-                getString(R.string.b_validate_dialog)
-            ) { _ , _ ->
-                val email = input.text.toString()
-                if (email.isEmpty()) {
-                    Toast.makeText(
-                        activity!!,
-                        getString(R.string.t_empty_email_reset_password_dialog_fragment),
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    viewModel.resetPassword(email)
-                }
-            }
-
-            alertDialog.setNegativeButton(
-                getString(R.string.b_cancel_dialog)
-            ) { dialog, _ -> dialog.cancel() }
-
-            alertDialog.show()
+            val resetPassDialog = ResetPasswordAlertDialog(
+                getString(R.string.tv_title_reset_password_fragment),
+                getString(R.string.tv_message_reset_password_fragment),
+                getString(R.string.b_validate_dialog),
+                getString(R.string.b_cancel_dialog),
+                getString(R.string.t_empty_email_reset_password_dialog_fragment),
+                viewModel
+                )
+            resetPassDialog.showOpenDialog(context!!)
+//            val alertDialog = AlertDialog.Builder(activity!!)
+//            alertDialog.setTitle(getString(R.string.tv_title_reset_password_fragment))
+//            alertDialog.setMessage(getString(R.string.tv_message_reset_password_fragment))
+//
+//            val input = EditText(activity!!)
+//            val lp = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT
+//            )
+//            input.hint = "E-Mail"
+//            input.layoutParams = lp
+//            alertDialog.setView(input)
+//
+//            alertDialog.setPositiveButton(
+//                getString(R.string.b_validate_dialog)
+//            ) { _ , _ ->
+//                val email = input.text.toString()
+//                if (email.isEmpty()) {
+//                    Toast.makeText(
+//                        activity!!,
+//                        getString(R.string.t_empty_email_reset_password_dialog_fragment),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                } else {
+//                    viewModel.resetPassword(email)
+//                }
+//            }
+//
+//            alertDialog.setNegativeButton(
+//                getString(R.string.b_cancel_dialog)
+//            ) { dialog, _ -> dialog.cancel() }
+//
+//            alertDialog.show()
         }
     }
 

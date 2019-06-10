@@ -17,6 +17,11 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import kotlinx.android.synthetic.main.activity_generation_qrcode.*
+import timber.log.Timber
+import java.net.URL
+import java.net.URLDecoder
+import java.util.AbstractMap
+import java.net.URLEncoder
 
 
 class GenerationQrCodeActivity : BaseActivity() {
@@ -47,7 +52,46 @@ class GenerationQrCodeActivity : BaseActivity() {
         } catch (e: WriterException) {
             e.printStackTrace()
         }
+
+        /*var dynamicLink: Uri? = null
+
+        val customParameters: Map.Entry<String, String> = AbstractMap.SimpleEntry("id", "test123")
+        val deepLink = "https://event-moi-ca.app.goo.gl/" + generateQueryParameters(customParameters)
+
+        val builder = Uri.Builder()
+            .scheme("https")
+            .authority("eventmoica.page.link/invitation")
+            .path("/")
+            .appendQueryParameter("link", deepLink)
+
+        dynamicLink = builder.build()
+
+        try {
+            val url = URL(
+                URLDecoder.decode(
+                    dynamicLink.toString(),
+                    "UTF-8"
+                )
+            )
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Firebase Deep Link")
+            intent.putExtra(Intent.EXTRA_TEXT, url.toString())
+            startActivity(intent)
+        } catch (e: Exception) {
+            Timber.e(e.localizedMessage)
+        }*/
     }
+
+    /*private fun generateQueryParameters(customParameters: Map.Entry<String, String>): String {
+        val queryParameters = StringBuilder()
+        //server purposes
+        queryParameters.append("?")
+
+        queryParameters.append(String.format("&%1s=%2s", customParameters.key, customParameters.value))
+
+        return URLEncoder.encode(queryParameters.toString(), "UTF-8")
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_qr_code, menu)

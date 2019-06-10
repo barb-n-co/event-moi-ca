@@ -5,10 +5,10 @@
     <string name="title_home">Événements</string>
     <string name="title_detail_event">Détail d\'un événement</string>
     <string name="title_profile">Profil</string>
-    <string name="title_event_map">Carte</string>
+    <string name="title_event_map">Carte des événements</string>
     <string name="title_qr_code">QR CODE</string>
     <string name="title_share">Share</string>
-    <string name="title_edit_detail_event">Editer un évènement</string>
+    <string name="title_edit_detail_event">Editer un événement</string>
 
     <!-- Main Activity -->
     <string name="toast_welcome_user_main_activity">Bienvenue %s</string>
@@ -98,6 +98,8 @@
     <string name="tv_dislike_comment_choice">Je n\'aime plus</string>
     <string name="switch_activate_detail_event_fragment">Activé</string>
     <string name="switch_desactivate_detail_event_fragment">Désactivé</string>
+    <string name="tv_not_already_accepted_alert">Vous n\'avez pas encore accepté cet évènement</string>
+    <string name="tv_no_pictures_detail_event_fragment">Il n\'y a pas encore de photos dans cet évènement</string>
 
 
     <!-- Detail Photo Fragment -->

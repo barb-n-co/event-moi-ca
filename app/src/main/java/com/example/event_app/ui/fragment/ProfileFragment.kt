@@ -221,4 +221,9 @@ class ProfileFragment : BaseFragment() {
         )
         permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
     }
+
+    override fun onStart() {
+        super.onStart()
+        setTitleToolbar(getString(R.string.title_profile))
+    }
 }

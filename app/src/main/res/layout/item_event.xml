@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:text="Accepted"
                 android:clickable="false"
+                android:elevation="4dp"
                 app:chipBackgroundColor="@color/colorPrimary"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/tv_name_myevents_item"

@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -20,10 +21,13 @@ import com.example.event_app.ui.fragment.DetailPhotoInterface
 import com.example.event_app.ui.fragment.HomeFragment
 import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.viewmodel.MainActivityViewModel
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+
 
 class MainActivity : BaseActivity() {
 
@@ -62,6 +66,32 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         setupNavigation()
+
+        /*FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener(
+                this
+            ) { pendingDynamicLinkData ->
+                // Get deep link from result (may be null if no link is found)
+                var deepLink: Uri? = null
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                }
+
+                deepLink?.query
+                text.setText(deepLink?.query)
+                // Handle the deep link. For example, open the linked
+                // content, or apply promotional credit to the user's
+                // account.
+                // ...
+
+                // ...
+            }
+            .addOnFailureListener(this, object : OnFailureListener {
+                override fun onFailure(e: Exception) {
+                    text.setText(e.localizedMessage.toString())
+                }
+            })*/
     }
 
     private fun setupNavigation() {
@@ -238,7 +268,7 @@ class MainActivity : BaseActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Timber.w("getInstanceId failed%s",task.exception.toString())
+                    Timber.w("getInstanceId failed%s", task.exception.toString())
                     return@addOnCompleteListener
                 }
 
@@ -267,7 +297,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if(supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0 > 0){
+        if (supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0 > 0) {
             NavHostFragment.findNavController(parent_host_fragment).popBackStack()
         } else {
             super.onBackPressed()

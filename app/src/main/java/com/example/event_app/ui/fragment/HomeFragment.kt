@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
@@ -20,6 +21,8 @@ import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import com.facebook.shimmer.ShimmerFrameLayout
 import io.reactivex.rxkotlin.addTo
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.android.synthetic.main.fragment_detail_event.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -51,8 +54,9 @@ class HomeFragment : BaseFragment(), HomeInterface {
         weakContext = WeakReference(context!!)
 
         val adapter = ListMyEventsAdapter(weakContext.get()!!, viewModel)
-        val mLayoutManager = LinearLayoutManager(context)
-        rv_event_home_fragment.layoutManager = mLayoutManager
+        val mGrid = GridLayoutManager(context, 1)
+        rv_event_home_fragment.layoutManager = mGrid
+        rv_event_home_fragment.itemAnimator = SlideInUpAnimator()
         rv_event_home_fragment.adapter = adapter
 
         swiperefresh_fragment_home.isRefreshing = false

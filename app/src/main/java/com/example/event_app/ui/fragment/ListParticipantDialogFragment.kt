@@ -38,8 +38,6 @@ class ListParticipantDialogFragment(
         val adapter = ListParticipantsAdapter(idOrganizer, isNotAnOrganizer)
         rv_listParticipants.layoutManager = LinearLayoutManager(context)
         rv_listParticipants.adapter = adapter
-        val itemDecor = DividerItemDecoration(context, VERTICAL)
-        rv_listParticipants.addItemDecoration(itemDecor)
         adapter.submitList(participants)
 
         adapter.userClickPublisher.subscribe({

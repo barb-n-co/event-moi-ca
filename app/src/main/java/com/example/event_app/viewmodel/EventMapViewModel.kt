@@ -3,7 +3,6 @@ package com.example.event_app.viewmodel
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.Event
@@ -60,7 +59,8 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
                                 it.isEmptyEvent,
                                 it.organizerPhoto,
                                 it.latitude,
-                                it.longitude
+                                it.longitude,
+                                organizerPhotoReference = eventRepository.getStorageReferenceForUrl(it.organizerPhoto)
                             )
                         }
                     }.filterNotNull()

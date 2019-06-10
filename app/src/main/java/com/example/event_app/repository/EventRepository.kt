@@ -327,7 +327,7 @@ object EventRepository {
         return allPictures.child(eventId).child(photoId).removeValue()
     }
 
-    fun updateEventForPhotoReporting(eventId: String, updateEvent: Event): Completable {
+    fun updateEventWithNewEvent(eventId: String, updateEvent: Event): Completable {
         return RxFirebaseDatabase.updateChildren(eventsRef, mapOf(Pair(eventId, updateEvent)))
     }
 

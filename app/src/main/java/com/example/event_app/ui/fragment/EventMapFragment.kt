@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.bumptech.glide.GenericTransitionOptions
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
@@ -130,10 +129,8 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
             if (event.organizerPhoto.isNotEmpty()) {
                 GlideApp
                     .with(it)
-                    .load(viewModel.getStorageRef(event.organizerPhoto))
+                    .load(event.organizerPhotoReference)
                     .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .circleCrop()
                     .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_bottom_sheet_map)

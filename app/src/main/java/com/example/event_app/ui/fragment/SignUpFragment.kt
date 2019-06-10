@@ -59,7 +59,7 @@ class SignUpFragment : BaseFragment() {
     private fun userRegister(email: String, password: String, name: String) {
         if (cb_cgu.isChecked) {
             tv_cgu.setTextColor(ContextCompat.getColor(this.context!!, R.color.white))
-            viewModel.register(email, password, name).subscribe(
+            viewModel.register(email, password, name, context!!).subscribe(
                 {
                     if (it) MainActivity.start(activity!!)
                     viewModel.setEmptyEvent()

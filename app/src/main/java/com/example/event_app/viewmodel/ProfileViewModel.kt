@@ -11,11 +11,9 @@ import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.NumberEvent
-import com.example.event_app.model.User
 import com.example.event_app.model.UserProfile
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
-import com.google.firebase.storage.StorageReference
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
@@ -118,6 +116,14 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
         }
     }
 
+    private fun randomPhotoNameGenerator(id: String): String {
+        val generator = Random()
+        var n = 10000
+        n = generator.nextInt(n)
+
+        return "${id}_${n}_${Date().time}"
+    }
+
     fun pickImageFromGallery(): Intent {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -143,8 +149,8 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
             bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, baos)
             baos.toByteArray()
         }
-
-        eventRepository.putBytesToFireStoreForUserPhotoProfile(userId, data, userId)
+        val photoName = randomPhotoNameGenerator(userId)
+        eventRepository.putBytesToFireStoreForUserPhotoProfile(userId, data, photoName)
             .subscribe(
                 { snapshot ->
                     user.value?.let { currentUser ->
@@ -152,9 +158,29 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                         currentUser.photoUrl = url
 
                         userRepository.updateUser(currentUser.id!!, currentUser.email!!, currentUser.name!!, url)
+                        eventRepository.fetchEvents()
+                            .subscribe(
+                                {
+                                    it.filter { it.idOrganizer == userId }.forEach {
+                                        val event = it
+                                        event.organizerPhoto = photoName
+                                        eventRepository.updateEventWithNewEvent(event.idEvent, event)
+                                            .subscribe(
+                                                {
+                                                    Timber.d("event updated")
+                                                },
+                                                {
+                                                    Timber.e(it)
+                                                }
+                                            ).addTo(disposeBag)
+                                    }
+                                },
+                                {
+                                    Timber.e(it)
+                                }
+                            ).addTo(disposeBag)
+
                     }
-
-
                 },
                 {
                     Timber.e(it)

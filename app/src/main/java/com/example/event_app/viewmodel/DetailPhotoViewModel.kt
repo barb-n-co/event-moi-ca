@@ -93,7 +93,8 @@ class DetailPhotoViewModel(
                         like.commentId == it.commentId
                     },
                     it.reported,
-                    it.profileImage
+                    it.profileImage,
+                    getStorageRef(it.profileImage)
                 )
             }
         }.subscribe(
@@ -104,6 +105,10 @@ class DetailPhotoViewModel(
                 Timber.e(it)
             }
         ).addTo(disposeBag)
+    }
+
+    fun getStorageReference(url: String): StorageReference {
+        return eventsRepository.getStorageReferenceForUrl(url)
     }
 
     fun addCommentLike(userId: String, commentId: String, photoId: String) {
@@ -332,7 +337,7 @@ class DetailPhotoViewModel(
     }
 
     private fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
-        return eventsRepository.updateEventForPhotoReporting(eventId, updateEvent)
+        return eventsRepository.updateEventWithNewEvent(eventId, updateEvent)
 
     }
 

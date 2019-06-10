@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,7 @@ import kotlinx.android.synthetic.main.list_pic_event.view.*
 import timber.log.Timber
 
 
-class CustomAdapter() :
+class CustomAdapter :
     ListAdapter<Photo, CustomAdapter.ViewHolder>(DiffPhotocallback()) {
 
     val photosClickPublisher: PublishSubject<String> = PublishSubject.create()
@@ -69,7 +68,12 @@ class CustomAdapter() :
             photo.url.let { path ->
                 val storageReference = EventRepository.ref.child(path)
                 this.photo = photo
-                GlideApp.with(v.context).load(storageReference).override(300, 300).transition(GenericTransitionOptions.with(R.anim.fade_in)).centerCrop().into(v.image_item)
+                GlideApp.with(v.context)
+                    .load(storageReference)
+                    .override(300, 300)
+                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
+                    .centerCrop()
+                    .into(v.image_item)
             }
         }
     }

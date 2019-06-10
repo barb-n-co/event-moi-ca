@@ -1,5 +1,7 @@
 package com.example.event_app.model
 
+import com.google.firebase.storage.StorageReference
+
 data class CommentaireItem(
     var commentId: String,
     var author: String,
@@ -9,5 +11,6 @@ data class CommentaireItem(
     var date: String,
     var likes: List<LikeComment>,
     var reported: Int = 0,
-    var profileImage: String = ""
+    var profileImage: String = "",
+    var profileImageStorageRef: StorageReference? = null
 )

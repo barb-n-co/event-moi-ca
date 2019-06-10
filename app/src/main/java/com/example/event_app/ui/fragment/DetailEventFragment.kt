@@ -21,19 +21,20 @@ import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.GenericTransitionOptions
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
-import com.example.event_app.model.*
+import com.example.event_app.model.Event
+import com.example.event_app.model.User
+import com.example.event_app.model.spannable
+import com.example.event_app.model.url
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
-import com.example.event_app.utils.or
 import com.example.event_app.viewmodel.DetailEventViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
@@ -88,8 +89,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         eventId?.let {
 
-            viewModel.getEventInfo(it)
-            viewModel.getParticipant(it)
+            //viewModel.getEventInfo(it)
+            //viewModel.getParticipant(it)
 
             adapter.photosClickPublisher.subscribe(
                 { photoId ->
@@ -108,6 +109,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             viewModel.initPhotoEventListener(it).subscribe(
                 { photoList ->
                     adapter.submitList(photoList)
+                    adapter.notifyDataSetChanged()
                 },
                 {
                     Timber.e(it)
@@ -130,15 +132,11 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     .with(context!!)
                     .load(it.organizerPhotoReference)
                     .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .circleCrop()
                     .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_fragment)
 
                 root_layout.visibility = VISIBLE
-
-                //adapter.isOrganizerClickPublisher.onNext(it.organizer)
 
                 if (it.organizer != 1) {
                     switch_activate_detail_event_fragment.visibility = GONE
@@ -151,6 +149,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                         fabmenu_detail_event.visibility = VISIBLE
                         displayQuitEventMenu(true)
                         setFab(it.activate != 0)
+                        rv_listImage.visibility = VISIBLE
                     }
 
                 } else {
@@ -456,6 +455,10 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_detail_event))
+        eventId?.let {
+            viewModel.getEventInfo(it)
+            viewModel.getParticipant(it)
+        }
     }
 
     override fun onStop() {

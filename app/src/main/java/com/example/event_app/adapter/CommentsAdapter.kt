@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Commentaire
@@ -91,9 +90,7 @@ class CommentsAdapter(
                 }
                 GlideApp
                     .with(itemView.context)
-                    .load(fragmentViewModel.getStorageRef(comment.profileImage))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
+                    .load(comment.profileImageStorageRef)
                     .circleCrop()
                     .placeholder(R.drawable.ic_profile)
                     .into(itemView.iv_user_comment_item)

@@ -1,17 +1,24 @@
 package com.example.event_app.viewmodel
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.R
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.MyEvents
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.firebase.storage.StorageReference
@@ -60,7 +67,8 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
                                 it.isEmptyEvent,
                                 it.organizerPhoto,
                                 it.latitude,
-                                it.longitude
+                                it.longitude,
+                                organizerPhotoReference = eventRepository.getStorageReferenceForUrl(it.organizerPhoto)
                             )
                         }
                     }.filterNotNull()
@@ -75,6 +83,18 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
 
     fun getStorageRef(url: String): StorageReference {
         return eventRepository.getStorageReferenceForUrl(url)
+    }
+
+    fun bitmapDescriptorFromVector(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
+        val background = ContextCompat.getDrawable(context, R.drawable.ic_address_48dp)
+        background!!.setBounds(0, 0, background.intrinsicWidth, background.intrinsicHeight)
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId)
+        vectorDrawable!!.setBounds(45, 28, vectorDrawable.intrinsicWidth + 50, vectorDrawable.intrinsicHeight + 33)
+        val bitmap = Bitmap.createBitmap(background.intrinsicWidth, background.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        background.draw(canvas)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     @SuppressLint("MissingPermission")

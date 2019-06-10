@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.bumptech.glide.GenericTransitionOptions
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
@@ -22,7 +21,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -90,7 +88,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
                             val position = LatLng(event.latitude, event.longitude)
                             val marker = googleEventMap.addMarker(
                                 MarkerOptions().position(position)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_map2))
+                                    .icon(viewModel.bitmapDescriptorFromVector(context!!, R.drawable.ic_camera_4))
                             )
                             marker.tag = event
                             val region = viewModel.setRegion(it)
@@ -130,10 +128,8 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
             if (event.organizerPhoto.isNotEmpty()) {
                 GlideApp
                     .with(it)
-                    .load(viewModel.getStorageRef(event.organizerPhoto))
+                    .load(event.organizerPhotoReference)
                     .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .circleCrop()
                     .placeholder(R.drawable.ic_profile)
                     .into(iv_organizer_detail_bottom_sheet_map)

@@ -67,7 +67,7 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f))
                 latLng?.let {
                     mMap.clear()
-                    mMap.addMarker(viewModel.createMarker(latLng, addressMap))
+                    mMap.addMarker(viewModel.createMarker(latLng, addressMap, context!!))
                 }
 
                 btn_maps.setOnClickListener {

@@ -21,7 +21,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -89,7 +88,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
                             val position = LatLng(event.latitude, event.longitude)
                             val marker = googleEventMap.addMarker(
                                 MarkerOptions().position(position)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.pin_map2))
+                                    .icon(viewModel.bitmapDescriptorFromVector(context!!, R.drawable.ic_camera_4))
                             )
                             marker.tag = event
                             val region = viewModel.setRegion(it)

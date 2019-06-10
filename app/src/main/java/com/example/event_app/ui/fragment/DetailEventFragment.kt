@@ -9,8 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -39,7 +38,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_detail_event.*
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.io.File
@@ -83,6 +84,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         adapter = CustomAdapter()
         val mGrid = GridLayoutManager(context, 3)
         rv_listImage.layoutManager = mGrid
+        rv_listImage.itemAnimator = SlideInUpAnimator()
         rv_listImage.adapter = adapter
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
 
@@ -107,7 +109,14 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
             viewModel.initPhotoEventListener(it).subscribe(
                 { photoList ->
-                    adapter.submitList(photoList)
+                    if(photoList.isEmpty()){
+                        group_no_pictures_event_detail_fragment.visibility = VISIBLE
+                        rv_listImage.visibility = INVISIBLE
+                    } else {
+                        group_no_pictures_event_detail_fragment.visibility = INVISIBLE
+                        rv_listImage.visibility = VISIBLE
+                        adapter.submitList(photoList)
+                    }
                 },
                 {
                     Timber.e(it)

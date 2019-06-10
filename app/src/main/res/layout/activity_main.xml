@@ -30,6 +30,16 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="TEST"
+            app:layout_constraintBottom_toTopOf="@+id/navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar"/>
+
     <androidx.constraintlayout.widget.Group
             android:id="@+id/g_navBar_mainActivity"
             android:layout_width="wrap_content"
@@ -73,5 +83,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

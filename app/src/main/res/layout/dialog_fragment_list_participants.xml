@@ -6,21 +6,20 @@
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_grey">
+        android:background="@color/white">
 
     <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/colorPrimary"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/tv_list_participants_popup"/>
+            app:layout_constraintBottom_toTopOf="@id/tv_list_participants_popup"/>
 
     <ImageView
             android:id="@+id/iv_closeDialog"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="12dp"
             android:src="@drawable/ic_cancel"
             android:tint="@color/black"
             app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/TitleListParticipants"
-            android:paddingBottom="16dp"
+            android:layout_marginTop="12dp"
+            android:padding="8dp"
             android:textAlignment="center"
             style="@style/SubtitleBlack"
             app:layout_constraintStart_toStartOf="parent"

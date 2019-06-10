@@ -37,7 +37,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     tools:text="Event"
-                    style="@style/Title"
+                    style="@style/TitleBlack"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>

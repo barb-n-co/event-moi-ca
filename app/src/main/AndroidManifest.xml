@@ -9,8 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-feature android:name="android.hardware.camera"
-                  android:required="true"/>
+
+    <uses-feature
+            android:name="android.hardware.camera"
+            android:required="true"/>
 
 
     <application
@@ -41,13 +43,13 @@
                 android:value="@integer/google_play_services_version"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_icon"
-                android:resource="@drawable/logo_event_moi_ca_notif" />
+                android:resource="@drawable/logo_event_moi_ca_notif"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_color"
-                android:resource="@color/colorAccent" />
+                android:resource="@color/colorAccent"/>
         <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="notif_event_moi_ca" />
+                android:value="notif_event_moi_ca"/>
 
 
         <activity android:name=".ui.activity.ShareGalleryActivity"/>
@@ -55,27 +57,36 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
 
-
-                <data android:mimeType="image/*" />
+                <data android:mimeType="image/*"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="image/*" />
+                <data android:mimeType="image/*"/>
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.LoginActivity"/>
-        <activity android:name=".ui.activity.MainActivity"/>
+        <activity android:name=".ui.activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                        android:host="https://event-moi-ca.app.goo.gl/"
+                        android:scheme="https"/>
+            </intent-filter>
+        </activity>
         <activity
                 android:name=".ui.activity.ScannerQrCodeActivity"
                 android:label="@string/app_name"
@@ -83,7 +94,7 @@
         <activity
                 android:name=".ui.activity.GenerationQrCodeActivity"
                 android:label="@string/app_name"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="portrait"/>
 
         <service android:name=".repository.MyFirebaseMessagingService">
             <intent-filter>

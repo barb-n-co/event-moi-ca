@@ -179,5 +179,10 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
         super.onResume()
         displayEventsOnMap()
     }
+
+    override fun onStart() {
+        super.onStart()
+        setTitleToolbar(getString(R.string.title_event_map))
+    }
 }
 

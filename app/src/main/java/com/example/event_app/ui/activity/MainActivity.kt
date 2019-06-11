@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -21,7 +20,6 @@ import com.example.event_app.ui.fragment.DetailPhotoInterface
 import com.example.event_app.ui.fragment.HomeFragment
 import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.viewmodel.MainActivityViewModel
-import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
@@ -67,31 +65,16 @@ class MainActivity : BaseActivity() {
         setSupportActionBar(toolbar)
         setupNavigation()
 
-        /*FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnSuccessListener(
-                this
-            ) { pendingDynamicLinkData ->
-                // Get deep link from result (may be null if no link is found)
-                var deepLink: Uri? = null
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
+        FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
+            .addOnSuccessListener {
+                if(it != null) {
+                    it.link.let {
+                        it.getQueryParameter("param")?.let {
+                            addInvitation(it)
+                        }
+                    }
                 }
-
-                deepLink?.query
-                text.setText(deepLink?.query)
-                // Handle the deep link. For example, open the linked
-                // content, or apply promotional credit to the user's
-                // account.
-                // ...
-
-                // ...
             }
-            .addOnFailureListener(this, object : OnFailureListener {
-                override fun onFailure(e: Exception) {
-                    text.setText(e.localizedMessage.toString())
-                }
-            })*/
     }
 
     private fun setupNavigation() {
@@ -204,14 +187,18 @@ class MainActivity : BaseActivity() {
             ScannerQrCodeActivity.QrCodeRequestCode -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.getStringExtra(ScannerQrCodeActivity.QrCodeKey)?.let {
-                        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
-                        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
-                        if (frg is HomeInterface) {
-                            frg.getInvitation(it)
-                        }
+                        addInvitation(it)
                     }
                 }
             }
+        }
+    }
+
+    private fun addInvitation(idEvent: String){
+        val container = supportFragmentManager.findFragmentById(R.id.parent_host_fragment)
+        val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
+        if (frg is HomeInterface) {
+            frg.getInvitation(idEvent)
         }
     }
 

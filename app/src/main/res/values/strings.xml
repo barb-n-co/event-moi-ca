@@ -142,6 +142,16 @@
     <!-- Share Activity -->
     <string name="selectEventToShare">Choisissez l\'évenement de publication :</string>
 
+    <!-- Generation QR Code -->
+    <string name="b_copy_link_qrcode_activity">Copier le lien</string>
+    <string name="b_share_link_qrcode_activity">Partager le lien</string>
+    <string name="b_share_qrcode_activity">Partager le QR Code</string>
+    <string name="title_share_link_qrcode_activity">Event moi ça</string>
+    <string name="message_share_link_qrcode_activity">Je vous invite à mon évènement où vous retrouverez toutes les informations sur l\'application "Event moi" ça via ce lien: %s</string>
+    <string name="title_share_intent_qrcode_activity">Partager</string>
+    <string name="title_copy_qrcode_activity">Copier</string>
+    <string name="tv_link_copied_qrcode_activity">Le lien a été copié</string>
+
     <!-- CGU -->
 
     <string-array name="cgu_body_list">

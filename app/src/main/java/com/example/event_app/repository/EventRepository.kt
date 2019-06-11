@@ -2,8 +2,7 @@ package com.example.event_app.repository
 
 import com.example.event_app.model.*
 import com.google.android.gms.tasks.Task
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
@@ -125,7 +124,7 @@ object EventRepository {
         ).map {
             myEvents.onNext(it)
             it.filter {
-                it.idEvent?.isNotEmpty() ?: false && it.isEmtyEvent == 0
+                it.isEmtyEvent == 0
             }
         }.toObservable()
     }
@@ -180,8 +179,20 @@ object EventRepository {
 
     // region Invitation
 
-    fun addInvitation(idEvent: String, idUser: String) {
-        myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0))
+    fun addInvitation(idEvent: String, idUser: String){
+        myEventsRef.child(idUser).child(idEvent).addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if(!p0.exists()){
+                    myEventsRef.child(idUser).child(idEvent).setValue(MyEvents(idEvent, 0, 0)).addOnSuccessListener {
+                        fetchEventsItem(idUser, UserEventState.NOTHING)
+                    }
+                }
+            }
+        })
     }
 
     fun acceptInvitation(idEvent: String, idUser: String, nameUser: String): Task<Void> {

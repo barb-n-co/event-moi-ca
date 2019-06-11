@@ -1,33 +1,33 @@
 package com.example.event_app.ui.activity
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import kotlinx.android.synthetic.main.activity_generation_qrcode.*
-import timber.log.Timber
-import java.net.URL
-import java.net.URLDecoder
-import java.util.AbstractMap
-import java.net.URLEncoder
 
 
 class GenerationQrCodeActivity : BaseActivity() {
 
     private val QRcodeWidth = 500
     private var bitmap: Bitmap? = null
+    private var link: String? = null
 
     companion object {
         const val ExtraCardId = "ExtraCardId"
@@ -45,80 +45,73 @@ class GenerationQrCodeActivity : BaseActivity() {
 
         val idCard = intent.getStringExtra(ExtraCardId)
 
-        try {
-            bitmap = encodeAsBitmap(idCard)
-            iv_qr_code.setImageBitmap(bitmap)
+        val deepLink = "https://eventmoica.page.link/invitation?param=${idCard}"
 
-        } catch (e: WriterException) {
-            e.printStackTrace()
+        val builder = FirebaseDynamicLinks.getInstance()
+            .createDynamicLink()
+            .setDomainUriPrefix("https://eventmoica.page.link")
+            .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
+            .setLink(Uri.parse(deepLink))
+
+        link = builder.buildDynamicLink().uri.toString()
+
+        link?.let {
+            initActions(it)
+            try {
+                bitmap = encodeAsBitmap(it)
+                iv_qr_code.setImageBitmap(bitmap)
+                b_share_qrcode_event_qrcode_activity.isEnabled = true
+            } catch (e: WriterException) {
+                e.printStackTrace()
+            }
         }
-
-        /*var dynamicLink: Uri? = null
-
-        val customParameters: Map.Entry<String, String> = AbstractMap.SimpleEntry("id", "test123")
-        val deepLink = "https://event-moi-ca.app.goo.gl/" + generateQueryParameters(customParameters)
-
-        val builder = Uri.Builder()
-            .scheme("https")
-            .authority("eventmoica.page.link/invitation")
-            .path("/")
-            .appendQueryParameter("link", deepLink)
-
-        dynamicLink = builder.build()
-
-        try {
-            val url = URL(
-                URLDecoder.decode(
-                    dynamicLink.toString(),
-                    "UTF-8"
-                )
-            )
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Firebase Deep Link")
-            intent.putExtra(Intent.EXTRA_TEXT, url.toString())
-            startActivity(intent)
-        } catch (e: Exception) {
-            Timber.e(e.localizedMessage)
-        }*/
     }
 
-    /*private fun generateQueryParameters(customParameters: Map.Entry<String, String>): String {
-        val queryParameters = StringBuilder()
-        //server purposes
-        queryParameters.append("?")
+    private fun initActions(link: String) {
+        b_copy_link_event_qrcode_activity.isEnabled = true
+        b_share_link_event_qrcode_activity.isEnabled = true
 
-        queryParameters.append(String.format("&%1s=%2s", customParameters.key, customParameters.value))
-
-        return URLEncoder.encode(queryParameters.toString(), "UTF-8")
-    }*/
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_qr_code, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_share -> {
+        b_copy_link_event_qrcode_activity.setOnClickListener {
+            copyLink(link)
+        }
+        b_share_qrcode_event_qrcode_activity.setOnClickListener {
             if (permissionManager.checkPermissions(
                     arrayOf(
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                 )
             ) {
-                share()
+                shareQrCode()
             } else {
                 requestPermissions()
             }
-
-            true
         }
-        else -> {
-            super.onOptionsItemSelected(item)
+        b_share_link_event_qrcode_activity.setOnClickListener {
+            shareLink(link)
         }
     }
 
-    private fun share() {
+    private fun copyLink(link: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText(getString(R.string.title_copy_qrcode_activity), link)
+        clipboard.primaryClip = clip
+        Snackbar.make(
+            cl_generation_qrcode_activity,
+            getString(R.string.tv_link_copied_qrcode_activity),
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun shareLink(link: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.title_share_link_qrcode_activity))
+        val shareMessage = getString(R.string.message_share_link_qrcode_activity, link)
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_intent_qrcode_activity)))
+    }
+
+    private fun shareQrCode() {
         val bitmapPath = MediaStore.Images.Media.insertImage(
             contentResolver,
             bitmap,
@@ -129,7 +122,7 @@ class GenerationQrCodeActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "image/png"
         intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
-        startActivity(Intent.createChooser(intent, "Share"))
+        startActivity(Intent.createChooser(intent, getString(R.string.title_share_intent_qrcode_activity)))
     }
 
     private fun requestPermissions() {

@@ -83,7 +83,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                        android:host="https://event-moi-ca.app.goo.gl/"
+                        android:host="https://eventmoica.page.link/invitation"
                         android:scheme="https"/>
             </intent-filter>
         </activity>

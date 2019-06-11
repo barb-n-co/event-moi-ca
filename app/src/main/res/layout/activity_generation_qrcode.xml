@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cl_generation_qrcode_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,19 +20,64 @@
                 android:id="@+id/toolbar_qrcode"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
                 app:title="@string/title_qr_code"
-                android:theme="@style/ToolbarTheme"/>
+                android:background="@color/black_grey"
+                app:titleTextColor="@color/colorAccent"
+                android:theme="@style/ToolbarTheme"
+                />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
             android:id="@+id/iv_qr_code"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
+            app:layout_constraintBottom_toTopOf="@id/b_copy_link_event_qrcode_activity"/>
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_copy_link_event_qrcode_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/b_copy_link_qrcode_activity"
+            android:textColor="@color/black_grey"
+            android:enabled="false"
+            app:icon="@drawable/ic_copy"
+            app:iconTint="@color/black_grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/b_share_link_event_qrcode_activity"
+            app:layout_constraintTop_toBottomOf="@id/iv_qr_code"/>
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_share_link_event_qrcode_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/b_share_link_qrcode_activity"
+            android:textColor="@color/black_grey"
+            android:enabled="false"
+            app:icon="@drawable/ic_share"
+            app:iconTint="@color/black_grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/b_share_qrcode_event_qrcode_activity"
+            app:layout_constraintTop_toBottomOf="@id/b_copy_link_event_qrcode_activity"/>
+
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/b_share_qrcode_event_qrcode_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/b_share_qrcode_activity"
+            android:textColor="@color/black_grey"
+            android:enabled="false"
+            app:icon="@drawable/ic_qrcode"
+            app:iconTint="@color/black_grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/b_share_link_event_qrcode_activity"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,10 +47,6 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
         }
     }
 
-    fun getStorageRef(url: String): StorageReference {
-        return eventsRepository.getStorageReferenceForUrl(url)
-    }
-
     fun addInvitation(idEvent: String) {
         userRepository.currentUser.value?.let { user ->
             user.id?.let { id ->

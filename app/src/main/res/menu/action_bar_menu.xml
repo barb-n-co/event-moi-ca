@@ -5,6 +5,13 @@
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
+            android:id="@+id/sv_search_event"
+            android:title="@string/search"
+            android:icon="@drawable/ic_search_orange"
+            app:actionViewClass="androidx.appcompat.widget.SearchView"
+            app:showAsAction="ifRoom|collapseActionView"/>
+
+    <item
             android:id="@+id/action_filter"
             android:icon="@drawable/ic_filter"
             android:title="@string/filter"

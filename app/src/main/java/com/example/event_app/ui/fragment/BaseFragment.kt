@@ -87,4 +87,8 @@ abstract class BaseFragment : Fragment(), KodeinAware {
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
     }
+
+    protected fun displaySearchEventMenu(value: Boolean) {
+        (activity as MainActivity).displaySearchEventMenu(value)
+    }
 }

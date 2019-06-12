@@ -2,17 +2,11 @@ package com.example.event_app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
-import com.example.event_app.model.MyEvents
 import com.example.event_app.model.UserEventState
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
-import com.google.firebase.storage.StorageReference
-import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
@@ -33,7 +27,33 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
         ).addTo(disposeBag)
     }
 
+    fun searchEvent(search: String) {
+        eventsRepository.myEventsItem.map {
+            it.filter {
+                it.nameEvent.contains(search, true)
+            }
+        }.subscribe(
+            {
+                myEventList.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
     fun getMyEvents() {
+        eventsRepository.myEventsItem.subscribe(
+            {
+                myEventList.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun fetchMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
             eventsRepository.fetchEventsItem(idUser, stateUserEvent)
                 .subscribe(
@@ -60,7 +80,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
             user.id?.let { id ->
                 user.name?.let { name ->
                     eventsRepository.acceptInvitation(idEvent, id, name).addOnCompleteListener {
-                        getMyEvents()
+                        fetchMyEvents()
                     }
                 }
             }
@@ -70,7 +90,7 @@ class HomeFragmentViewModel(private val userRepository: UserRepository, private 
     fun refuseInvitation(idEvent: String) {
         userRepository.currentUser.value?.id?.let { userId ->
             eventsRepository.exitEvent(idEvent, userId).addOnCompleteListener {
-                getMyEvents()
+                fetchMyEvents()
             }
         }
     }

@@ -5,7 +5,7 @@
     <string name="title_home">Événements</string>
     <string name="title_detail_event">Détail d\'un événement</string>
     <string name="title_profile">Profil</string>
-    <string name="title_event_map">Carte des événements</string>
+    <string name="title_event_map">Carte</string>
     <string name="title_invitation">Invitation</string>
     <string name="title_list_participants">Participants</string>
     <string name="title_share">Share</string>
@@ -40,6 +40,7 @@
     <string name="fab_qrcode_title">Scanner un QR Code</string>
     <string name="fab_add_event_title">Ajouter un événement</string>
     <string name="filter">Filtre</string>
+    <string name="search">Search</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucun événement à venir.</string>
 
     <!-- Filter Dialog Fragment -->

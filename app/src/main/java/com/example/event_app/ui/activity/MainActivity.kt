@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.FrameLayout
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -41,6 +43,7 @@ class MainActivity : BaseActivity() {
     private var deleteEventButtonMenu: MenuItem? = null
     private var quitEventButtonMenu: MenuItem? = null
     private var downloadPicturesButtonMenu: MenuItem? = null
+    private var searchEventButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -95,6 +98,7 @@ class MainActivity : BaseActivity() {
         reportPhotoActionMenu = menu.findItem(R.id.action_report)
         authorizePhotoActionMenu = menu.findItem(R.id.action_validate_photo)
         downloadPicturesButtonMenu = menu.findItem(R.id.action_download_every_photos)
+        searchEventButtonMenu = menu.findItem(R.id.sv_search_event)
 
         photoDetailActionList.add(downloadActionMenu)
         photoDetailActionList.add(deletePhotoActionMenu)
@@ -105,15 +109,41 @@ class MainActivity : BaseActivity() {
         val frg = container?.childFragmentManager?.findFragmentById(R.id.parent_host_fragment)
         if (frg is HomeFragment) {
             displayFilterMenu(true)
+            displaySearchEventMenu(true)
         } else {
             displayFilterMenu(false)
+            displaySearchEventMenu(false)
         }
         displayDetailPhotoActions(false)
         displayQuitEventMenu(false)
         displayDeleteEventMenu(false)
         displayEditEventMenu(false)
         displayDownloadPicturesMenu(false)
+        setSearchView(menu, frg)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setSearchView(menu: Menu, frg: Fragment?) {
+        val searchView = menu.findItem(R.id.sv_search_event).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    if (frg is HomeInterface) {
+                        frg.searchEvent(it)
+                    }
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    if (frg is HomeInterface) {
+                        frg.searchEvent(it)
+                    }
+                }
+                return false
+            }
+        })
     }
 
 
@@ -214,6 +244,10 @@ class MainActivity : BaseActivity() {
 
     fun displayFilterMenu(value: Boolean) {
         filterButtonMenu?.isVisible = value
+    }
+
+    fun displaySearchEventMenu(value: Boolean) {
+        searchEventButtonMenu?.isVisible = value
     }
 
     fun displayEditEventMenu(value: Boolean) {

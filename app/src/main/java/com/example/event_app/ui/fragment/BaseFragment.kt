@@ -68,12 +68,12 @@ abstract class BaseFragment : Fragment(), KodeinAware {
         (activity as MainActivity).displayDetailPhotoActionDeletePhoto(value)
     }
 
-    protected fun displayQrCodeMenu(value: Boolean) {
-        (activity as MainActivity).displayQrCodeMenu(value)
-    }
-
     protected fun displayEditEventMenu(value: Boolean) {
         (activity as MainActivity).displayEditEventMenu(value)
+    }
+
+    protected fun displayDownloadPictures(value: Boolean) {
+        (activity as MainActivity).displayDownloadPicturesMenu(value)
     }
 
     protected fun displayDeleteEventMenu(value: Boolean) {

@@ -6,7 +6,8 @@
     <string name="title_detail_event">Détail d\'un événement</string>
     <string name="title_profile">Profil</string>
     <string name="title_event_map">Carte des événements</string>
-    <string name="title_qr_code">QR CODE</string>
+    <string name="title_invitation">Invitation</string>
+    <string name="title_list_participants">Participants</string>
     <string name="title_share">Share</string>
     <string name="title_edit_detail_event">Editer un événement</string>
 
@@ -37,9 +38,9 @@
 
     <!-- Home Fragment -->
     <string name="fab_qrcode_title">Scanner un QR Code</string>
-    <string name="fab_add_event_title">Ajouter un évènement</string>
+    <string name="fab_add_event_title">Ajouter un événement</string>
     <string name="filter">Filtre</string>
-    <string name="tv_no_invitation_fragment">Vous n\'avez aucun évènement à venir.</string>
+    <string name="tv_no_invitation_fragment">Vous n\'avez aucun événement à venir.</string>
 
     <!-- Filter Dialog Fragment -->
     <string name="cb_filter_invitation_dialog_fragment">Invitation</string>
@@ -54,43 +55,43 @@
 
     <!-- Add Event Fragment -->
     <string name="tv_organizer_add_event_fragment">Nom de l\'organisateur</string>
-    <string name="tv_name_add_event_fragment">Nom de l\'évènement</string>
+    <string name="tv_name_add_event_fragment">Nom de l\'événement</string>
     <string name="tv_description_add_event_fragment">Description</string>
     <string name="chip_date_start_add_event_fragment">Choisir la date de début</string>
     <string name="chip_date_end_add_event_fragment">Choisir la date de fin</string>
-    <string name="b_validate_add_event_fragment">Créer l\'évènement</string>
+    <string name="b_validate_add_event_fragment">Créer l\'événement</string>
     <string name="error_empty_field_add_event_fragment">Vous n\'avez pas complété tous les champs</string>
     <string name="error_date_add_event_fragment">La date de fin doit être supérieure à la date de début</string>
-    <string name="toolbar_add_event_fragment_add_event">Ajouter un évènement</string>
+    <string name="toolbar_add_event_fragment_add_event">Ajouter un événement</string>
     <string name="tv_place_add_event_fragment">Lieu de l\'événement</string>
 
     <!-- Detail Event Fragment -->
-    <string name="fab_camera_detail_event_fragment">Prendre une photo</string>
-    <string name="fab_gallery_detail_event_fragment">Choisir une photo</string>
+    <string name="navigation_camera_detail_event_fragment">Photo</string>
+    <string name="navigation_gallery_detail_event_fragment">Galerie</string>
     <string name="download_all_pictures_from_one_event">Tout télécharger</string>
     <string name="detail_event_organisateur">Organisateur :</string>
     <string name="detail_event_startDate">Date de début :</string>
     <string name="detail_event_endDate">Date de fin :</string>
-    <string name="b_exit_detail_event_fragment">Quitter l\'évènement</string>
-    <string name="b_edit_detail_event_fragment">Editer l\'évènement</string>
-    <string name="tv_dialogTitle_detail_event_fragment">Quitter l\'évènement</string>
-    <string name="tv_dialogMessage_detail_event_fragment">Voulez-vous vraiment quitter l\'évènement ?</string>
+    <string name="b_exit_detail_event_fragment">Quitter l\'événement</string>
+    <string name="b_edit_detail_event_fragment">Editer l\'événement</string>
+    <string name="tv_dialogTitle_detail_event_fragment">Quitter l\'événement</string>
+    <string name="tv_dialogMessage_detail_event_fragment">Voulez-vous vraiment quitter l\'événement ?</string>
     <string name="tv_dialogCancel_detail_event_fragment">Non</string>
     <string name="tv_dialogValidate_detail_event_fragment">Oui</string>
-    <string name="exit_event_toast_detail_event_fragment">Vous avez quitté l\'évènement.</string>
-    <string name="b_delete_detail_event_fragment">Supprimer l\'évènement</string>
-    <string name="tv_delete_event_detail_event_fragment">Supprimer l\'évènement</string>
-    <string name="tv_delete_event_message_detail_event_fragment">Voulez-vous supprimer votre évènement ?</string>
+    <string name="exit_event_toast_detail_event_fragment">Vous avez quitté l\'événement.</string>
+    <string name="b_delete_detail_event_fragment">Supprimer l\'événement</string>
+    <string name="tv_delete_event_detail_event_fragment">Supprimer l\'événement</string>
+    <string name="tv_delete_event_message_detail_event_fragment">Voulez-vous supprimer votre événement ?</string>
     <string name="tv_delete_event_cancel_detail_event_fragment">Non</string>
     <string name="tv_delete_event_valider_detail_event_fragment">Oui</string>
-    <string name="tv_delete_event_toast_detail_event_fragment">L\'évènement a été supprimé avec succès.</string>
+    <string name="tv_delete_event_toast_detail_event_fragment">L\'événement a été supprimé avec succès.</string>
     <string name="ToastRemoveParticipant">Le participant a été retiré</string>
     <plurals name="participants">
         <item quantity="one">%1$d participant</item>
         <item quantity="other">%1$d participants</item>
     </plurals>
     <string name="tv_place_detail_event_fragment">Adresse :</string>
-    <string name="TitleListParticipants">Voici les participants à l\'évènement</string>
+    <string name="TitleListParticipants">Voici les participants à l\'événement</string>
     <string name="tv_delete_comment_choice">Supprimer</string>
     <string name="tv_report_comment_choice">Signaler</string>
     <string name="tv_edit_comment_choice">Editer</string>
@@ -98,8 +99,8 @@
     <string name="tv_dislike_comment_choice">Je n\'aime plus</string>
     <string name="switch_activate_detail_event_fragment">Activé</string>
     <string name="switch_desactivate_detail_event_fragment">Désactivé</string>
-    <string name="tv_not_already_accepted_alert">Vous n\'avez pas encore accepté cet évènement</string>
-    <string name="tv_no_pictures_detail_event_fragment">Il n\'y a pas encore de photos dans cet évènement</string>
+    <string name="tv_not_already_accepted_alert">Vous n\'avez pas encore accepté cet événement</string>
+    <string name="tv_no_pictures_detail_event_fragment">Il n\'y a pas encore de photos dans cet événement</string>
 
 
     <!-- Detail Photo Fragment -->
@@ -112,7 +113,7 @@
     <string name="picture_authorized_by_admin">Photo autorisée par l\'administrateur.</string>
     <string name="add_comment_to_photo">Ajouter un commentaire…</string>
     <string name="detail_photo_fragment_fab_signaler">Signaler</string>
-    <string name="notification_message_title">Une photo a été signalée sur un évènement</string>
+    <string name="notification_message_title">Une photo a été signalée sur un événement</string>
     <string name="picture_already_reported">photo déjà signalée</string>
     <string name="problem_occured_during_download">Un problème a eut lieu lors du signalement. Merci de réessayer.</string>
     <string name="detail_photo_fragment_authorize_photo">Autoriser la Photo</string>
@@ -147,7 +148,7 @@
     <string name="b_share_link_qrcode_activity">Partager le lien</string>
     <string name="b_share_qrcode_activity">Partager le QR Code</string>
     <string name="title_share_link_qrcode_activity">Event moi ça</string>
-    <string name="message_share_link_qrcode_activity">Je vous invite à mon évènement où vous retrouverez toutes les informations sur l\'application "Event moi" ça via ce lien: %s</string>
+    <string name="message_share_link_qrcode_activity">Je vous invite à mon événement où vous retrouverez toutes les informations sur l\'application "Event moi" ça via ce lien: %s</string>
     <string name="title_share_intent_qrcode_activity">Partager</string>
     <string name="title_copy_qrcode_activity">Copier</string>
     <string name="tv_link_copied_qrcode_activity">Le lien a été copié</string>
@@ -204,6 +205,6 @@
     <string name="passwords_does_not_match">Les deux mots de passe ne correspondent pas !</string>
     <string name="error_occured_downloading_photo">Une erreur a eu lieu lors du téléchargement</string>
     <string name="download_complete">Téléchargement terminé</string>
-    <string name="error_occured_leaving_event">Une erreur a eut lieu. Vous n\'avez pas quitté l\'évènement</string>
+    <string name="error_occured_leaving_event">Une erreur a eut lieu. Vous n\'avez pas quitté l\'événement</string>
 
 </resources>

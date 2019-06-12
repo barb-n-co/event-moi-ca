@@ -61,7 +61,7 @@ class CommentsAdapter(
                     editCommentListener(makeEditedCommentFrom(comment))
                 }
                 itemView.chip_like_user_comment_item.text = comment.likes.size.toString()
-                itemView.chip_like_other_comment_item.visibility = GONE
+                itemView.chip_like_other_comment_item.visibility = INVISIBLE
                 if (comment.likes.size > 0) {
                     itemView.chip_like_user_comment_item.visibility = VISIBLE
                 } else itemView.chip_like_user_comment_item.visibility = GONE
@@ -83,7 +83,7 @@ class CommentsAdapter(
                 itemView.chip_like_user_comment_item.visibility = GONE
                 if (comment.likes.size > 0) {
                     itemView.chip_like_other_comment_item.visibility = VISIBLE
-                } else itemView.chip_like_other_comment_item.visibility = GONE
+                } else itemView.chip_like_other_comment_item.visibility = INVISIBLE
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_other_user_comment_item.visibility =
                         if (comment.reported == 0) GONE else VISIBLE

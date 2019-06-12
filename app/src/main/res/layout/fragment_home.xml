@@ -6,15 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <!--<com.facebook.shimmer.ShimmerFrameLayout-->
-            <!--android:id="@+id/shimmer_view_container"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--app:shimmer_auto_start="true"-->
-            <!--app:shimmer_duration="2000"-->
-            <!--app:shimmer_base_alpha="0.9"-->
-            <!--&gt;-->
-
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swiperefresh_fragment_home"
                 android:layout_width="match_parent"
@@ -38,9 +29,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!--</com.facebook.shimmer.ShimmerFrameLayout>-->
-
-
     <androidx.constraintlayout.widget.Group
             android:id="@+id/g_no_item_home_fragment"
             android:layout_width="wrap_content"
@@ -54,6 +42,7 @@
             android:layout_width="100dp"
             android:layout_height="0dp"
             android:src="@drawable/ic_avatar"
+            android:tint="@color/black"
             app:layout_constraintDimensionRatio="1:1"
             android:layout_marginBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,9 +53,9 @@
             android:id="@+id/tv_no_home_fragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:layout_margin="16dp"
             android:text="@string/tv_no_invitation_fragment"
+            style="@style/bodyBlack"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

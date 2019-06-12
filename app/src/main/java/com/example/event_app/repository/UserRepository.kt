@@ -11,7 +11,6 @@ import durdinapps.rxfirebase2.RxFirebaseAuth
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -28,10 +27,27 @@ object UserRepository {
     private val usersRef: DatabaseReference = database.reference.child(USERS)
     private val tokenRef: DatabaseReference = database.reference.child("tokens")
 
-    fun getUserById(userId: String): Maybe<User> {
+    fun getUser(userId: String): Observable<User> {
+        val obs = RxFirebaseDatabase.observeSingleValueEvent(
+            usersRef.child(userId), User::class.java
+        ).toObservable()
+
+        obs.subscribe(
+            {
+                currentUser.onNext(User(it.id, it.name, it.email, it.photoUrl))
+            },
+            {
+                Timber.e(it)
+            }
+        )
+
+        return obs
+    }
+
+    fun getUserById(userId: String): Observable<User> {
         return RxFirebaseDatabase.observeSingleValueEvent(
             usersRef.child(userId), User::class.java
-        )
+        ).toObservable()
     }
 
     fun getAllUsers(): Observable<List<User>> {
@@ -84,7 +100,12 @@ object UserRepository {
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setDisplayName(name).build()
                     userAuth?.updateProfile(profileUpdates)?.addOnCompleteListener {
-                        setNameFirebase(firebaseUser.uid, name, email, "${authResult.user.uid}/${authResult.user.uid}.jpeg")
+                        setNameFirebase(
+                            firebaseUser.uid,
+                            name,
+                            email,
+                            "${authResult.user.uid}/${authResult.user.uid}.jpeg"
+                        )
                     }
                     currentUser.onNext(user)
 
@@ -119,8 +140,9 @@ object UserRepository {
             Timber.d("user deleted")
         }
     }
+
     fun deleteAccount(idUser: String): Completable {
-            return RxFirebaseDatabase.setValue(usersRef.child(idUser), null)
+        return RxFirebaseDatabase.setValue(usersRef.child(idUser), null)
     }
 
     fun getUserNameFromFirebase() {

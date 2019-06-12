@@ -58,7 +58,7 @@
     </style>
 
     <style name="bodyBlack">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/black_grey</item>
         <item name="android:textSize">@dimen/body</item>
     </style>
 

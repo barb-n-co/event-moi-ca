@@ -12,7 +12,6 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.PopupWindow
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
@@ -35,13 +34,10 @@ import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.DetailEventViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import io.github.kobakei.materialfabspeeddial.OnMenuItemClick
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_detail_event.*
-import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.io.File
@@ -90,9 +86,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         ViewCompat.setNestedScrollingEnabled(rv_listImage, false)
 
         eventId?.let {
-
-            //viewModel.getEventInfo(it)
-            //viewModel.getParticipant(it)
 
             adapter.photosClickPublisher.subscribe(
                 { photoId ->
@@ -150,22 +143,22 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                 if (it.organizer != 1) {
                     switch_activate_detail_event_fragment.visibility = GONE
                     if (it.accepted != 1) {
-                        fabmenu_detail_event.visibility = GONE
+                        navigation_detail_event.visibility = GONE
                         iv_alert_not_accepted_event.visibility = VISIBLE
                         not_already_accepted_alert.visibility = VISIBLE
 
                     } else {
-                        fabmenu_detail_event.visibility = VISIBLE
+                        navigation_detail_event.visibility = VISIBLE
                         displayQuitEventMenu(true)
-                        setFab(it.activate != 0)
+                        setNavigation(it.activate != 0)
                         rv_listImage.visibility = VISIBLE
                     }
+                    navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = false
 
                 } else {
-                    setFab(it.activate != 0)
+                    setNavigation(it.activate != 0)
                     displayDeleteEventMenu(true)
                     displayEditEventMenu(true)
-                    displayQrCodeMenu(true)
                     if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
                         switch_activate_detail_event_fragment.text =
@@ -180,17 +173,18 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                             switch_activate_detail_event_fragment.text =
                                 getString(R.string.switch_activate_detail_event_fragment)
                             viewModel.changeActivationEvent(true)
-                            setFab(true)
+                            setNavigation(true)
                         } else {
                             switch_activate_detail_event_fragment.text =
                                 getString(R.string.switch_desactivate_detail_event_fragment)
                             viewModel.changeActivationEvent(false)
-                            setFab(false)
+                            setNavigation(false)
                         }
                     }
                     switch_activate_detail_event_fragment.visibility = VISIBLE
-                    fabmenu_detail_event.visibility = VISIBLE
+                    navigation_detail_event.visibility = VISIBLE
                     rv_listImage.visibility = VISIBLE
+                    navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = true
                 }
             },
             {
@@ -198,10 +192,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
             })
             .addTo(viewDisposable)
 
-        tv_listParticipant.setOnClickListener { openPopUp() }
-
         viewModel.participants.subscribe({
-            tv_listParticipant.text = resources.getQuantityString(R.plurals.participants, it.size, it.size)
+            chip_listParticipant.text = resources.getQuantityString(R.plurals.participants, it.size, it.size)
             participants = it
         }, {
             Timber.e(it)
@@ -217,7 +209,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
         }
 
-        tv_listParticipant.setOnClickListener { openPopUp() }
+        chip_listParticipant.setOnClickListener { openPopUp() }
 
     }
 
@@ -325,58 +317,59 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
     }
 
-    private fun setFab(state: Boolean) {
+    private fun setNavigation(state: Boolean) {
 
         if (state) {
-            fabmenu_detail_event.getMiniFab(0).show()
-            fabmenu_detail_event.getMiniFabTextView(0).visibility = VISIBLE
-            fabmenu_detail_event.getMiniFab(1).show()
-            fabmenu_detail_event.getMiniFabTextView(1).visibility = VISIBLE
+            navigation_detail_event.menu.findItem(R.id.action_camera).isVisible = true
+            navigation_detail_event.menu.findItem(R.id.action_gallery).isVisible = true
         } else {
-            fabmenu_detail_event.getMiniFab(0).hide()
-            fabmenu_detail_event.getMiniFabTextView(0).visibility = GONE
-            fabmenu_detail_event.getMiniFab(1).hide()
-            fabmenu_detail_event.getMiniFabTextView(1).visibility = GONE
+            navigation_detail_event.menu.findItem(R.id.action_camera).isVisible = false
+            navigation_detail_event.menu.findItem(R.id.action_gallery).isVisible = false
         }
 
-        fabmenu_detail_event.addOnMenuItemClickListener(object : OnMenuItemClick {
-            override fun invoke(miniFab: FloatingActionButton, label: TextView?, itemId: Int) {
-                when (itemId) {
-                    R.id.action_camera -> {
-                        if (permissionManager.checkPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                )
+        navigation_detail_event.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.action_camera -> {
+                    if (permissionManager.checkPermissions(
+                            arrayOf(
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
                             )
-                        ) {
-                            takePhotoByCamera()
-                        } else {
-                            requestPermissions()
-                        }
+                        )
+                    ) {
+                        takePhotoByCamera()
+                    } else {
+                        requestPermissions()
                     }
-                    R.id.action_gallery -> {
-                        if (permissionManager.checkPermissions(
-                                arrayOf(
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                )
-                            )
-                        ) {
-                            takePhotoByGallery()
-                        } else {
-                            requestPermissions()
-                        }
-                    }
-                    R.id.action_download_every_photos -> {
-                        eventId?.let { id ->
-                            val eventName = tv_event_name_detail_fragment.text.toString()
-                            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
-                        }
-                    }
+                    true
                 }
+                R.id.action_gallery -> {
+                    if (permissionManager.checkPermissions(
+                            arrayOf(
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            )
+                        )
+                    ) {
+                        takePhotoByGallery()
+                    } else {
+                        requestPermissions()
+                    }
+                    true
+                }
+                R.id.action_invitation -> {
+                    eventId?.let {
+                        GenerationQrCodeActivity.start(activity as MainActivity, it)
+                    }
+                    true
+                }
+                R.id.action_list_participants -> {
+                    openPopUp()
+                    true
+                }
+                else -> false
             }
-        })
+        }
 
 
     }
@@ -416,12 +409,6 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
     }
 
-    override fun loadQrCode() {
-        eventId?.let {
-            GenerationQrCodeActivity.start(activity as MainActivity, it)
-        }
-    }
-
     override fun editEvent() {
         eventId?.let {
             val action =
@@ -439,6 +426,14 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun quitEvent() {
         eventId?.let {
             actionExitEvent(it)
+        }
+    }
+
+    override fun downloadPictures() {
+        eventId?.let { id ->
+            val eventName = tv_event_name_detail_fragment.text.toString()
+            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
+            true
         }
     }
 
@@ -464,6 +459,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_detail_event))
+        displayDownloadPictures(true)
         eventId?.let {
             viewModel.getEventInfo(it)
             viewModel.getParticipant(it)
@@ -472,7 +468,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
     override fun onStop() {
         super.onStop()
-        displayQrCodeMenu(false)
+        displayDownloadPictures(false)
         displayEditEventMenu(false)
         displayDeleteEventMenu(false)
         displayQuitEventMenu(false)
@@ -486,7 +482,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 }
 
 interface DetailEventInterface {
-    fun loadQrCode()
+    fun downloadPictures()
     fun editEvent()
     fun deleteEvent()
     fun quitEvent()

@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.model.User
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.SplashScreenActivity
+import com.example.event_app.utils.or
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -23,21 +26,20 @@ import java.util.*
 class SplashScreenViewModel(private val userRepository: UserRepository) : BaseViewModel() {
 
     private val EVENT_TOPIC = "notif_event_moi_ca"
+    val endSplashscreen: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
-    fun getCurrentUser(): FirebaseUser? {
+    fun getCurrentUser(){
         val user = userRepository.fireBaseAuth.currentUser
         user?.let { fireAuthUser ->
-            userRepository.getUserById(fireAuthUser.uid)
-                .subscribe(
-                    {
-                        userRepository.currentUser.onNext(User(it.id, it.name, it.email, it.photoUrl))
-                    },
-                    {
-                        Timber.e(it)
-                    }
-                ).addTo(disposeBag)
-        }
-        return user
+            userRepository.getUser(fireAuthUser.uid).subscribe(
+                {
+                    endSplashscreen.onNext(true)
+                },
+                {
+                    Timber.e(it)
+                }
+            )
+        } ?: endSplashscreen.onNext(false)
     }
 
     fun initMessageReceiving() {

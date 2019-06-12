@@ -12,13 +12,6 @@
             app:showAsAction="always"/>
 
     <item
-            android:id="@+id/action_qr_code"
-            android:icon="@drawable/ic_load_qrcode"
-            android:title="@string/title_qr_code"
-            android:menuCategory="alternative"
-            app:showAsAction="never"/>
-
-    <item
             android:id="@+id/action_edit_event"
             android:icon="@drawable/ic_edit"
             android:title="@string/b_edit_detail_event_fragment"
@@ -66,5 +59,11 @@
             android:menuCategory="alternative"
             android:title="@string/detail_photo_fragment_authorize_photo"
             app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/action_download_every_photos"
+            android:icon="@drawable/ic_file_download"
+            android:orderInCategory="3"
+            android:title="@string/download_all_pictures_from_one_event"/>
 
 </menu>

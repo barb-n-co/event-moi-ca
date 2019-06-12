@@ -20,7 +20,7 @@
                 android:id="@+id/toolbar_qrcode"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="@string/title_qr_code"
+                app:title="@string/title_invitation"
                 android:background="@color/black_grey"
                 app:titleTextColor="@color/colorAccent"
                 android:theme="@style/ToolbarTheme"

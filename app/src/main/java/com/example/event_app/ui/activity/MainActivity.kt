@@ -40,6 +40,7 @@ class MainActivity : BaseActivity() {
     private var editEventButtonMenu: MenuItem? = null
     private var deleteEventButtonMenu: MenuItem? = null
     private var quitEventButtonMenu: MenuItem? = null
+    private var downloadPicturesButtonMenu: MenuItem? = null
 
     private lateinit var currentController: NavController
     private lateinit var navControllerHome: NavController
@@ -85,7 +86,7 @@ class MainActivity : BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.action_bar_menu, menu)
         filterButtonMenu = menu.findItem(R.id.action_filter)
-        qrCodeButtonMenu = menu.findItem(R.id.action_qr_code)
+        qrCodeButtonMenu = menu.findItem(R.id.action_invitation)
         editEventButtonMenu = menu.findItem(R.id.action_edit_event)
         deleteEventButtonMenu = menu.findItem(R.id.action_delete_event)
         quitEventButtonMenu = menu.findItem(R.id.action_quit_event)
@@ -93,6 +94,7 @@ class MainActivity : BaseActivity() {
         deletePhotoActionMenu = menu.findItem(R.id.action_delete_photo)
         reportPhotoActionMenu = menu.findItem(R.id.action_report)
         authorizePhotoActionMenu = menu.findItem(R.id.action_validate_photo)
+        downloadPicturesButtonMenu = menu.findItem(R.id.action_download_every_photos)
 
         photoDetailActionList.add(downloadActionMenu)
         photoDetailActionList.add(deletePhotoActionMenu)
@@ -106,11 +108,11 @@ class MainActivity : BaseActivity() {
         } else {
             displayFilterMenu(false)
         }
-        displayQrCodeMenu(false)
         displayDetailPhotoActions(false)
         displayQuitEventMenu(false)
         displayDeleteEventMenu(false)
         displayEditEventMenu(false)
+        displayDownloadPicturesMenu(false)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -151,9 +153,9 @@ class MainActivity : BaseActivity() {
                 }
                 true
             }
-            R.id.action_qr_code -> {
+            R.id.action_download_every_photos -> {
                 if (frg is DetailEventInterface) {
-                    frg.loadQrCode()
+                    frg.downloadPictures()
                 }
                 true
             }
@@ -214,12 +216,12 @@ class MainActivity : BaseActivity() {
         filterButtonMenu?.isVisible = value
     }
 
-    fun displayQrCodeMenu(value: Boolean) {
-        qrCodeButtonMenu?.isVisible = value
-    }
-
     fun displayEditEventMenu(value: Boolean) {
         editEventButtonMenu?.isVisible = value
+    }
+
+    fun displayDownloadPicturesMenu(value: Boolean) {
+        downloadPicturesButtonMenu?.isVisible = value
     }
 
     fun displayDeleteEventMenu(value: Boolean) {

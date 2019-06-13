@@ -1,18 +1,23 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorBackground">@color/background</item>
+        <item name="actionBarTheme">@style/AppTheme.ToolbarTheme</item>
     </style>
 
-    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat">
-        <item name="android:homeAsUpIndicator">@drawable/ic_back</item>
+    <style name="AppTheme.ToolbarTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorAccent</item>
         <item name="android:textColorSecondary">@color/colorAccent</item>
+    </style>
+
+    <style name="MyTheme.ActionBar.TitleToolbarStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:colorPrimary">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorAccent</item>
     </style>
 
     <style name="Title">

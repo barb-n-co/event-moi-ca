@@ -163,7 +163,7 @@ class ProfileViewModel(private val userRepository: UserRepository, private val e
                                 {
                                     it.filter { it.idOrganizer == userId }.forEach {
                                         val event = it
-                                        event.organizerPhoto = photoName
+                                        it.organizerPhoto = photoName
                                         eventRepository.updateEventWithNewEvent(event.idEvent, event)
                                             .subscribe(
                                                 {

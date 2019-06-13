@@ -25,7 +25,6 @@ import java.util.*
 
 class SplashScreenViewModel(private val userRepository: UserRepository) : BaseViewModel() {
 
-    private val EVENT_TOPIC = "notif_event_moi_ca"
     val endSplashscreen: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
     fun getCurrentUser(){
@@ -42,37 +41,10 @@ class SplashScreenViewModel(private val userRepository: UserRepository) : BaseVi
         } ?: endSplashscreen.onNext(false)
     }
 
-    fun initMessageReceiving() {
-
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Timber.w(task.exception, "getInstanceId failed")
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                val token = task.result?.token
-
-                // Log and toast
-                val msg = "message with token = $token"
-                Timber.d(msg)
-            })
-
-        FirebaseMessaging.getInstance().subscribeToTopic(EVENT_TOPIC)
-            .addOnCompleteListener { task ->
-                var msg = "subscribed !!!"
-                if (!task.isSuccessful) {
-                    msg = "failed to subscribed"
-                }
-                Timber.d("message for subscribing: $msg")
-            }
-    }
-
     @Throws(IOException::class)
     fun createImageFile(context: Context, uri: Uri): File {
         // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             "JPEG_${timeStamp}_",

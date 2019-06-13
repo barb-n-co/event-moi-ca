@@ -29,6 +29,7 @@ class SplashScreenActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+        supportActionBar?.hide()
 
         intentReceived = intent
         val type = intentReceived.type
@@ -49,13 +50,13 @@ class SplashScreenActivity : BaseActivity() {
                         Intent.ACTION_SEND == action && type?.startsWith("image/") ?: false -> {
                             val imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
                             viewModel.createImageFile(this, imageUri)
-                            val loginIntent = Intent(this, LoginActivity::class.java)
-                            startActivity(loginIntent)
+                            LoginActivity.start(this)
                         }
                         else -> {
                             LoginActivity.start(this)
                         }
                     }
+                finish()
             },
             {
                 Timber.e(it)
@@ -67,10 +68,5 @@ class SplashScreenActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.getCurrentUser()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        finish()
     }
 }

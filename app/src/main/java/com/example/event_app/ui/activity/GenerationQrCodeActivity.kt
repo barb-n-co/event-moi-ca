@@ -40,7 +40,6 @@ class GenerationQrCodeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_generation_qrcode)
-        setSupportActionBar(toolbar_qrcode)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val idCard = intent.getStringExtra(ExtraCardId)

@@ -2,9 +2,7 @@ package com.example.event_app.ui.fragment
 
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -19,7 +17,6 @@ import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
@@ -33,8 +30,10 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private var photoAuthorId: String? = null
     private var photoURL: String = ""
     private var adapter: CommentsAdapter? = null
-    private val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
+    private var photo: Photo? = null
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
+
+    private var isValidatePhoto: Boolean? = null
 
     companion object {
         fun newInstance(): DetailPhotoFragment = DetailPhotoFragment()
@@ -59,6 +58,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         initAdapter(view)
         setActions()
 
@@ -114,7 +114,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.photo.subscribe(
             { photo ->
-                this.photo.onNext(photo)
+                this.photo = photo
                 photoURL = photo.url
                 photoAuthorId = photo.auteurId
 
@@ -133,8 +133,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             },
             {
                 Timber.e(it)
-            }, {
-                setMenu()
             })
             .addTo(viewDisposable)
 
@@ -171,8 +169,50 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 Timber.e(error)
             }
         ).addTo(viewDisposable)
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_detail_photo_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        UserRepository.currentUser.value?.id?.let {userId ->
+            if (userId == idOrganizer || userId == photoAuthorId) {
+                menu.findItem(R.id.action_delete_photo).isVisible = true
+                if(userId != photoAuthorId){
+                    menu.findItem(R.id.action_report_photo).isVisible = true
+                }
+            }
+            photo?.let {
+                if (userId == idOrganizer && it.isReported == 1) {
+                    menu.findItem(R.id.action_validate_photo).isVisible = true
+                }
+            }
+        }
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.action_report_photo -> {
+                reportAction()
+                true
+            }
+            R.id.action_delete_photo -> {
+                deleteAction()
+                true
+            }
+            R.id.action_download_photo -> {
+                downloadAction()
+                true
+            }
+            R.id.action_validate_photo -> {
+                authorizeAction()
+                true
+            }
+            else -> false
+        }
     }
 
     private fun setActions() {
@@ -247,24 +287,12 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     }
 
     private fun setMenu() {
-        val userId = UserRepository.currentUser.value?.id
-        val authorId = photoAuthorId
-        if (userId != null && (userId == idOrganizer)) {
-            displayDetailPhotoMenuDeletePhoto(true)
-        }
-        if (userId != null && (userId == authorId)) {
-            displayDetailPhotoMenuDeletePhoto(true)
-        }
-        photo.value?.let {
-            if (userId != null && userId == idOrganizer && it.isReported == 1) {
-                displayDetailPhotoMenuActionValidatePhoto(true)
-            }
-        }
+        activity?.invalidateOptionsMenu()
     }
 
     private fun authorizeImage() {
         eventId?.let { eventId ->
-            photo.value?.let { photo ->
+            photo?.let { photo ->
                 if (photo.isReported == 1) {
                     viewModel.reportOrValidateImage(
                         eventId,
@@ -273,7 +301,8 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                         getString(R.string.picture_authorized_by_admin),
                         getString(R.string.problem_occured_during_download)
                     )
-                    displayDetailPhotoMenuActionValidatePhoto(false)
+                    isValidatePhoto = false
+                    activity?.invalidateOptionsMenu()
                 }
             }
         }
@@ -281,7 +310,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     private fun reportImage() {
         eventId?.let { eventId ->
-            photo.value?.let { photo ->
+            photo?.let { photo ->
                 if (photo.isReported == 0) {
                     viewModel.reportOrValidateImage(
                         eventId, photo, 1,
@@ -331,16 +360,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     override fun reportAction() {
         reportImage()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        displayDetailPhotoMenuRestricted(true)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        displayDetailPhotoMenu(false)
     }
 
 }

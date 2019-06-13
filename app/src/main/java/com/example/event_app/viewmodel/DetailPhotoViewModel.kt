@@ -318,12 +318,11 @@ class DetailPhotoViewModel(
                         updateEventReportedPhotoCount(eventId, updateEvent)
                             .subscribe(
                                 {
-                                    Timber.e("event updated")
                                     menuListener.onNext(true)
                                 },
                                 {
                                     messageDispatcher.onNext(errorMessage)
-                                    Timber.e("error for update event reported photo = $it")
+                                    Timber.e(it)
                                 }
                             )
                     }
@@ -338,7 +337,6 @@ class DetailPhotoViewModel(
 
     private fun updateEventReportedPhotoCount(eventId: String, updateEvent: Event): Completable {
         return eventsRepository.updateEventWithNewEvent(eventId, updateEvent)
-
     }
 
     private fun getNumberOfLikes(photoId: String) {

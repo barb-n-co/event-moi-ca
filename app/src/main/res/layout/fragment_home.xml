@@ -70,7 +70,7 @@
             app:fab_miniFabBackgroundColor="@color/colorAccent"
             app:fab_miniFabTextBackground="@drawable/fab_label_back_coloured"
             app:fab_fabDrawable="@drawable/ic_menu_fab"
-            app:fab_menu="@menu/menu_fab_home"
+            app:fab_menu="@menu/menu_fab_home_fragment"
             tools:ignore="MissingPrefix"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

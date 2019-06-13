@@ -7,10 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.*
-import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -45,7 +43,7 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 
 
-class DetailEventFragment : BaseFragment(), DetailEventInterface {
+class DetailEventFragment : BaseFragment() {
 
     private lateinit var weakContext: WeakReference<Context>
     private lateinit var adapter: CustomAdapter
@@ -55,6 +53,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     val event: BehaviorSubject<Event> = BehaviorSubject.create()
     private var popupWindow: PopupWindow? = null
     var idOrganizer = ""
+
+    private var isOrganizerMenu: Boolean? = null
 
     companion object {
         fun newInstance(): DetailEventFragment = DetailEventFragment()
@@ -70,6 +70,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(true)
         setVisibilityNavBar(false)
 
         weakContext = WeakReference<Context>(context)
@@ -149,7 +150,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
                     } else {
                         navigation_detail_event.visibility = VISIBLE
-                        displayQuitEventMenu(true)
+                        isOrganizerMenu = false
+                        activity?.invalidateOptionsMenu()
                         setNavigation(it.activate != 0)
                         rv_listImage.visibility = VISIBLE
                     }
@@ -157,8 +159,8 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
 
                 } else {
                     setNavigation(it.activate != 0)
-                    displayDeleteEventMenu(true)
-                    displayEditEventMenu(true)
+                    isOrganizerMenu = true
+                    activity?.invalidateOptionsMenu()
                     if (it.activate == 0) {
                         switch_activate_detail_event_fragment.isChecked = false
                         switch_activate_detail_event_fragment.text =
@@ -236,6 +238,43 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
                     }
                 }
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_detail_event_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        if (isOrganizerMenu == true) {
+            menu.findItem(R.id.action_delete_event).isVisible = true
+            menu.findItem(R.id.action_edit_event).isVisible = true
+        } else if(isOrganizerMenu == false) {
+            menu.findItem(R.id.action_quit_event).isVisible = true
+        }
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.action_download_all_pictures -> {
+                downloadPictures()
+                true
+            }
+            R.id.action_edit_event -> {
+                editEvent()
+                true
+            }
+            R.id.action_delete_event -> {
+                deleteEvent()
+                true
+            }
+            R.id.action_quit_event -> {
+                quitEvent()
+                true
+            }
+            else -> false
         }
     }
 
@@ -409,7 +448,7 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
     }
 
-    override fun editEvent() {
+    private fun editEvent() {
         eventId?.let {
             val action =
                 DetailEventFragmentDirections.actionDetailEventFragmentToEditDetailEventFragment(it)
@@ -417,19 +456,19 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         }
     }
 
-    override fun deleteEvent() {
+    private fun deleteEvent() {
         eventId?.let {
             actionDeleteEvent(it)
         }
     }
 
-    override fun quitEvent() {
+    private fun quitEvent() {
         eventId?.let {
             actionExitEvent(it)
         }
     }
 
-    override fun downloadPictures() {
+    private fun downloadPictures() {
         eventId?.let { id ->
             val eventName = tv_event_name_detail_fragment.text.toString()
             viewModel.getAllPictures(id, weakContext.get()!!, eventName)
@@ -459,19 +498,10 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_detail_event))
-        displayDownloadPictures(true)
         eventId?.let {
             viewModel.getEventInfo(it)
             viewModel.getParticipant(it)
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        displayDownloadPictures(false)
-        displayEditEventMenu(false)
-        displayDeleteEventMenu(false)
-        displayQuitEventMenu(false)
     }
 
     override fun onDestroyView() {
@@ -479,11 +509,4 @@ class DetailEventFragment : BaseFragment(), DetailEventInterface {
         popupWindow?.dismiss()
         super.onDestroyView()
     }
-}
-
-interface DetailEventInterface {
-    fun downloadPictures()
-    fun editEvent()
-    fun deleteEvent()
-    fun quitEvent()
 }

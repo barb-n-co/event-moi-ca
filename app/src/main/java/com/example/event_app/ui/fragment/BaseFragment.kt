@@ -28,9 +28,9 @@ abstract class BaseFragment : Fragment(), KodeinAware {
 
     protected fun setVisibilityToolbar(value: Boolean) {
         if (value) {
-            (activity as MainActivity).app_bar.visibility = View.VISIBLE
+            (activity as MainActivity).supportActionBar?.show()
         } else {
-            (activity as MainActivity).app_bar.visibility = View.GONE
+            (activity as MainActivity).supportActionBar?.hide()
         }
     }
 
@@ -48,47 +48,7 @@ abstract class BaseFragment : Fragment(), KodeinAware {
         } else (activity as AppCompatActivity).g_navBar_mainActivity.visibility = View.GONE
     }
 
-    protected fun displayFilterMenu(value: Boolean) {
-        (activity as MainActivity).displayFilterMenu(value)
-    }
-
-    protected fun displayDetailPhotoMenu(value: Boolean) {
-        (activity as MainActivity).displayDetailPhotoActions(value)
-    }
-
-    protected fun displayDetailPhotoMenuRestricted(value: Boolean) {
-        (activity as MainActivity).displayDetailPhotoMenuRestricted(value)
-    }
-
-    protected fun displayDetailPhotoMenuActionValidatePhoto(value: Boolean) {
-        (activity as MainActivity).displayDetailPhotoActionValidatePhoto(value)
-    }
-
-    protected fun displayDetailPhotoMenuDeletePhoto(value: Boolean) {
-        (activity as MainActivity).displayDetailPhotoActionDeletePhoto(value)
-    }
-
-    protected fun displayEditEventMenu(value: Boolean) {
-        (activity as MainActivity).displayEditEventMenu(value)
-    }
-
-    protected fun displayDownloadPictures(value: Boolean) {
-        (activity as MainActivity).displayDownloadPicturesMenu(value)
-    }
-
-    protected fun displayDeleteEventMenu(value: Boolean) {
-        (activity as MainActivity).displayDeleteEventMenu(value)
-    }
-
-    protected fun displayQuitEventMenu(value: Boolean) {
-        (activity as MainActivity).displayQuitEventMenu(value)
-    }
-
     protected fun fragmentMapIsOpen(value: Boolean) {
         (activity as MainActivity).isMapOpen(value)
-    }
-
-    protected fun displaySearchEventMenu(value: Boolean) {
-        (activity as MainActivity).displaySearchEventMenu(value)
     }
 }

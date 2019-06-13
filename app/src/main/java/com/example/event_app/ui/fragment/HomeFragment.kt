@@ -2,16 +2,17 @@ package com.example.event_app.ui.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
 import com.example.event_app.model.EventItem
+import com.example.event_app.model.UserEventState
 import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
@@ -41,6 +42,7 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDisplayHomeAsUpEnabled(false)
+        setHasOptionsMenu(true)
         setVisibilityNavBar(true)
         setFab()
 
@@ -85,10 +87,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         viewModel.myEventList.subscribe(
             { eventList ->
                 if (eventList.isEmpty()) {
-                    showPlaceHolder()
+                    showPlaceHolder(adapter)
                 } else {
                     displayEvents(adapter, eventList)
                 }
+                changeTitle(viewModel.stateUserEvent)
                 swiperefresh_fragment_home.isRefreshing = false
             },
             {
@@ -98,15 +101,39 @@ class HomeFragment : BaseFragment(), HomeInterface {
             .addTo(viewDisposable)
     }
 
+    private fun changeTitle(stateUserEvent: UserEventState) {
+        when(stateUserEvent){
+            UserEventState.NOTHING -> setTitleToolbar(getString(R.string.title_home))
+            UserEventState.INVITATION -> setTitleToolbar(getString(R.string.title_invitation))
+            UserEventState.PARTICIPATE -> setTitleToolbar(getString(R.string.title_participation))
+            UserEventState.ORGANIZER -> setTitleToolbar(getString(R.string.title_organizer))
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_home_fragment, menu)
+        setSearchView(menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.action_filter -> {
+                openFilter()
+                true
+            }
+            else -> false
+        }
+    }
+
     private fun displayEvents(adapter: ListMyEventsAdapter, eventList: List<EventItem>?) {
-        rv_event_home_fragment.visibility = VISIBLE
         g_no_item_home_fragment.visibility = GONE
         adapter.submitList(eventList)
     }
 
-    private fun showPlaceHolder() {
-        rv_event_home_fragment.visibility = GONE
+    private fun showPlaceHolder(adapter: ListMyEventsAdapter) {
         g_no_item_home_fragment.visibility = VISIBLE
+        adapter.submitList(emptyList())
     }
 
     private fun setFab() {
@@ -128,24 +155,43 @@ class HomeFragment : BaseFragment(), HomeInterface {
         ScannerQrCodeActivity.start(activity!!)
     }
 
-    override fun getInvitation(idEvent: String) {
-        viewModel.addInvitation(idEvent)
+    private fun setSearchView(menu: Menu) {
+        val searchView = menu.findItem(R.id.sv_search_event).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    searchEvent(it)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    searchEvent(it)
+                }
+                return false
+            }
+        })
     }
 
-    override fun openFilter() {
-        val bottomSheetDialog = FilterDialogFragment(stateSelectedListener = {
-            viewModel.stateUserEvent = it
-            viewModel.fetchMyEvents()
-        }, filterState = viewModel.stateUserEvent)
-        bottomSheetDialog.show(requireFragmentManager(), TAG)
-    }
-
-    override fun searchEvent(search: String) {
+    private fun searchEvent(search: String) {
         if(search.isEmpty()){
             viewModel.getMyEvents()
         } else {
             viewModel.searchEvent(search)
         }
+    }
+
+    override fun getInvitation(idEvent: String) {
+        viewModel.addInvitation(idEvent)
+    }
+
+    private fun openFilter() {
+        val bottomSheetDialog = FilterDialogFragment(stateSelectedListener = {
+            viewModel.stateUserEvent = it
+            viewModel.fetchMyEvents()
+        }, filterState = viewModel.stateUserEvent)
+        bottomSheetDialog.show(requireFragmentManager(), TAG)
     }
 
     private fun requestCameraPermission() {
@@ -157,31 +203,15 @@ class HomeFragment : BaseFragment(), HomeInterface {
     override fun onResume() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_home))
-        displayFilterMenu(true)
-        displaySearchEventMenu(true)
         viewModel.fetchMyEvents()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setTitleToolbar(getString(R.string.title_home))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        displayFilterMenu(false)
-        displaySearchEventMenu(false)
     }
 
     override fun onDestroyView() {
         weakContext.clear()
         super.onDestroyView()
     }
-
 }
 
 interface HomeInterface {
     fun getInvitation(idEvent: String)
-    fun openFilter()
-    fun searchEvent(search: String)
 }

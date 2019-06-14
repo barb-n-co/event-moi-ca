@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import com.example.event_app.R
 import com.example.event_app.utils.getLatLng
 import com.example.event_app.viewmodel.MapsViewModel
@@ -34,11 +33,6 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
 
     companion object {
         fun newInstance(): AddAddressMapFragment = AddAddressMapFragment()
-
-        var fragmentManager: FragmentManager? = null
-        fun popBack() {
-            fragmentManager?.popBackStack()
-        }
     }
 
     override fun onCreateView(
@@ -52,9 +46,7 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        AddAddressMapFragment.fragmentManager = fragmentManager
         initMap()
-        viewModel.observeAddressResults()
 
         iv_back_menu_maps.setOnClickListener {
             fragmentManager?.popBackStack()
@@ -83,7 +75,7 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
 
         ).addTo(viewDisposable)
 
-        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment?
+        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_event_fragment) as AutocompleteSupportFragment?
 
         autocompleteFragment?.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG))
 
@@ -96,7 +88,6 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
                 Timber.i( "An error occurred: $status")
             }
         })
-
     }
 
     private fun initMap() {

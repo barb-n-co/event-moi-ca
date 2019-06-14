@@ -78,7 +78,7 @@ val viewModelModule = Kodein.Module("ViewModelModule") {
     }
 
 
-    bind<EventMapViewModel.Factory>() with provider { EventMapViewModel.Factory(instance(), instance()) }
+    bind<EventMapViewModel.Factory>() with provider { EventMapViewModel.Factory(instance(), instance(), instance()) }
     bind<EventMapViewModel>() with factory { fragment: Fragment ->
         ViewModelProvider(fragment, instance<EventMapViewModel.Factory>())
             .get(EventMapViewModel::class.java)

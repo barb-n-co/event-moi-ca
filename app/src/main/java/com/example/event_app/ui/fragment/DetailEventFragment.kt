@@ -23,10 +23,7 @@ import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
-import com.example.event_app.model.Event
-import com.example.event_app.model.User
-import com.example.event_app.model.spannable
-import com.example.event_app.model.url
+import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
@@ -88,6 +85,8 @@ class DetailEventFragment : BaseFragment() {
 
         eventId?.let {
 
+            viewModel.getParticipant(it)
+
             adapter.photosClickPublisher.subscribe(
                 { photoId ->
                     val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
@@ -102,16 +101,14 @@ class DetailEventFragment : BaseFragment() {
                 }
             ).addTo(viewDisposable)
 
-            viewModel.initPhotoEventListener(it).subscribe(
-                { photoList ->
-                    if(photoList.isEmpty()){
+            viewModel.pictures.subscribe(
+                { pictures ->
+                    if(pictures.isEmpty()){
                         group_no_pictures_event_detail_fragment.visibility = VISIBLE
-                        rv_listImage.visibility = INVISIBLE
                     } else {
                         group_no_pictures_event_detail_fragment.visibility = INVISIBLE
-                        rv_listImage.visibility = VISIBLE
-                        adapter.submitList(photoList)
                     }
+                    adapter.submitList(pictures.reversed())
                     adapter.notifyDataSetChanged()
                 },
                 {
@@ -122,72 +119,7 @@ class DetailEventFragment : BaseFragment() {
 
         viewModel.event.subscribe(
             {
-                tv_event_name_detail_fragment.text = it.nameEvent
-                tv_description_detail_fragment.text = it.description
-                tv_organizer_detail_fragment.text = it.nameOrganizer
-
-                tv_address_detail_fragment.text = spannable { url("", it.place) }
-                tv_start_event_detail_fragment.text = it.dateStart
-                tv_finish_event_detail_fragment.text = it.dateEnd
-                idOrganizer = it.idOrganizer
-
-                GlideApp
-                    .with(context!!)
-                    .load(it.organizerPhotoReference)
-                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
-                    .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
-                    .into(iv_organizer_detail_fragment)
-
-                root_layout.visibility = VISIBLE
-
-                if (it.organizer != 1) {
-                    switch_activate_detail_event_fragment.visibility = GONE
-                    if (it.accepted != 1) {
-                        navigation_detail_event.visibility = GONE
-                        iv_alert_not_accepted_event.visibility = VISIBLE
-                        not_already_accepted_alert.visibility = VISIBLE
-
-                    } else {
-                        navigation_detail_event.visibility = VISIBLE
-                        isOrganizerMenu = false
-                        activity?.invalidateOptionsMenu()
-                        setNavigation(it.activate != 0)
-                        rv_listImage.visibility = VISIBLE
-                    }
-                    navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = false
-
-                } else {
-                    setNavigation(it.activate != 0)
-                    isOrganizerMenu = true
-                    activity?.invalidateOptionsMenu()
-                    if (it.activate == 0) {
-                        switch_activate_detail_event_fragment.isChecked = false
-                        switch_activate_detail_event_fragment.text =
-                            getString(R.string.switch_desactivate_detail_event_fragment)
-                    } else {
-                        switch_activate_detail_event_fragment.isChecked = true
-                        switch_activate_detail_event_fragment.text =
-                            getString(R.string.switch_activate_detail_event_fragment)
-                    }
-                    switch_activate_detail_event_fragment.setOnCheckedChangeListener { _, isChecked ->
-                        if (isChecked) {
-                            switch_activate_detail_event_fragment.text =
-                                getString(R.string.switch_activate_detail_event_fragment)
-                            viewModel.changeActivationEvent(true)
-                            setNavigation(true)
-                        } else {
-                            switch_activate_detail_event_fragment.text =
-                                getString(R.string.switch_desactivate_detail_event_fragment)
-                            viewModel.changeActivationEvent(false)
-                            setNavigation(false)
-                        }
-                    }
-                    switch_activate_detail_event_fragment.visibility = VISIBLE
-                    navigation_detail_event.visibility = VISIBLE
-                    rv_listImage.visibility = VISIBLE
-                    navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = true
-                }
+                displayEvent(it)
             },
             {
                 Timber.e(it)
@@ -201,18 +133,7 @@ class DetailEventFragment : BaseFragment() {
             Timber.e(it)
         }).addTo(viewDisposable)
 
-
-        tv_address_detail_fragment.setOnClickListener {
-            val query = tv_address_detail_fragment.text.toString()
-            val address = getString(R.string.map_query, query)
-            if (query.isNotEmpty()) {
-                startActivity(viewModel.createMapIntent(address))
-            }
-
-        }
-
-        chip_listParticipant.setOnClickListener { openPopUp() }
-
+        setViewActions()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
@@ -278,6 +199,88 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
+    private fun displayEvent(it: EventItem) {
+        tv_event_name_detail_fragment.text = it.nameEvent
+        tv_description_detail_fragment.text = it.description
+        tv_organizer_detail_fragment.text = it.nameOrganizer
+
+        tv_address_detail_fragment.text = spannable { url("", it.place) }
+        tv_start_event_detail_fragment.text = it.dateStart
+        tv_finish_event_detail_fragment.text = it.dateEnd
+        idOrganizer = it.idOrganizer
+
+        GlideApp
+            .with(context!!)
+            .load(it.organizerPhotoReference)
+            .transition(GenericTransitionOptions.with(R.anim.fade_in))
+            .circleCrop()
+            .placeholder(R.drawable.ic_profile)
+            .into(iv_organizer_detail_fragment)
+
+        root_layout.visibility = VISIBLE
+
+        if (it.organizer != 1) {
+            switch_activate_detail_event_fragment.visibility = GONE
+            if (it.accepted != 1) {
+                navigation_detail_event.visibility = GONE
+                iv_alert_not_accepted_event.visibility = VISIBLE
+                not_already_accepted_alert.visibility = VISIBLE
+
+            } else {
+                navigation_detail_event.visibility = VISIBLE
+                isOrganizerMenu = false
+                activity?.invalidateOptionsMenu()
+                setNavigation(it.activate != 0)
+                rv_listImage.visibility = VISIBLE
+            }
+            navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = false
+
+        } else {
+            setNavigation(it.activate != 0)
+            isOrganizerMenu = true
+            activity?.invalidateOptionsMenu()
+            if (it.activate == 0) {
+                switch_activate_detail_event_fragment.isChecked = false
+                switch_activate_detail_event_fragment.text =
+                    getString(R.string.switch_desactivate_detail_event_fragment)
+            } else {
+                switch_activate_detail_event_fragment.isChecked = true
+                switch_activate_detail_event_fragment.text =
+                    getString(R.string.switch_activate_detail_event_fragment)
+            }
+            switch_activate_detail_event_fragment.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    switch_activate_detail_event_fragment.text =
+                        getString(R.string.switch_activate_detail_event_fragment)
+                    viewModel.changeActivationEvent(true)
+                    setNavigation(true)
+                } else {
+                    switch_activate_detail_event_fragment.text =
+                        getString(R.string.switch_desactivate_detail_event_fragment)
+                    viewModel.changeActivationEvent(false)
+                    setNavigation(false)
+                }
+            }
+            switch_activate_detail_event_fragment.visibility = VISIBLE
+            navigation_detail_event.visibility = VISIBLE
+            rv_listImage.visibility = VISIBLE
+            navigation_detail_event.menu.findItem(R.id.action_invitation).isVisible = true
+        }
+    }
+
+    private fun setViewActions() {
+        tv_address_detail_fragment.setOnClickListener {
+            val query = tv_address_detail_fragment.text.toString()
+            val address = getString(R.string.map_query, query)
+            if (query.isNotEmpty()) {
+                startActivity(viewModel.createMapIntent(address))
+            }
+
+        }
+
+        chip_listParticipant.setOnClickListener { openPopUp() }
+    }
+
     private fun actionDeleteEvent(eventId: String) {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
@@ -337,9 +340,6 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun openPopUp() {
-        eventId?.let {
-            viewModel.getParticipant(it)
-        }
         val popup = ListParticipantDialogFragment(
             deleteSelectedListener = {
                 removeUser(it)
@@ -499,6 +499,7 @@ class DetailEventFragment : BaseFragment() {
         super.onResume()
         setTitleToolbar(getString(R.string.title_detail_event))
         eventId?.let {
+            viewModel.getPicturesEvent(it)
             viewModel.getEventInfo(it)
             viewModel.getParticipant(it)
         }

@@ -1,11 +1,11 @@
 package com.example.event_app.ui.fragment
 
 import android.Manifest
+import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
+import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
@@ -15,7 +15,9 @@ import com.example.event_app.model.spannable
 import com.example.event_app.model.url
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.getLatLng
 import com.example.event_app.viewmodel.EventMapViewModel
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -23,11 +25,15 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.bottom_sheet_detail_event_map.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.util.*
 
 
 class EventMapFragment : BaseFragment(), OnMapReadyCallback {
@@ -68,12 +74,49 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_event_detail_map)
         initMap()
+
+        viewModel.mapAddress.subscribe(
+            { addressMap ->
+                val latLng = addressMap.getLatLng()
+                googleEventMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f))
+            },
+            { error ->
+                Timber.e(error)
+            }
+
+        ).addTo(viewDisposable)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_event_map_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        setSearchView(menu)
+        super.onPrepareOptionsMenu(menu)
     }
 
     private fun initMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         setHasOptionsMenu(true)
+    }
+
+    private fun setSearchView(menu: Menu) {
+        val searchView = menu.findItem(R.id.sv_search_event_map).actionView as SearchView
+        searchView.queryHint = getString(R.string.tv_hint_search_event_map)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    viewModel.searchAddress(it)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean = false
+        })
     }
 
 

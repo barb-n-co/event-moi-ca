@@ -57,14 +57,11 @@ class CommentsAdapter(
                 itemView.iv_edit_comment_item.setOnClickListener {
                     itemView.group_edit_comment_item.visibility = GONE
                     itemView.tv_message_user_comment_item.visibility = VISIBLE
-
                     editCommentListener(makeEditedCommentFrom(comment))
                 }
                 itemView.chip_like_user_comment_item.text = comment.likes.size.toString()
                 itemView.chip_like_other_comment_item.visibility = INVISIBLE
-                if (comment.likes.size > 0) {
-                    itemView.chip_like_user_comment_item.visibility = VISIBLE
-                } else itemView.chip_like_user_comment_item.visibility = GONE
+                itemView.chip_like_user_comment_item.visibility = if (comment.likes.size > 0) VISIBLE else GONE
 
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_user_comment_item.visibility = if (comment.reported == 0) GONE else VISIBLE
@@ -81,9 +78,8 @@ class CommentsAdapter(
                 itemView.tv_name_comment_item.text = comment.author
                 itemView.chip_like_other_comment_item.text = comment.likes.size.toString()
                 itemView.chip_like_user_comment_item.visibility = GONE
-                if (comment.likes.size > 0) {
-                    itemView.chip_like_other_comment_item.visibility = VISIBLE
-                } else itemView.chip_like_other_comment_item.visibility = INVISIBLE
+                if (comment.likes.size > 0) itemView.chip_like_other_comment_item.visibility =
+                    if (comment.likes.size > 0) VISIBLE else INVISIBLE
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_other_user_comment_item.visibility =
                         if (comment.reported == 0) GONE else VISIBLE

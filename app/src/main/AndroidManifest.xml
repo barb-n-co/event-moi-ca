@@ -53,7 +53,8 @@
 
 
         <activity android:name=".ui.activity.ShareGalleryActivity"/>
-        <activity android:name=".ui.activity.SplashScreenActivity">
+        <activity android:name=".ui.activity.SplashScreenActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
@@ -78,7 +79,8 @@
         </activity>
         <activity android:name=".ui.activity.LoginActivity"/>
         <activity android:name=".ui.activity.MainActivity"
-                  android:windowSoftInputMode="adjustPan">
+                  android:windowSoftInputMode="adjustPan"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

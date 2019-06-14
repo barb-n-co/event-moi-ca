@@ -44,10 +44,10 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     BaseViewModel() {
 
     val participants: BehaviorSubject<List<User>> = BehaviorSubject.create()
+    val pictures: BehaviorSubject<List<Photo>> = BehaviorSubject.create()
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
     private var eventLoaded: Event? = null
     val loading: PublishSubject<Boolean> = PublishSubject.create()
-    var organizerPhoto: PublishSubject<String> = PublishSubject.create()
     lateinit var currentPhotoPath: String
 
     init {
@@ -140,7 +140,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             val newEvent = it.apply {
                 this.activate = if (state) 1 else 0
             }
-            eventsRepository.addEvent(it.idOrganizer, it.organizer, newEvent)
+            eventsRepository.addEvent(it.organizer, newEvent)
         }
     }
 
@@ -194,10 +194,6 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         getParticipant(eventId)
     }
 
-    fun getStorageRef(url: String): StorageReference {
-        return eventsRepository.getStorageReferenceForUrl(url)
-    }
-
     fun getParticipant(eventId: String) {
         eventsRepository.getParticipants(eventId).subscribe(
             {
@@ -209,8 +205,15 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         ).addTo(disposeBag)
     }
 
-    fun initPhotoEventListener(id: String): Observable<List<Photo>> {
-        return eventsRepository.getAllPicturesStream(id)
+    fun getPicturesEvent(id: String) {
+        eventsRepository.getAllPicturesStream(id).subscribe(
+            {
+                pictures.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
     }
 
     fun pickImageFromGallery(): Intent {

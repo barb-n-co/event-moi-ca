@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,9 @@ import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.hideKeyboard
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
@@ -28,7 +31,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     private var photoId: String? = null
     private var idOrganizer: String? = null
     private var photoAuthorId: String? = null
-    private var photoURL: String = ""
+    private var photoURL: String? = null
     private var adapter: CommentsAdapter? = null
     private var photo: Photo? = null
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
@@ -61,6 +64,15 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         setHasOptionsMenu(true)
         initAdapter(view)
         setActions()
+
+        viewModel.commentaires.subscribe(
+            { commentList ->
+                adapter?.submitList(commentList)
+            },
+            { error ->
+                Timber.e(error)
+            }
+        ).addTo(viewDisposable)
 
         viewModel.onBackPressedTrigger.subscribe(
             {
@@ -123,11 +135,11 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 tv_auteur.text = photo.authorName
                 setMenu()
 
-                viewModel.getPhotographProfilePicture(photo.auteurId)
+                viewModel.getAuthorPicture(photo.auteurId)
 
                 GlideApp
                     .with(context!!)
-                    .load(viewModel.getStorageRef(photoURL))
+                    .load(viewModel.getStorageRef(photo.url))
                     .centerInside()
                     .into(iv_photo)
             },
@@ -136,7 +148,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             })
             .addTo(viewDisposable)
 
-        viewModel.photoTaker.subscribe(
+        viewModel.authorPicture.subscribe(
             {
                 GlideApp
                     .with(context!!)
@@ -154,21 +166,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 viewModel.addLikes(photoId)
             }
         }
-
-        viewModel.getPhotoDetail(eventId, photoId)
-
-        viewModel.commentaires.subscribe(
-            { commentList ->
-                adapter?.submitList(commentList)
-                if (commentList.isNotEmpty()) {
-                    rv_comments.visibility = View.VISIBLE
-                } else rv_comments.visibility = View.GONE
-
-            },
-            { error ->
-                Timber.e(error)
-            }
-        ).addTo(viewDisposable)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -223,7 +220,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     viewModel.addComment(comment, photoId)
                         .subscribe(
                             {
-                                viewModel.getPhotoDetail(eventId, photoId)
                                 et_comments.text.clear()
                                 et_comments.hideKeyboard()
                             },
@@ -239,7 +235,13 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     ).show()
                 }
             }
+        }
 
+        iv_photo.setOnClickListener {
+            photoURL?.let {
+                val action = DetailPhotoFragmentDirections.actionDetailPhotoFragmentToPhotoFullscreenFragment(it)
+                NavHostFragment.findNavController(this).navigate(action)
+            }
         }
     }
 
@@ -280,7 +282,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     viewModel.editComment(it)
                     view.hideKeyboard()
                 })
-            rv_comments.itemAnimator = DefaultItemAnimator()
+            rv_comments.itemAnimator = SlideInUpAnimator()
             rv_comments.adapter = adapter
             rv_comments.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
@@ -325,22 +327,26 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     }
 
     private fun downloadImage() {
-        viewModel.downloadImageOnPhone(
-            photoURL, eventId!!, photoId!!,
-            getString(R.string.picture_downloaded_toast),
-            getString(R.string.error_on_download_toast)
-        )
+        photoURL?.let {
+            viewModel.downloadImageOnPhone(
+                it, eventId!!, photoId!!,
+                getString(R.string.picture_downloaded_toast),
+                getString(R.string.error_on_download_toast)
+            )
+        }
     }
 
     private fun deleteImage() {
         eventId?.let { eventId ->
             viewModel.photo.value?.let { photo ->
                 photoId?.let { id ->
-                    viewModel.deleteImageOrga(
-                        eventId, id, photoURL, photo.isReported,
-                        getString(R.string.picture_deleted),
-                        getString(R.string.unable_to_delete_picture)
-                    )
+                    photoURL?.let {photoURL ->
+                        viewModel.deleteImageOrga(
+                            eventId, id, photoURL, photo.isReported,
+                            getString(R.string.picture_deleted),
+                            getString(R.string.unable_to_delete_picture)
+                        )
+                    }
                 }
             }
         }
@@ -360,6 +366,17 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
     override fun reportAction() {
         reportImage()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setTitleToolbar(getString(R.string.title_detail_photo))
+        photoId?.let {photoId ->
+            viewModel.fetchComments(photoId)
+            eventId?.let {eventId ->
+                viewModel.getPhotoDetail(eventId, photoId)
+            }
+        }
     }
 
 }

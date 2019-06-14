@@ -34,23 +34,8 @@ class ListEventAdapter : ListAdapter<EventItem, ListEventAdapter.EventViewHolder
             itemView.tv_name_myevent_item.text = event.nameEvent
             itemView.tv_startDate_myevent_item.text = "Du ${event.dateStart} au ${event.dateEnd}"
 
-//            UserRepository.currentUser.value?.let {
-//                if (it.id == event.idOrganizer) {
-//                    itemView.b_refuse_myevent_item.visibility = View.VISIBLE
-//                    itemView.b_refuse_myevent_item.setOnClickListener {
-//                        organizerClickPublisher.onNext(event.idOrganizer)
-//                    }
-//                } else {
-//                    itemView.b_refuse_myevent_item.visibility = View.INVISIBLE
-//                }
-//            }
-
-            bindPositionClick(event.idEvent)
-        }
-
-        private fun bindPositionClick(idEvent: String) {
             itemView.setOnClickListener {
-                eventsClickPublisher.onNext(idEvent)
+                eventsClickPublisher.onNext(event.idEvent)
             }
         }
     }

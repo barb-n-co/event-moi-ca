@@ -11,10 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.R
+import com.example.event_app.model.AddressMap
 import com.example.event_app.model.Event
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.MyEvents
 import com.example.event_app.repository.EventRepository
+import com.example.event_app.repository.MapsRepository
 import com.example.event_app.repository.UserRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -30,12 +32,28 @@ import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 
-class EventMapViewModel(private val eventRepository: EventRepository, private val userRepository: UserRepository) :
+class EventMapViewModel(private val eventRepository: EventRepository, private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
     BaseViewModel() {
 
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
     val currentLocation: PublishSubject<LatLng> = PublishSubject.create()
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
+
+    init {
+        mapsRepository.mapAddress.subscribe(
+            {
+                mapAddress.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun searchAddress(adr: String) {
+        mapsRepository.buildRequestWithAddress(adr)
+    }
 
     fun getMyEvents() {
         userRepository.currentUser.value?.id?.let { idUser ->
@@ -140,11 +158,11 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
     }
 
 
-    class Factory(private val eventRepository: EventRepository, private val userRepository: UserRepository) :
+    class Factory(private val eventRepository: EventRepository, private val userRepository: UserRepository, private val mapsRepository: MapsRepository) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return EventMapViewModel(eventRepository, userRepository) as T
+            return EventMapViewModel(eventRepository, userRepository, mapsRepository) as T
         }
     }
 }

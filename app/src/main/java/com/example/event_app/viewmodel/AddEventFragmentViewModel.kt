@@ -23,12 +23,12 @@ class AddEventFragmentViewModel(
         endDateString: String, latitude: Double, longitude: Double
     ) {
         userRepository.currentUser.value?.let { user ->
-            user.id?.let { id ->
+            user.id?.let { idUser ->
                 user.name?.let { userName ->
                     eventsRepository.addEvent(
-                        id, userName,
+                        userName,
                         Event(
-                            idEvent = idEvent, idOrganizer = id,
+                            idEvent = idEvent, idOrganizer = idUser,
                             organizer = organizer, name = name,
                             place = place, description = description,
                             dateStart = startDateString, dateEnd = endDateString,

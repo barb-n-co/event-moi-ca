@@ -58,7 +58,6 @@ class AddEventFragmentViewModel(
                 // Get new Instance ID token
                 val token = task.result?.token
 
-                // Log and toast
                 val msg = "message with token = $token"
                 Timber.d(msg)
             })

@@ -10,6 +10,7 @@ import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.ui.activity.ShareGalleryActivity
 import com.example.event_app.ui.activity.SplashScreenActivity
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.LoginViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -42,7 +43,7 @@ class LoginFragment : BaseFragment() {
             if (!viewModel.checkIfFieldsAreEmpty(email, password)) {
                 userLogin(email, password)
             } else {
-                Toast.makeText(context, getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+                context?.toast(R.string.login_fragment_error_emplty, Toast.LENGTH_SHORT)
             }
 
         }
@@ -73,7 +74,7 @@ class LoginFragment : BaseFragment() {
             },
             {
                 Timber.e(it)
-                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+                context?.toast(it.localizedMessage, Toast.LENGTH_SHORT)
             }
         ).addTo(viewDisposable)
     }

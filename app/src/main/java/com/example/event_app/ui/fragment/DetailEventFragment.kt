@@ -28,6 +28,7 @@ import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
 import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.DetailEventViewModel
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
@@ -133,7 +134,26 @@ class DetailEventFragment : BaseFragment() {
             Timber.e(it)
         }).addTo(viewDisposable)
 
-        setViewActions()
+        viewModel.messageDispatcher.subscribe(
+            {
+                context?.toast(it, Toast.LENGTH_SHORT)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        tv_address_detail_fragment.setOnClickListener {
+            val query = tv_address_detail_fragment.text.toString()
+            val address = getString(R.string.map_query, query)
+            if (query.isNotEmpty()) {
+                startActivity(viewModel.createMapIntent(address))
+            }
+
+        }
+
+        chip_listParticipant.setOnClickListener { openPopUp() }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {
@@ -268,19 +288,6 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
-    private fun setViewActions() {
-        tv_address_detail_fragment.setOnClickListener {
-            val query = tv_address_detail_fragment.text.toString()
-            val address = getString(R.string.map_query, query)
-            if (query.isNotEmpty()) {
-                startActivity(viewModel.createMapIntent(address))
-            }
-
-        }
-
-        chip_listParticipant.setOnClickListener { openPopUp() }
-    }
-
     private fun actionDeleteEvent(eventId: String) {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.tv_delete_event_detail_event_fragment))
@@ -289,11 +296,7 @@ class DetailEventFragment : BaseFragment() {
             .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { _, _ ->
                 viewModel.deleteEvent(eventId).addOnCompleteListener {
                     fragmentManager?.popBackStack()
-                    Toast.makeText(
-                        activity!!,
-                        getString(R.string.tv_delete_event_toast_detail_event_fragment),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    context?.toast(R.string.tv_delete_event_toast_detail_event_fragment, Toast.LENGTH_SHORT)
                 }
             }.show()
     }
@@ -310,32 +313,18 @@ class DetailEventFragment : BaseFragment() {
                                 if (task2.isSuccessful) {
                                     fragmentManager?.popBackStack()
                                 } else {
-                                    Toast.makeText(
-                                        context,
-                                        getString(R.string.error_occured_leaving_event),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    context?.toast(R.string.error_occured_leaving_event, Toast.LENGTH_SHORT)
                                     Timber.e(task2.exception?.localizedMessage)
                                 }
                             }
 
                         } else {
-                            Toast.makeText(
-                                context,
-                                getString(R.string.error_occured_leaving_event),
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            context?.toast(R.string.error_occured_leaving_event, Toast.LENGTH_SHORT)
                             Timber.e(task.exception?.localizedMessage)
                         }
 
                     }
-                    Toast.makeText(
-                        activity!!,
-                        getString(R.string.exit_event_toast_detail_event_fragment),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                context?.toast(R.string.exit_event_toast_detail_event_fragment, Toast.LENGTH_SHORT)
             }.show()
     }
 
@@ -353,7 +342,7 @@ class DetailEventFragment : BaseFragment() {
 
     private fun removeUser(userId: String) {
         viewModel.removeParticipant(eventId!!, userId)
-        Toast.makeText(context, getString(R.string.ToastRemoveParticipant), Toast.LENGTH_LONG).show()
+        context?.toast(R.string.ToastRemoveParticipant, Toast.LENGTH_LONG)
     }
 
     private fun setNavigation(state: Boolean) {
@@ -419,12 +408,7 @@ class DetailEventFragment : BaseFragment() {
             val photoFile: File? = try {
                 viewModel.createImageFile(context!!)
             } catch (ex: IOException) {
-                Toast.makeText(
-                    context,
-                    getString(R.string.error_occured_downloading_photo),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                context?.toast(R.string.error_occured_downloading_photo, Toast.LENGTH_SHORT)
                 null
             }
             // Continue only if the File was successfully created

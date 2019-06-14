@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.example.event_app.R
 import com.example.event_app.model.Event
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.AddEventFragmentViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_edit_detail_event.*
@@ -170,8 +171,7 @@ class EditDetailEventFragment : BaseFragment() {
                 && place.isNotEmpty() && place != getString(R.string.chip_adresse)
             ) {
                 if (dateEnd!!.time <= dateStart!!.time) {
-                    Toast.makeText(context, getString(R.string.error_date_add_event_fragment), Toast.LENGTH_SHORT)
-                        .show()
+                    context?.toast(R.string.error_date_add_event_fragment, Toast.LENGTH_SHORT)
                 } else {
                     viewModel.addEventFragment(
                         event.idEvent,
@@ -187,8 +187,7 @@ class EditDetailEventFragment : BaseFragment() {
                     fragmentManager?.popBackStack()
                 }
             } else {
-                Toast.makeText(context, getString(R.string.error_empty_field_add_event_fragment), Toast.LENGTH_SHORT)
-                    .show()
+                context?.toast(R.string.error_empty_field_add_event_fragment, Toast.LENGTH_SHORT)
             }
         }
     }

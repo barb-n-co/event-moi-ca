@@ -6,6 +6,7 @@ import android.graphics.PixelFormat
 import android.os.Environment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.event_app.R
 import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
@@ -33,7 +34,7 @@ class DetailPhotoViewModel(
 
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val menuListener: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    val messageDispatcher: BehaviorSubject<String> = BehaviorSubject.create()
+    val messageDispatcher: BehaviorSubject<Int> = BehaviorSubject.create()
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
 
@@ -114,7 +115,7 @@ class DetailPhotoViewModel(
         ).addTo(disposeBag)
     }
 
-    fun reportComment(commentaireItem: CommentaireItem, message: String) {
+    fun reportComment(commentaireItem: CommentaireItem) {
         val commentReported = Commentaire(
             commentaireItem.commentId,
             commentaireItem.author,
@@ -126,7 +127,7 @@ class DetailPhotoViewModel(
         )
         eventsRepository.editCommentOfPhoto(commentReported).subscribe(
             {
-                messageDispatcher.onNext(message)
+                messageDispatcher.onNext(R.string.detail_photo_fragment_comment_reported)
                 fetchComments(commentaireItem.photoId)
             },
             {
@@ -174,19 +175,19 @@ class DetailPhotoViewModel(
         }
     }
 
-    fun downloadImageOnPhone(url: String, eventId: String, photoId: String, message: String, errorMessage: String) {
+    fun downloadImageOnPhone(url: String, eventId: String, photoId: String) {
         eventsRepository.downloadImageFile(url)
             .subscribe(
                 { byteArray ->
                     if (saveImage(byteArray, eventId, photoId).isNotEmpty()) {
-                        messageDispatcher.onNext(message)
+                        messageDispatcher.onNext(R.string.picture_downloaded_toast)
                     } else {
-                        messageDispatcher.onNext(errorMessage)
+                        messageDispatcher.onNext(R.string.error_on_download_toast)
                     }
                 },
                 { error ->
                     Timber.e(error)
-                    messageDispatcher.onNext(errorMessage)
+                    messageDispatcher.onNext(R.string.error_on_download_toast)
                 }
             ).addTo(disposeBag)
     }
@@ -220,14 +221,12 @@ class DetailPhotoViewModel(
         eventId: String,
         photoId: String,
         url: String,
-        isReported: Int,
-        message: String,
-        errorMessage: String
+        isReported: Int
     ) {
         eventsRepository.deletePhotoOrga(eventId, photoId).addOnCompleteListener {
             if (it.isSuccessful) {
                 /** delete from FireStore */
-                deleteRefFromFirestore(url, message, errorMessage)
+                deleteRefFromFirestore(url)
                 /** delete likes */
                 deleteLikesForPhoto(photoId)
                 /** delete comments */
@@ -261,16 +260,16 @@ class DetailPhotoViewModel(
         }
     }
 
-    private fun deleteRefFromFirestore(photoUrl: String, message: String, errorMessage: String) {
+    private fun deleteRefFromFirestore(photoUrl: String) {
         eventsRepository.deletePhotoFromFireStore(photoUrl)
             .subscribe(
                 {
-                    messageDispatcher.onNext(message)
+                    messageDispatcher.onNext(R.string.picture_deleted)
                     onBackPressedTrigger.onNext(true)
                 },
                 { error ->
                     Timber.e(error)
-                    messageDispatcher.onNext(errorMessage + error)
+                    messageDispatcher.onNext(R.string.unable_to_delete_picture)
                 }
             ).addTo(disposeBag)
     }
@@ -283,7 +282,7 @@ class DetailPhotoViewModel(
         return eventsRepository.getStorageReferenceForUrl(url)
     }
 
-    fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int, message: String, errorMessage: String) {
+    fun reportOrValidateImage(eventId: String, photo: Photo, delta: Int) {
         val reportValue = if (delta > 0) 1 else 0
 
         eventsRepository.getEventDetail(eventId)
@@ -292,13 +291,16 @@ class DetailPhotoViewModel(
                     reportPhoto(eventId, photo, reportValue)
                         .subscribe(
                             {
-                                messageDispatcher.onNext(message)
+                                messageDispatcher.onNext(
+                                    if (delta == -1) R.string.picture_authorized_by_admin
+                                    else R.string.picture_reported_to_owner
+                                )
                                 if (reportValue == 1) {
                                     sendReportMessageToEventOwner(it.idOrganizer, eventId)
                                 }
                             },
                             {
-                                messageDispatcher.onNext(errorMessage)
+                                messageDispatcher.onNext(R.string.problem_occured_during_download)
                                 Timber.e(it)
                             }
                         ).addTo(disposeBag)
@@ -313,7 +315,7 @@ class DetailPhotoViewModel(
                                     menuListener.onNext(true)
                                 },
                                 {
-                                    messageDispatcher.onNext(errorMessage)
+                                    messageDispatcher.onNext(R.string.problem_occured_during_download)
                                     Timber.e(it)
                                 }
                             )
@@ -322,7 +324,7 @@ class DetailPhotoViewModel(
                 },
                 {
                     Timber.e(it)
-                    messageDispatcher.onNext(errorMessage)
+                    messageDispatcher.onNext(R.string.problem_occured_during_download)
                 }
             ).addTo(disposeBag)
     }
@@ -348,18 +350,18 @@ class DetailPhotoViewModel(
     }
 
     fun addLikes(photoId: String) {
-        userRepository.currentUser.value?.id?.let {
+        userRepository.currentUser.value?.id?.let { userId ->
             if (isPhotoAlreadyLiked) {
-                eventsRepository.deleteLike(it, photoId)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
+                eventsRepository.deleteLike(userId, photoId)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
                             isPhotoAlreadyLiked = false
                         } else {
-                            Timber.e(it.exception)
+                            Timber.e(task.exception)
                         }
                     }
             } else {
-                eventsRepository.setNewLike(it, photoId)
+                eventsRepository.setNewLike(userId, photoId)
                     .subscribe(
                         {
                             isPhotoAlreadyLiked = true

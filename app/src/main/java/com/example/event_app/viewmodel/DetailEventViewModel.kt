@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.GenericTransitionOptions
@@ -48,6 +47,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
     val event: BehaviorSubject<EventItem> = BehaviorSubject.create()
     private var eventLoaded: Event? = null
     val loading: PublishSubject<Boolean> = PublishSubject.create()
+    val messageDispatcher: BehaviorSubject<Int> = BehaviorSubject.create()
     lateinit var currentPhotoPath: String
 
     init {
@@ -240,7 +240,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
             .subscribe(
                 { photoList ->
                     val number = mutableListOf<String>()
-                    photoList.forEach { photo ->
+                    photoList.forEachIndexed { index, photo ->
                         GlideApp.with(context)
                             .asBitmap()
                             .load(eventsRepository.getStorageReferenceForUrl(photo.url))
@@ -250,31 +250,28 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                 override fun onLoadFailed(errorDrawable: Drawable?) {
                                     super.onLoadFailed(errorDrawable)
                                     Timber.e("an error append $errorDrawable")
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.error_occured_downloading_photo), Toast.LENGTH_SHORT
-                                    ).show()
+                                    messageDispatcher.onNext(R.string.error_occured_downloading_photo)
                                 }
 
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     Timber.d("image downloading in progress")
-                                    val path = saveImage(resource, folderName, photo.id)
-                                    if (path.isNotEmpty()) {
-                                        number.add(path)
-                                    }
-                                    if (number.size == photoList.size) {
-                                        Toast.makeText(
-                                            context,
-                                            context.getString(R.string.download_complete),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                    if (isExternalStorageWritable()) {
+                                        val path = saveImage(resource, folderName, photo.id)
+                                        if (path.isNotEmpty()) {
+                                            number.add(path)
+                                        }
+                                        if (index == photoList.size -1 ) {
+                                            if (number.size == photoList.size) {
+                                                messageDispatcher.onNext(R.string.download_complete)
+                                            } else {
+                                                messageDispatcher.onNext(R.string.error_occured_downloading_photo)
+                                            }
+                                        }
+
                                     } else {
-                                        Toast.makeText(
-                                            context,
-                                            context.getString(R.string.error_occured_downloading_photo),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        messageDispatcher.onNext(R.string.no_sdCard_mounted)
                                     }
+
                                 }
 
                                 override fun onLoadCleared(placeholder: Drawable?) {
@@ -290,25 +287,41 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
 
     }
 
+    fun isExternalStorageWritable(): Boolean {
+        return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
+    }
+
     fun saveImage(finalBitmap: Bitmap, eventName: String, photoId: String): String {
 
         var imagePath = ""
-        val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/Event-Moi-Ca/${eventName.replace(" ", "_")}/")
-        photoFolder.mkdirs()
-        val outletFrame = "$photoId.jpg"
-        val file = File(photoFolder, outletFrame)
-        if (file.exists()) file.delete()
-        try {
-            val out = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
-            imagePath = file.absolutePath
-            out.flush()
-            out.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val albumName = "/Event-Moi-Ca/${eventName.replace(" ", "_")}/"
+        getPublicAlbumStorageDir(albumName)
+            ?.let {
+                val outletFrame = "$photoId.jpg"
+                val file = File(it, outletFrame)
+                if (file.exists()) file.delete()
+                try {
+                    val out = FileOutputStream(file)
+                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
+                    imagePath = file.absolutePath
+                    out.flush()
+                    out.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
         return imagePath
+    }
+
+    private fun getPublicAlbumStorageDir(albumName: String): File? {
+        // Get the directory for the user's public pictures directory.
+        val file = File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES), albumName)
+        if (!file?.mkdirs()) {
+            Timber.e("Directory not created")
+        }
+        return file
     }
 
     fun removeParticipant(idEvent: String, userId: String) {

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.event_app.R
 import com.example.event_app.ui.activity.MainActivity
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.LoginViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -44,7 +45,7 @@ class SignUpFragment : BaseFragment() {
             if (password == confirmPassword) {
                 userRegister(email, password, fullName)
             } else {
-                Toast.makeText(context, getString(R.string.passwords_does_not_match), Toast.LENGTH_SHORT).show()
+                context?.toast(R.string.passwords_does_not_match, Toast.LENGTH_SHORT)
             }
 
         }
@@ -66,7 +67,7 @@ class SignUpFragment : BaseFragment() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(context, getString(R.string.login_fragment_error_emplty), Toast.LENGTH_SHORT).show()
+                    context?.toast(R.string.login_fragment_error_emplty, Toast.LENGTH_SHORT)
                 }
             ).addTo(viewDisposable)
         } else {

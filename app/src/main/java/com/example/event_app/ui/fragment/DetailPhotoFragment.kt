@@ -4,6 +4,7 @@ package com.example.event_app.ui.fragment
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.hideKeyboard
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
@@ -95,7 +97,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
 
         viewModel.messageDispatcher.subscribe(
             {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                context?.toast(it, Toast.LENGTH_SHORT)
             },
             {
                 Timber.e(it)
@@ -232,11 +234,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                             }
                         ).addTo(viewDisposable)
                 } else {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.detail_photo_fragment_toast_commentaire_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    context?.toast(R.string.detail_photo_fragment_toast_commentaire_error, Toast.LENGTH_SHORT)
                 }
             }
 
@@ -258,7 +256,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                             }
                         }
                         CommentChoice.REPORT -> {
-                            viewModel.reportComment(comment, getString(R.string.detail_photo_fragment_comment_reported))
+                            viewModel.reportComment(comment)
                         }
                         CommentChoice.LIKE -> {
                             photoId?.let {
@@ -297,9 +295,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                     viewModel.reportOrValidateImage(
                         eventId,
                         photo,
-                        -1,
-                        getString(R.string.picture_authorized_by_admin),
-                        getString(R.string.problem_occured_during_download)
+                        -1
                     )
                     isValidatePhoto = false
                     activity?.invalidateOptionsMenu()
@@ -313,23 +309,17 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             photo?.let { photo ->
                 if (photo.isReported == 0) {
                     viewModel.reportOrValidateImage(
-                        eventId, photo, 1,
-                        getString(R.string.picture_reported_to_owner),
-                        getString(R.string.problem_occured_during_download)
+                        eventId, photo, 1
                     )
                 } else {
-                    Toast.makeText(context, getString(R.string.picture_already_reported), Toast.LENGTH_SHORT).show()
+                    context?.toast(R.string.picture_already_reported, Toast.LENGTH_SHORT)
                 }
             }
         }
     }
 
     private fun downloadImage() {
-        viewModel.downloadImageOnPhone(
-            photoURL, eventId!!, photoId!!,
-            getString(R.string.picture_downloaded_toast),
-            getString(R.string.error_on_download_toast)
-        )
+        viewModel.downloadImageOnPhone(photoURL, eventId!!, photoId!!)
     }
 
     private fun deleteImage() {
@@ -337,9 +327,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
             viewModel.photo.value?.let { photo ->
                 photoId?.let { id ->
                     viewModel.deleteImageOrga(
-                        eventId, id, photoURL, photo.isReported,
-                        getString(R.string.picture_deleted),
-                        getString(R.string.unable_to_delete_picture)
+                        eventId, id, photoURL, photo.isReported
                     )
                 }
             }
@@ -347,7 +335,14 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     }
 
     override fun deleteAction() {
-        deleteImage()
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle(getString(R.string.delete_photo_alert_title_detail_photo_fragment))
+            .setMessage(getString(R.string.delete_photo_alert_message_detail_photo_fragment))
+            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { _, _ -> }
+            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { _, _ ->
+                deleteImage()
+            }.show()
+
     }
 
     override fun authorizeAction() {

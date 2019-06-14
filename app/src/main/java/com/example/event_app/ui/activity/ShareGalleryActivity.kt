@@ -12,6 +12,7 @@ import com.example.event_app.R
 import com.example.event_app.adapter.ListEventAdapter
 import com.example.event_app.model.EventItem
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.ShareGalleryViewModel
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_share_gallery.*
@@ -46,11 +47,7 @@ class ShareGalleryActivity : BaseActivity() {
         } else if (uri != null && uri.toString().isNotEmpty()) {
             GlideApp.with(this).load(uri).transition(GenericTransitionOptions.with(R.anim.fade_in)).into(iv_imageToShare)
         } else {
-            Toast.makeText(
-                this,
-                getString(R.string.an_error_occured_please_try_later),
-                Toast.LENGTH_SHORT
-            ).show()
+            this.toast(R.string.an_error_occured_please_try_later, Toast.LENGTH_SHORT)
             finish()
         }
 
@@ -71,8 +68,7 @@ class ShareGalleryActivity : BaseActivity() {
             adapter.eventsClickPublisher.subscribe(
                 {
                     viewModel.putImageWithBitmap(galeryBitmap, it, true)
-                    Toast.makeText(this, getString(R.string.image_shared_success), Toast.LENGTH_LONG)
-                        .show()
+                    this.toast(R.string.image_shared_success, Toast.LENGTH_LONG)
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
@@ -80,8 +76,7 @@ class ShareGalleryActivity : BaseActivity() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(this, getString(R.string.an_error_occured_please_try_later), Toast.LENGTH_LONG)
-                        .show()
+                    this.toast(R.string.an_error_occured_please_try_later, Toast.LENGTH_LONG)
                     finish()
                 }
             ).addTo(viewDisposable)
@@ -93,8 +88,7 @@ class ShareGalleryActivity : BaseActivity() {
                 {
                     val bitmap = BitmapFactory.decodeFile(path)
                     viewModel.putImageWithBitmap(bitmap, it, true)
-                    Toast.makeText(this, getString(R.string.image_shared_success), Toast.LENGTH_LONG)
-                        .show()
+                    this.toast(R.string.image_shared_success, Toast.LENGTH_LONG)
                     val intent = Intent(this, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
@@ -102,8 +96,7 @@ class ShareGalleryActivity : BaseActivity() {
                 },
                 {
                     Timber.e(it)
-                    Toast.makeText(this, getString(R.string.an_error_occured_please_try_later), Toast.LENGTH_LONG)
-                        .show()
+                    this.toast(R.string.an_error_occured_please_try_later, Toast.LENGTH_LONG)
                     finish()
                 }
             ).addTo(viewDisposable)

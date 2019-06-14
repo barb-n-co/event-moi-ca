@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
+import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.LoginViewModel
 import kotlinx.android.synthetic.main.reset_password_alert_dialog.view.*
 
@@ -30,11 +31,7 @@ class ResetPasswordAlertDialog(
         builder.setPositiveButton(positiveButtonTitle) { _, _ ->
             val email = view.ed_reset_password.text.toString()
             if (email.isEmpty()) {
-                Toast.makeText(
-                    view.context,
-                    emptyAlert,
-                    Toast.LENGTH_LONG
-                ).show()
+                context.toast(emptyAlert, Toast.LENGTH_LONG)
             } else {
                 loginViewModel.resetPassword(email)
             }

@@ -17,3 +17,11 @@ fun View.hideKeyboard() {
 fun AddressMap.getLatLng(): LatLng? {
     return this.lat?.let { it1 -> this.lng?.let { it2 -> LatLng(it1, it2) } }
 }
+
+fun Context.toast(message: String, duration: Int) {
+    android.widget.Toast.makeText(this, message, duration).show()
+}
+
+fun Context.toast(stringRef: Int, duration: Int) {
+    android.widget.Toast.makeText(this, this.getString(stringRef), duration).show()
+}

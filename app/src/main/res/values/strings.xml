@@ -209,5 +209,7 @@
     <string name="error_occured_downloading_photo">Une erreur a eu lieu lors du téléchargement</string>
     <string name="download_complete">Téléchargement terminé</string>
     <string name="error_occured_leaving_event">Une erreur a eut lieu. Vous n\'avez pas quitté l\'événement</string>
+    <string name="delete_account_menu_profile">Supprimer mon compte</string>
+    <string name="disconnect_account_menu_profile">Déconnexion</string>
 
 </resources>

@@ -6,21 +6,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import com.bumptech.glide.GenericTransitionOptions
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.MediaStoreSignature
-import com.bumptech.glide.signature.ObjectKey
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
 import com.example.event_app.model.NumberEvent
-import com.example.event_app.model.User
 import com.example.event_app.model.UserProfile
 import com.example.event_app.ui.activity.LoginActivity
 import com.example.event_app.ui.activity.MainActivity
@@ -51,14 +44,15 @@ class ProfileFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        b_deconnexion_profile_fragment.setOnClickListener {
-            actionDeconnexion()
-        }
-
-        b_delete_account_profile_fragment.setOnClickListener {
-            actionDeleteAccount()
-        }
+        setHasOptionsMenu(true)
+        setVisibilityNavBar(true)
+//        b_deconnexion_profile_fragment.setOnClickListener {
+//            actionDeconnexion()
+//        }
+//
+//        b_delete_account_profile_fragment.setOnClickListener {
+//            actionDeleteAccount()
+//        }
 
         iv_photo_fragment_profile.setOnClickListener {
             openPopUp()
@@ -81,6 +75,25 @@ class ProfileFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_profile_fragment, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.disconnect_account -> {
+                actionDeconnexion()
+                true
+            }
+            R.id.delete_account -> {
+                actionDeleteAccount()
+                true
+            }
+            else -> false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, returnIntent: Intent?) {

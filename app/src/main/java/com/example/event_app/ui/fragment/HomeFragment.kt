@@ -6,14 +6,12 @@ import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListMyEventsAdapter
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.UserEventState
-import com.example.event_app.ui.activity.ScannerQrCodeActivity
 import com.example.event_app.viewmodel.HomeFragmentViewModel
 import io.reactivex.rxkotlin.addTo
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
@@ -137,23 +135,27 @@ class HomeFragment : BaseFragment(), HomeInterface {
     }
 
     private fun setFab() {
-        fabmenu_home.addOnMenuItemClickListener { _, _, itemId ->
-            when (itemId) {
-                R.id.action_scan_qrcode -> {
-                    requestCameraPermission()
-                }
-                R.id.action_add_event -> {
-                    val action =
-                        HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
-                    NavHostFragment.findNavController(this).navigate(action)
-                }
-            }
+        fabmenu_home.setOnClickListener {
+            val action = HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
+            NavHostFragment.findNavController(this).navigate(action)
         }
+//        fabmenu_home.addOnMenuItemClickListener { _, _, itemId ->
+//            when (itemId) {
+//                R.id.action_scan_qrcode -> {
+//                    requestCameraPermission()
+//                }
+//                R.id.action_add_event -> {
+//                    val action =
+//                        HomeFragmentDirections.actionMyHomeFragmentToAddEventFragment()
+//                    NavHostFragment.findNavController(this).navigate(action)
+//                }
+//            }
+//        }
     }
 
-    private fun openQrCode() {
-        ScannerQrCodeActivity.start(activity!!)
-    }
+//    private fun openQrCode() {
+//        ScannerQrCodeActivity.start(activity!!)
+//    }
 
     private fun setSearchView(menu: Menu) {
         val searchView = menu.findItem(R.id.sv_search_event).actionView as SearchView
@@ -194,11 +196,11 @@ class HomeFragment : BaseFragment(), HomeInterface {
         bottomSheetDialog.show(requireFragmentManager(), TAG)
     }
 
-    private fun requestCameraPermission() {
-        if (permissionManager.requestCameraPermission(activity!!)) {
-            openQrCode()
-        }
-    }
+//    private fun requestCameraPermission() {
+//        if (permissionManager.requestCameraPermission(activity!!)) {
+//            openQrCode()
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()

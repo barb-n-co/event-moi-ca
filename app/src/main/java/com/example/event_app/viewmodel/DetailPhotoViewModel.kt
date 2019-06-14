@@ -14,10 +14,10 @@ import com.example.event_app.repository.UserRepository
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -29,40 +29,36 @@ class DetailPhotoViewModel(
 ) : BaseViewModel() {
 
     val photo: BehaviorSubject<Photo> = BehaviorSubject.create()
-    val commentaires: PublishSubject<List<CommentaireItem>> = PublishSubject.create()
+    val authorPicture: BehaviorSubject<String> = BehaviorSubject.create()
+    val commentaires: BehaviorSubject<List<CommentaireItem>> = BehaviorSubject.create()
+
     val userLike: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val menuListener: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val messageDispatcher: BehaviorSubject<Int> = BehaviorSubject.create()
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
-    val photoTaker: BehaviorSubject<String> = BehaviorSubject.create()
 
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
 
-    fun getPhotoDetail(eventId: String?, photoId: String?) {
-        eventId?.let { eventIdNotNull ->
-            photoId?.let { photoId ->
-                getNumberOfLikes(photoId)
-                eventsRepository.getPhotoDetail(eventIdNotNull, photoId).subscribe(
-                    { picture ->
-                        Timber.d("vm: ${picture.url}")
-                        photo.onNext(picture)
-                    },
-                    { error ->
-                        Timber.e(error)
-                    }).addTo(disposeBag)
+    fun getPhotoDetail(eventId: String, photoId: String) {
+        getNumberOfLikes(photoId)
+        eventsRepository.getPhotoDetail(eventId, photoId).subscribe(
+            { picture ->
+                Timber.d("vm: ${picture.url}")
+                photo.onNext(picture)
+            },
+            { error ->
+                Timber.e(error)
+            }).addTo(disposeBag)
 
-                fetchComments(photoId)
-            }
-        }
     }
 
-    fun getPhotographProfilePicture(userId: String) {
+    fun getAuthorPicture(userId: String) {
         userRepository.getUserById(userId).subscribe(
             {
-                photoTaker.onNext(it.photoUrl)
+                authorPicture.onNext(it.photoUrl)
             },
             {
                 Timber.e(it)
@@ -74,8 +70,8 @@ class DetailPhotoViewModel(
         return userRepository.currentUser.value!!
     }
 
-    private fun fetchComments(photoId: String) {
-        Flowable.zip(
+    fun fetchComments(photoId: String) {
+        Observable.combineLatest(
             eventsRepository.fetchCommentaires(photoId),
             eventsRepository.getCommentLikes(photoId),
             BiFunction { t1: List<Commentaire>, t2: List<LikeComment> ->
@@ -106,10 +102,6 @@ class DetailPhotoViewModel(
                 Timber.e(it)
             }
         ).addTo(disposeBag)
-    }
-
-    fun getStorageReference(url: String): StorageReference {
-        return eventsRepository.getStorageReferenceForUrl(url)
     }
 
     fun addCommentLike(userId: String, commentId: String, photoId: String) {

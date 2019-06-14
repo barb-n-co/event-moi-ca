@@ -51,7 +51,7 @@ class LoginViewModel(
     fun setEmptyEvent() {
         userRepository.currentUser.value?.id?.let {
             val event = Event(isEmptyEvent = 1, idEvent = "empty")
-            eventRepository.addEvent(it, "", event)
+            eventRepository.addEvent("", event)
             notificationRepository.createNotificationChannel(it)
         }
 
@@ -96,10 +96,8 @@ class LoginViewModel(
             Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ALPHA_8)
         }
 
-        if (drawable is BitmapDrawable) {
-            if (drawable.bitmap != null) {
-                return drawable.bitmap
-            }
+        if (drawable is BitmapDrawable && drawable.bitmap != null) {
+            return drawable.bitmap
         }
 
         val canvas = Canvas(bitmap)
@@ -109,9 +107,11 @@ class LoginViewModel(
     }
 
 
-    class Factory(private val userRepository: UserRepository,
-                  private val eventRepository: EventRepository,
-                  private val notificationRepository: NotificationRepository) :
+    class Factory(
+        private val userRepository: UserRepository,
+        private val eventRepository: EventRepository,
+        private val notificationRepository: NotificationRepository
+    ) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")

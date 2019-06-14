@@ -5,6 +5,7 @@
     <string name="title_home">Événements</string>
     <string name="title_organizer">Organisateur</string>
     <string name="title_participation">Participation</string>
+    <string name="title_detail_photo">Photo</string>
     <string name="title_detail_event">Détail d\'un événement</string>
     <string name="title_profile">Profil</string>
     <string name="title_event_map">Carte</string>
@@ -44,6 +45,9 @@
     <string name="filter">Filtre</string>
     <string name="search">Search</string>
     <string name="tv_no_invitation_fragment">Vous n\'avez aucun événement à venir.</string>
+
+    <!-- Event Map Fragment -->
+    <string name="tv_hint_search_event_map">Rechercher un lieu...</string>
 
     <!-- Filter Dialog Fragment -->
     <string name="cb_filter_invitation_dialog_fragment">Invitation</string>

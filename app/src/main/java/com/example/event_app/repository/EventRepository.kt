@@ -141,14 +141,14 @@ object EventRepository {
     }
 
 
-    fun addEvent(idOrganizer: String, nameOrganizer: String, event: Event) {
+    fun addEvent(nameOrganizer: String, event: Event) {
         if (event.isEmptyEvent == 0) {
-            myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
+            myEventsRef.child(event.idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1))
         } else {
-            myEventsRef.child(idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1, 1))
+            myEventsRef.child(event.idOrganizer).child(event.idEvent).setValue(MyEvents(event.idEvent, 1, 1, 1))
         }
-        eventParticipantsRef.child(event.idEvent).child(idOrganizer)
-            .setValue(EventParticipant(idOrganizer, nameOrganizer, 1, 1))
+        eventParticipantsRef.child(event.idEvent).child(event.idOrganizer)
+            .setValue(EventParticipant(event.idOrganizer, nameOrganizer, 1, 1))
         RxFirebaseDatabase.setValue(eventsRef.child(event.idEvent), event).subscribe()
     }
 
@@ -181,9 +181,7 @@ object EventRepository {
 
     fun addInvitation(idEvent: String, idUser: String){
         myEventsRef.child(idUser).child(idEvent).addListenerForSingleValueEvent(object: ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
+            override fun onCancelled(p0: DatabaseError) = Unit
 
             override fun onDataChange(p0: DataSnapshot) {
                 if(!p0.exists()){
@@ -261,14 +259,14 @@ object EventRepository {
         return commentLikesRef.child(photoId).child(likeId).removeValue()
     }
 
-    fun getCommentLikes(photoId: String): Flowable<List<LikeComment>> {
+    fun getCommentLikes(photoId: String): Observable<List<LikeComment>> {
         return RxFirebaseDatabase.observeValueEvent(
             commentLikesRef.child(photoId), DataSnapshotMapper.listOf(LikeComment::class.java)
         ).map {
             it.filter {
                 it.userId.isNotEmpty()
             }
-        }
+        }.toObservable()
     }
 
     //endregion
@@ -346,10 +344,10 @@ object EventRepository {
 
     //region Comment
 
-    fun fetchCommentaires(photoId: String): Flowable<List<Commentaire>> {
+    fun fetchCommentaires(photoId: String): Observable<List<Commentaire>> {
         return RxFirebaseDatabase.observeValueEvent(
             commentsRef.child(photoId), DataSnapshotMapper.listOf(Commentaire::class.java)
-        )
+        ).toObservable()
     }
 
     fun addCommentToPhoto(comment: String, photoId: String, user: User): Completable {

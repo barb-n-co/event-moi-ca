@@ -24,7 +24,7 @@ class MapsViewModel(private val mapsRepository: MapsRepository) : BaseViewModel(
 
     var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
 
-    fun observeAddressResults() {
+    init {
         mapsRepository.mapAddress.subscribe(
             {
                 mapAddress.onNext(it)
@@ -33,7 +33,6 @@ class MapsViewModel(private val mapsRepository: MapsRepository) : BaseViewModel(
                 Timber.e(it)
             }
         ).addTo(disposeBag)
-
     }
 
     fun searchAddress(adr: String) {

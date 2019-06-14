@@ -75,6 +75,13 @@
         <argument
                 android:name="idOrganizer"
                 app:argType="string"/>
+        <action
+                android:id="@+id/action_detailPhotoFragment_to_photoFullscreenFragment"
+                app:destination="@id/photoFullscreenFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
 
     <fragment
@@ -105,6 +112,16 @@
             android:name="com.example.event_app.ui.fragment.EventMapFragment"
             android:label="EventMapFragment"
             tools:layout="@layout/fragment_event_map">
+    </fragment>
+
+    <fragment
+            android:id="@+id/photoFullscreenFragment"
+            android:name="com.example.event_app.ui.fragment.PhotoFullscreenFragment"
+            android:label="fragment_photo_fullscreen"
+            tools:layout="@layout/fragment_photo_fullscreen">
+        <argument
+                android:name="photoUrl"
+                app:argType="string"/>
     </fragment>
 
 </navigation>

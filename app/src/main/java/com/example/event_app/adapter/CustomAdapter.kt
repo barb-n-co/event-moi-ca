@@ -71,7 +71,6 @@ class CustomAdapter :
                 GlideApp.with(v.context)
                     .load(storageReference)
                     .override(300, 300)
-                    .transition(GenericTransitionOptions.with(R.anim.fade_in))
                     .centerCrop()
                     .into(v.image_item)
             }

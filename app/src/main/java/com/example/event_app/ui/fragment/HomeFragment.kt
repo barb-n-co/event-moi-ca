@@ -142,7 +142,10 @@ class HomeFragment : BaseFragment(), HomeInterface {
 //        fabmenu_home.addOnMenuItemClickListener { _, _, itemId ->
 //            when (itemId) {
 //                R.id.action_scan_qrcode -> {
-//                    requestCameraPermission()
+//                    permissionManager.executeFunctionWithPermissionNeeded(
+//                        activity as BaseActivity,
+//                        Manifest.permission.CAMERA,
+//                        { openQrCode() })
 //                }
 //                R.id.action_add_event -> {
 //                    val action =
@@ -196,11 +199,6 @@ class HomeFragment : BaseFragment(), HomeInterface {
         bottomSheetDialog.show(requireFragmentManager(), TAG)
     }
 
-//    private fun requestCameraPermission() {
-//        if (permissionManager.requestCameraPermission(activity!!)) {
-//            openQrCode()
-//        }
-//    }
 
     override fun onResume() {
         super.onResume()

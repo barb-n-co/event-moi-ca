@@ -14,6 +14,11 @@ abstract class BaseActivity : AppCompatActivity(), KodeinAware {
     override val kodein by closestKodein()
     protected val permissionManager: PermissionManager by instance()
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         viewDisposable.dispose()

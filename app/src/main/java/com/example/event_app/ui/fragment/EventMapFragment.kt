@@ -8,7 +8,6 @@ import androidx.appcompat.widget.SearchView
 import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomInfoWindowGoogleMap
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_LOCATION
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.spannable
 import com.example.event_app.model.url
@@ -148,6 +147,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         googleEventMap = googleMap
+
         requestPermissions()
 
         val customInfoWindow = CustomInfoWindowGoogleMap(context = requireContext())
@@ -191,21 +191,16 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-
     private fun requestPermissions() {
         val permissions = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        requestPermissions(permissions, PERMISSION_LOCATION)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_LOCATION && !grantResults.contains(-1)) {
-            viewModel.getCurrentLocation()
-        }
-
+        permissionManager.executeFunctionWithPermissionNeeded(
+            this,
+            permissions,
+            { viewModel.getCurrentLocation() }
+        )
     }
 
     override fun onResume() {

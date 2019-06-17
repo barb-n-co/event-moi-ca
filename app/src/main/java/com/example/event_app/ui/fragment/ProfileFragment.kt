@@ -12,8 +12,8 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.signature.MediaStoreSignature
 import com.example.event_app.R
-import com.example.event_app.manager.PermissionManager
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_CAMERA
+import com.example.event_app.manager.CAPTURE_PHOTO
+import com.example.event_app.manager.IMAGE_PICK_CODE
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.UserProfile
 import com.example.event_app.ui.activity.LoginActivity
@@ -94,7 +94,7 @@ class ProfileFragment : BaseFragment() {
 
         when (requestCode) {
 
-            PermissionManager.IMAGE_PICK_CODE -> {
+            IMAGE_PICK_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
@@ -105,7 +105,7 @@ class ProfileFragment : BaseFragment() {
                 }
             }
 
-            PermissionManager.CAPTURE_PHOTO -> {
+            CAPTURE_PHOTO -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val capturedBitmap = viewModel.getBitmapWithPath()
                     userId?.let { userId ->
@@ -120,17 +120,15 @@ class ProfileFragment : BaseFragment() {
     private fun openPopUp() {
         val popup = ProfilePhotoSourceDialogFragment(
             choiceSelectedListener = {
-                if (permissionManager.checkPermissions(arrayOf(Manifest.permission.CAMERA))) {
-                    if (it) {
-                        takePhotoByCamera()
-                    }
+                if (it) {
+                    permissionManager.executeFunctionWithPermissionNeeded(
+                        this,
+                        Manifest.permission.CAMERA,
+                        { takePhotoByCamera() }
+                    )
                 } else {
-                    requestPermissions()
+                    takePhotoByGallery()
                 }
-
-                if(!it) {
-                takePhotoByGallery()
-            }
             }
         )
         popup.show(requireFragmentManager(), "profilePhotoSource")
@@ -214,21 +212,6 @@ class ProfileFragment : BaseFragment() {
             resources.getString(R.string.tv_number_participate_profile_fragment, numberEvent.participate)
         tv_event_organizer_fragment_profile.text =
             resources.getString(R.string.tv_number_organizer_profile_fragment, numberEvent.organizer)
-    }
-
-    private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA
-        )
-        requestPermissions(permissions, PERMISSION_CAMERA)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_CAMERA && !grantResults.contains(-1)) {
-            takePhotoByCamera()
-        }
     }
 
     override fun onStart() {

@@ -6,13 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.event_app.R
-import com.example.event_app.manager.PermissionManager
+import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_CAMERA
 import com.example.event_app.repository.MyFirebaseMessagingService
 import com.example.event_app.ui.fragment.HomeInterface
 import com.example.event_app.viewmodel.MainActivityViewModel
@@ -84,7 +82,7 @@ class MainActivity : BaseActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PermissionManager.REQUEST_PERMISSION_CAMERA && grantResults[permissions.indexOf(Manifest.permission.CAMERA)] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == PERMISSION_CAMERA && grantResults[permissions.indexOf(Manifest.permission.CAMERA)] == PackageManager.PERMISSION_GRANTED) {
             openQrCode()
         }
     }

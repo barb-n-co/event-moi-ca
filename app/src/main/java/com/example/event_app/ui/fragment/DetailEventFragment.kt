@@ -21,7 +21,7 @@ import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
 import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
 import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_ALL
+import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_CAMERA
 import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
@@ -200,7 +200,7 @@ class DetailEventFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.action_download_all_pictures -> {
-                downloadPictures()
+                downloadIfAuthorized()
                 true
             }
             R.id.action_edit_event -> {
@@ -359,30 +359,18 @@ class DetailEventFragment : BaseFragment() {
             when (it.itemId) {
                 R.id.action_camera -> {
                     if (permissionManager.checkPermissions(
-                            arrayOf(
-                                Manifest.permission.CAMERA,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            )
+                            arrayOf(Manifest.permission.CAMERA)
                         )
                     ) {
                         takePhotoByCamera()
                     } else {
-                        requestPermissions()
+                        val permissions = arrayOf(Manifest.permission.CAMERA)
+                        requestPermissions(permissions, PERMISSION_CAMERA)
                     }
                     true
                 }
                 R.id.action_gallery -> {
-                    if (permissionManager.checkPermissions(
-                            arrayOf(
-                                Manifest.permission.CAMERA,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            )
-                        )
-                    ) {
-                        takePhotoByGallery()
-                    } else {
-                        requestPermissions()
-                    }
+                    takePhotoByGallery()
                     true
                 }
                 R.id.action_invitation -> {
@@ -452,6 +440,18 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
+    private fun downloadIfAuthorized() {
+        if (permissionManager.checkPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            )
+        ) {
+            downloadPictures()
+        } else {
+            val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            requestPermissions(permissions, PERMISSION_IMPORT)
+        }
+    }
+
     private fun downloadPictures() {
         eventId?.let { id ->
             val eventName = tv_event_name_detail_fragment.text.toString()
@@ -460,22 +460,15 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
-    private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        permissionManager.requestPermissions(permissions, PERMISSION_ALL, activity as MainActivity)
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ALL && grantResults.size == 2) {
+
+        if (requestCode == PERMISSION_CAMERA && !grantResults.contains(-1)) {
             takePhotoByCamera()
         }
 
-        if (requestCode == PERMISSION_IMPORT && grantResults.size == 2) {
-            takePhotoByGallery()
+        if (requestCode == PERMISSION_IMPORT && !grantResults.contains(-1)) {
+            downloadPictures()
         }
     }
 

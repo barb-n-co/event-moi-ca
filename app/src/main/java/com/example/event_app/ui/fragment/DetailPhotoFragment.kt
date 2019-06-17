@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
@@ -203,7 +202,11 @@ class DetailPhotoFragment : BaseFragment() {
                 true
             }
             R.id.action_download_photo -> {
-                downloadIfAuthorized()
+                permissionManager.executeFunctionWithPermissionNeeded(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    { downloadImage() }
+                )
                 true
             }
             R.id.action_validate_photo -> {
@@ -320,18 +323,6 @@ class DetailPhotoFragment : BaseFragment() {
         }
     }
 
-    private fun downloadIfAuthorized() {
-        if (permissionManager.checkPermissions(
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            )
-        ) {
-            downloadImage()
-        } else {
-            val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            requestPermissions(permissions, PERMISSION_IMPORT)
-        }
-    }
-
     private fun downloadImage() {
         photoURL?.let {
             viewModel.downloadImageOnPhone(it, eventId!!, photoId!!)
@@ -374,13 +365,5 @@ class DetailPhotoFragment : BaseFragment() {
         }
     }
 
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_IMPORT && !grantResults.contains(-1)) {
-            downloadImage()
-        }
-    }
 }
 

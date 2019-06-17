@@ -19,10 +19,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
-import com.example.event_app.manager.PermissionManager.Companion.CAPTURE_PHOTO
-import com.example.event_app.manager.PermissionManager.Companion.IMAGE_PICK_CODE
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_CAMERA
-import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
+import com.example.event_app.manager.CAPTURE_PHOTO
+import com.example.event_app.manager.IMAGE_PICK_CODE
 import com.example.event_app.model.*
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.ui.activity.GenerationQrCodeActivity
@@ -358,15 +356,11 @@ class DetailEventFragment : BaseFragment() {
         navigation_detail_event.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.action_camera -> {
-                    if (permissionManager.checkPermissions(
-                            arrayOf(Manifest.permission.CAMERA)
-                        )
-                    ) {
-                        takePhotoByCamera()
-                    } else {
-                        val permissions = arrayOf(Manifest.permission.CAMERA)
-                        requestPermissions(permissions, PERMISSION_CAMERA)
-                    }
+                    permissionManager.executeFunctionWithPermissionNeeded(
+                        this,
+                        Manifest.permission.CAMERA,
+                        {takePhotoByCamera()}
+                    )
                     true
                 }
                 R.id.action_gallery -> {
@@ -441,15 +435,12 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun downloadIfAuthorized() {
-        if (permissionManager.checkPermissions(
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            )
-        ) {
-            downloadPictures()
-        } else {
-            val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            requestPermissions(permissions, PERMISSION_IMPORT)
-        }
+
+        permissionManager.executeFunctionWithPermissionNeeded(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            { downloadPictures() }
+        )
     }
 
     private fun downloadPictures() {
@@ -457,18 +448,6 @@ class DetailEventFragment : BaseFragment() {
             val eventName = tv_event_name_detail_fragment.text.toString()
             viewModel.getAllPictures(id, weakContext.get()!!, eventName)
             true
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_CAMERA && !grantResults.contains(-1)) {
-            takePhotoByCamera()
-        }
-
-        if (requestCode == PERMISSION_IMPORT && !grantResults.contains(-1)) {
-            downloadPictures()
         }
     }
 

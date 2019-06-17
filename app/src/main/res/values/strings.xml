@@ -202,6 +202,10 @@
 
     </string-array>
 
+    <!-- Permissions -->
+    <string name="permission_default_explanation">L\'application a besoin de cette autorisation pour fonctionner correctement</string>
+    <string name="permission_default_always_deny">Si vous ne permettez pas à l\'application d\'accéder à cette autorisation elle risque de ne pas fonctionner correctement</string>
+
     <!-- Other -->
     <string name="chip_adresse">Veuillez choisir une adresse</string>
     <string name="map_query">geo:0,0?q=%s</string>

@@ -12,7 +12,6 @@ import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.event_app.R
-import com.example.event_app.manager.PermissionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -74,16 +73,10 @@ class GenerationQrCodeActivity : BaseActivity() {
             copyLink(link)
         }
         b_share_qrcode_event_qrcode_activity.setOnClickListener {
-            if (permissionManager.checkPermissions(
-                    arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                )
-            ) {
-                shareQrCode()
-            } else {
-                requestPermissions()
-            }
+            permissionManager.executeFunctionWithPermissionNeeded(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                { shareQrCode() })
         }
         b_share_link_event_qrcode_activity.setOnClickListener {
             shareLink(link)
@@ -122,13 +115,6 @@ class GenerationQrCodeActivity : BaseActivity() {
         intent.type = "image/png"
         intent.putExtra(Intent.EXTRA_STREAM, bitmapUri)
         startActivity(Intent.createChooser(intent, getString(R.string.title_share_intent_qrcode_activity)))
-    }
-
-    private fun requestPermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_IMPORT, this)
     }
 
     private fun encodeAsBitmap(str: String): Bitmap? {

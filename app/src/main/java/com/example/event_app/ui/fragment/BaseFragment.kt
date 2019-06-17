@@ -17,6 +17,11 @@ abstract class BaseFragment : Fragment(), KodeinAware {
     val viewDisposable: CompositeDisposable = CompositeDisposable()
     protected val permissionManager: PermissionManager by instance()
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionManager.onRequestPermissionsResult(this, requestCode, permissions, grantResults)
+    }
+
     override fun onDestroyView() {
         viewDisposable.clear()
         super.onDestroyView()

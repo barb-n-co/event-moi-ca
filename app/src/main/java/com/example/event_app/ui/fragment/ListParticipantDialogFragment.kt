@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.event_app.R
 import com.example.event_app.adapter.ListParticipantsAdapter
@@ -41,8 +40,16 @@ class ListParticipantDialogFragment(
         adapter.submitList(participants)
 
         adapter.userClickPublisher.subscribe({
-            deleteSelectedListener(it)
-            dismiss()
+            val dialog = AlertDialog.Builder(activity!!)
+            dialog.setTitle(getString(R.string.delete_participant_alert_title_dialog_fragment))
+                .setMessage(getString(R.string.delete_participant_alert_message_dialog_fragment))
+                .setNegativeButton(getString(R.string.tv_dialogCancel_detail_event_fragment)) { _, _ -> }
+                .setPositiveButton(getString(R.string.tv_dialogValidate_detail_event_fragment)) { _, _ ->
+                    deleteSelectedListener(it)
+                    dismiss()
+                }.show()
+
+
         }, {
             Timber.e(it)
         }).addTo(viewDisposable)

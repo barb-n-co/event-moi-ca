@@ -218,5 +218,7 @@
     <string name="delete_photo_alert_title_detail_photo_fragment">Supprimer la photo</string>
     <string name="delete_photo_alert_message_detail_photo_fragment">Etes-vous sûr de vouloir supprimer cette photo ?</string>
     <string name="no_sdCard_mounted">Erreur : Aucune carte SD ne semble être disponible</string>
+    <string name="delete_participant_alert_title_dialog_fragment">Suppression participant</string>
+    <string name="delete_participant_alert_message_dialog_fragment">Êtes-vous sûr de vouloir supprimer ce participant ?</string>
 
 </resources>

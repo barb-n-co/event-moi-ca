@@ -1,7 +1,6 @@
 package com.example.event_app.ui.fragment
 
 import android.Manifest
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
@@ -17,7 +16,6 @@ import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.getLatLng
 import com.example.event_app.viewmodel.EventMapViewModel
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,15 +23,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.bottom_sheet_detail_event_map.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
-import java.util.*
 
 
 class EventMapFragment : BaseFragment(), OnMapReadyCallback {
@@ -208,7 +202,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_LOCATION && grantResults.size == 2) {
+        if (requestCode == PERMISSION_LOCATION && !grantResults.contains(-1)) {
             viewModel.getCurrentLocation()
         }
 

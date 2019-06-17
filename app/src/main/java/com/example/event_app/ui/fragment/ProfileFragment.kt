@@ -13,10 +13,10 @@ import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.signature.MediaStoreSignature
 import com.example.event_app.R
 import com.example.event_app.manager.PermissionManager
+import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_CAMERA
 import com.example.event_app.model.NumberEvent
 import com.example.event_app.model.UserProfile
 import com.example.event_app.ui.activity.LoginActivity
-import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.viewmodel.ProfileViewModel
 import io.reactivex.rxkotlin.addTo
@@ -46,13 +46,6 @@ class ProfileFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setVisibilityNavBar(true)
-//        b_deconnexion_profile_fragment.setOnClickListener {
-//            actionDeconnexion()
-//        }
-//
-//        b_delete_account_profile_fragment.setOnClickListener {
-//            actionDeleteAccount()
-//        }
 
         iv_photo_fragment_profile.setOnClickListener {
             openPopUp()
@@ -85,7 +78,7 @@ class ProfileFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.disconnect_account -> {
-                actionDeconnexion()
+                actionDisconnection()
                 true
             }
             R.id.delete_account -> {
@@ -127,21 +120,17 @@ class ProfileFragment : BaseFragment() {
     private fun openPopUp() {
         val popup = ProfilePhotoSourceDialogFragment(
             choiceSelectedListener = {
-                if (permissionManager.checkPermissions(
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-                    )
-                ) {
+                if (permissionManager.checkPermissions(arrayOf(Manifest.permission.CAMERA))) {
                     if (it) {
                         takePhotoByCamera()
-                    } else {
-                        takePhotoByGallery()
                     }
                 } else {
                     requestPermissions()
                 }
+
+                if(!it) {
+                takePhotoByGallery()
+            }
             }
         )
         popup.show(requireFragmentManager(), "profilePhotoSource")
@@ -178,7 +167,7 @@ class ProfileFragment : BaseFragment() {
     }
 
 
-    private fun actionDeconnexion() {
+    private fun actionDisconnection() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(R.string.tv_title_dialog_logout)
             .setMessage(R.string.tv_message_dialog_logout)
@@ -229,10 +218,17 @@ class ProfileFragment : BaseFragment() {
 
     private fun requestPermissions() {
         val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.CAMERA
         )
-        permissionManager.requestPermissions(permissions, PermissionManager.PERMISSION_ALL, activity as MainActivity)
+        requestPermissions(permissions, PERMISSION_CAMERA)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSION_CAMERA && !grantResults.contains(-1)) {
+            takePhotoByCamera()
+        }
     }
 
     override fun onStart() {

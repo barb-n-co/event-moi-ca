@@ -1,17 +1,18 @@
 package com.example.event_app.ui.fragment
 
 
+import android.Manifest
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.event_app.R
 import com.example.event_app.adapter.CommentsAdapter
+import com.example.event_app.manager.PermissionManager.Companion.PERMISSION_IMPORT
 import com.example.event_app.model.CommentChoice
 import com.example.event_app.model.Photo
 import com.example.event_app.repository.UserRepository
@@ -22,12 +23,11 @@ import com.example.event_app.viewmodel.DetailPhotoViewModel
 import io.reactivex.rxkotlin.addTo
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_detail_photo.*
-import kotlinx.android.synthetic.main.fragment_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 
 
-class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
+class DetailPhotoFragment : BaseFragment() {
 
     private var eventId: String? = null
     private var photoId: String? = null
@@ -195,7 +195,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.action_report_photo -> {
-                reportAction()
+                reportImage()
                 true
             }
             R.id.action_delete_photo -> {
@@ -203,11 +203,11 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 true
             }
             R.id.action_download_photo -> {
-                downloadAction()
+                downloadIfAuthorized()
                 true
             }
             R.id.action_validate_photo -> {
-                authorizeAction()
+                authorizeImage()
                 true
             }
             else -> false
@@ -320,6 +320,18 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
     }
 
+    private fun downloadIfAuthorized() {
+        if (permissionManager.checkPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            )
+        ) {
+            downloadImage()
+        } else {
+            val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            requestPermissions(permissions, PERMISSION_IMPORT)
+        }
+    }
+
     private fun downloadImage() {
         photoURL?.let {
             viewModel.downloadImageOnPhone(it, eventId!!, photoId!!)
@@ -340,7 +352,7 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
     }
 
-    override fun deleteAction() {
+    private fun deleteAction() {
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle(getString(R.string.delete_photo_alert_title_detail_photo_fragment))
             .setMessage(getString(R.string.delete_photo_alert_message_detail_photo_fragment))
@@ -349,18 +361,6 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
                 deleteImage()
             }.show()
 
-    }
-
-    override fun authorizeAction() {
-        authorizeImage()
-    }
-
-    override fun downloadAction() {
-        downloadImage()
-    }
-
-    override fun reportAction() {
-        reportImage()
     }
 
     override fun onStart() {
@@ -374,11 +374,13 @@ class DetailPhotoFragment : BaseFragment(), DetailPhotoInterface {
         }
     }
 
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSION_IMPORT && !grantResults.contains(-1)) {
+            downloadImage()
+        }
+    }
 }
 
-interface DetailPhotoInterface {
-    fun deleteAction()
-    fun authorizeAction()
-    fun downloadAction()
-    fun reportAction()
-}

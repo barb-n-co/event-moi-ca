@@ -19,7 +19,7 @@ class PermissionManager(val context: Context) {
 
     var autoIncrementRequestCode = 0
         get() {
-            field = field + 1
+            field += 1
             return field
         }
 
@@ -80,18 +80,17 @@ class PermissionManager(val context: Context) {
             {
                 showRefusedPermissionDialog(
                     activity,
-                    refusedText,
-                    {
-                        executeFunctionWithPermissionNeeded(
-                            activity,
-                            permissions,
-                            onGranted,
-                            requestCode,
-                            refusedText,
-                            alwaysDenyText
-                        )
-                    }
-                )
+                    refusedText
+                ) {
+                    executeFunctionWithPermissionNeeded(
+                        activity,
+                        permissions,
+                        onGranted,
+                        requestCode,
+                        refusedText,
+                        alwaysDenyText
+                    )
+                }
             },
             {
                 showAlwaysDenyPermissionDialog(
@@ -118,18 +117,17 @@ class PermissionManager(val context: Context) {
             {
                 showRefusedPermissionDialog(
                     fragment,
-                    refusedText,
-                    {
-                        executeFunctionWithPermissionNeeded(
-                            fragment,
-                            permissions,
-                            onGranted,
-                            requestCode,
-                            refusedText,
-                            alwaysDenyText
-                        )
-                    }
-                )
+                    refusedText
+                ) {
+                    executeFunctionWithPermissionNeeded(
+                        fragment,
+                        permissions,
+                        onGranted,
+                        requestCode,
+                        refusedText,
+                        alwaysDenyText
+                    )
+                }
             },
             {
                 showAlwaysDenyPermissionDialog(
@@ -238,13 +236,10 @@ class PermissionManager(val context: Context) {
         onRefused: (() -> Unit)? = null,
         onAlwaysDeny: (() -> Unit)? = null
     ) {
-        requestPermissionsDataMap.put(
-            requestCode,
-            RequestPermissionData(
-                onGranted,
-                onRefused,
-                onAlwaysDeny
-            )
+        requestPermissionsDataMap[requestCode] = RequestPermissionData(
+            onGranted,
+            onRefused,
+            onAlwaysDeny
         )
         fragment.requestPermissions(permissions, requestCode)
     }
@@ -257,13 +252,10 @@ class PermissionManager(val context: Context) {
         onRefused: (() -> Unit)? = null,
         onAlwaysDeny: (() -> Unit)? = null
     ) {
-        requestPermissionsDataMap.put(
-            requestCode,
-            RequestPermissionData(
-                onGranted,
-                onRefused,
-                onAlwaysDeny
-            )
+        requestPermissionsDataMap[requestCode] = RequestPermissionData(
+            onGranted,
+            onRefused,
+            onAlwaysDeny
         )
         ActivityCompat.requestPermissions(activity, permissions, requestCode)
     }
@@ -274,7 +266,7 @@ class PermissionManager(val context: Context) {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        val permissionsData = requestPermissionsDataMap.get(requestCode)
+        val permissionsData = requestPermissionsDataMap[requestCode]
         requestPermissionsDataMap.remove(requestCode)
         if (permissionsData != null) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
@@ -296,7 +288,7 @@ class PermissionManager(val context: Context) {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        val permissionsData = requestPermissionsDataMap.get(requestCode)
+        val permissionsData = requestPermissionsDataMap[requestCode]
         requestPermissionsDataMap.remove(requestCode)
         if (permissionsData != null) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
@@ -330,11 +322,10 @@ class PermissionManager(val context: Context) {
     ) {
         AlertDialog.Builder(activity)
             .setMessage(explanation)
-            .setPositiveButton(android.R.string.yes,
-                { dialog, which ->
-                    onAcceptClick()
-                }
-            )
+            .setPositiveButton(android.R.string.yes
+            ) { _, _ ->
+                onAcceptClick()
+            }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
@@ -346,11 +337,10 @@ class PermissionManager(val context: Context) {
     ) {
         AlertDialog.Builder(fragment.context!!)
             .setMessage(explanation)
-            .setPositiveButton(android.R.string.yes,
-                { dialog, which ->
-                    onAcceptClick()
-                }
-            )
+            .setPositiveButton(android.R.string.yes
+            ) { _, _ ->
+                onAcceptClick()
+            }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
@@ -359,17 +349,16 @@ class PermissionManager(val context: Context) {
 
         AlertDialog.Builder(activity)
             .setMessage(explanation)
-            .setPositiveButton(android.R.string.yes,
-                { dialog, which ->
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            .setPositiveButton(android.R.string.yes
+            ) { _, _ ->
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 
-                    val uri = Uri.fromParts("package", context.getPackageName(), null)
-                    intent.setData(uri)
+                val uri = Uri.fromParts("package", context.packageName, null)
+                intent.data = uri
 
-                    activity.startActivity(intent)
-                }
-            )
+                activity.startActivity(intent)
+            }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
@@ -378,17 +367,16 @@ class PermissionManager(val context: Context) {
 
         AlertDialog.Builder(fragment.context!!)
             .setMessage(explanation)
-            .setPositiveButton(android.R.string.yes,
-                { dialog, which ->
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            .setPositiveButton(android.R.string.yes
+            ) { _, _ ->
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 
-                    val uri = Uri.fromParts("package", context.getPackageName(), null)
-                    intent.setData(uri)
+                val uri = Uri.fromParts("package", context.packageName, null)
+                intent.data = uri
 
-                    fragment.startActivity(intent)
-                }
-            )
+                fragment.startActivity(intent)
+            }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }

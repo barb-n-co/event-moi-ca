@@ -145,7 +145,9 @@ class DetailEventFragment : BaseFragment() {
             val query = tv_address_detail_fragment.text.toString()
             val address = getString(R.string.map_query, query)
             if (query.isNotEmpty()) {
-                startActivity(viewModel.createMapIntent(address))
+                viewModel.createMapIntent(address)?.let {
+                    startActivity(it)
+                }
             }
 
         }
@@ -171,9 +173,9 @@ class DetailEventFragment : BaseFragment() {
                 if (resultCode == Activity.RESULT_OK) {
                     returnIntent?.extras
                     val galleryUri = returnIntent?.data!!
-                    val galeryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
+                    val galleryBitmap = viewModel.getBitmapWithResolver(context!!.contentResolver, galleryUri)
                     eventId?.let { eventId ->
-                        viewModel.putImageWithBitmap(galeryBitmap, eventId, true)
+                        viewModel.putImageWithBitmap(galleryBitmap, eventId, true)
                     }
                 }
             }
@@ -198,7 +200,7 @@ class DetailEventFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId){
             R.id.action_download_all_pictures -> {
-                downloadIfAuthorized()
+                requireDownload()
                 true
             }
             R.id.action_edit_event -> {
@@ -408,8 +410,7 @@ class DetailEventFragment : BaseFragment() {
 
     private fun takePhotoByGallery() {
         viewModel.pickImageFromGallery().also { galleryIntent ->
-            val chooser =
-                Intent.createChooser(galleryIntent, "My Gallery")
+            val chooser = Intent.createChooser(galleryIntent, "My Gallery")
             startActivityForResult(chooser, IMAGE_PICK_CODE)
         }
     }
@@ -434,8 +435,7 @@ class DetailEventFragment : BaseFragment() {
         }
     }
 
-    private fun downloadIfAuthorized() {
-
+    private fun requireDownload() {
         permissionManager.executeFunctionWithPermissionNeeded(
             this,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,

@@ -3,6 +3,7 @@ package com.example.event_app.viewmodel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
@@ -18,12 +19,11 @@ import com.example.event_app.model.MyEvents
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.MapsRepository
 import com.example.event_app.repository.UserRepository
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.firebase.storage.StorageReference
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
@@ -38,12 +38,23 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
     val myEventList: BehaviorSubject<List<EventItem>> = BehaviorSubject.create()
     val currentLocation: PublishSubject<LatLng> = PublishSubject.create()
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var locationCallback: LocationCallback? = null
     var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
+    var sharedPreferences: BehaviorSubject<SharedPreferences> = BehaviorSubject.create()
 
     init {
         mapsRepository.mapAddress.subscribe(
             {
                 mapAddress.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+
+        sharedPreferences.subscribe(
+            {
+                mapsRepository.sharedPref = it
             },
             {
                 Timber.e(it)
@@ -99,10 +110,6 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
         }
     }
 
-    fun getStorageRef(url: String): StorageReference {
-        return eventRepository.getStorageReferenceForUrl(url)
-    }
-
     fun bitmapDescriptorFromVector(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
         val background = ContextCompat.getDrawable(context, R.drawable.ic_address_48dp)
         background!!.setBounds(0, 0, background.intrinsicWidth, background.intrinsicHeight)
@@ -117,14 +124,39 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
 
     @SuppressLint("MissingPermission")
     fun getCurrentLocation() {
+
         fusedLocationProviderClient.lastLocation.addOnCompleteListener {
             if (it.isSuccessful) {
-                val latitude = it.result?.latitude
-                val longitude = it.result?.longitude
-                if (latitude != null && longitude != null) {
-                    val latLong = LatLng(latitude, longitude)
-                    currentLocation.onNext(latLong)
+                mapsRepository.getLastLocation()?.let { latLng ->
+                    currentLocation.onNext(latLng)
                 }
+
+                if (locationCallback == null) {
+                    locationCallback = object : LocationCallback() {
+
+                        override fun onLocationAvailability(p0: LocationAvailability?) {
+                            super.onLocationAvailability(p0)
+                            Timber.d(p0.toString())
+                        }
+
+                        override fun onLocationResult(locationResult: LocationResult?) {
+                            locationResult ?: return
+                            for (location in locationResult.locations){
+                                val latitude = location.latitude
+                                val longitude = location.longitude
+                                mapsRepository.saveLastLocation(latitude, longitude)
+                                val latLng = LatLng(latitude, longitude)
+                                if (myEventList.value == null) {
+                                    currentLocation.onNext(latLng)
+                                }
+
+                            }
+                        }
+                    }
+                }
+                val locationRequest = LocationRequest.create()
+                locationRequest.priority = LocationRequest.PRIORITY_LOW_POWER
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
             } else {
                 Timber.e("fused error : ${it.exception}")
             }
@@ -151,8 +183,8 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
         return LatLngBounds(LatLng(latitudeMin, longitudeMin), LatLng(latitudeMax, longitudeMax))
     }
 
-    fun createMapIntent(address: String): Intent {
-        return Uri.parse(address).let { location ->
+    fun createMapIntent(address: String): Intent? {
+        return Uri.parse(address)?.let { location ->
             Intent(Intent.ACTION_VIEW, location)
         }
     }

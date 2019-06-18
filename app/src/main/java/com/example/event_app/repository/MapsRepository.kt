@@ -2,8 +2,10 @@ package com.example.event_app.repository
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.example.event_app.BuildConfig
 import com.example.event_app.model.AddressMap
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
@@ -14,16 +16,41 @@ import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import java.util.*
 
+private const val LATITUDE = "lastLatitude"
+private const val LONGITUDE = "lastLongitude"
 
 class MapsRepository(context: Context) {
     private var placesClient: PlacesClient
     var mapAddress: PublishSubject<AddressMap> = PublishSubject.create()
+    var sharedPref: SharedPreferences? = null
 
     init {
         Places.initialize(context, BuildConfig.GOOGLE_MAP_API_KEY)
         placesClient = Places.createClient(context)
     }
 
+    fun getLastLocation(): LatLng? {
+        var latLng: LatLng? = null
+        sharedPref?.let { sharedPreferences ->
+
+            val lastLatitudeSaved = sharedPreferences.getString(LATITUDE, "")
+            val lastLongitudeSaved = sharedPreferences.getString(LONGITUDE, "")
+
+            if (!lastLatitudeSaved.isNullOrEmpty() && !lastLongitudeSaved.isNullOrEmpty()) {
+                latLng = LatLng(lastLatitudeSaved.toDouble(), lastLongitudeSaved.toDouble())
+            }
+        }
+        return latLng
+    }
+
+    fun saveLastLocation(latitude: Double, longitude: Double) {
+        sharedPref?.let { sharedPreferences ->
+            val newLocationToSave = sharedPreferences.edit()
+            newLocationToSave.putString(LATITUDE, latitude.toString())
+            newLocationToSave.putString(LONGITUDE, longitude.toString())
+            newLocationToSave.apply()
+        }
+    }
 
     fun buildRequestWithAddress(address: String) {
         val token = AutocompleteSessionToken.newInstance()

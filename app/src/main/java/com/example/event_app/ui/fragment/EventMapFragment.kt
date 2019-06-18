@@ -1,6 +1,7 @@
 package com.example.event_app.ui.fragment
 
 import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
@@ -11,7 +12,6 @@ import com.example.event_app.adapter.CustomInfoWindowGoogleMap
 import com.example.event_app.model.EventItem
 import com.example.event_app.model.spannable
 import com.example.event_app.model.url
-import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.getLatLng
 import com.example.event_app.viewmodel.EventMapViewModel
@@ -43,8 +43,11 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(activity as MainActivity)
+        activity?.getSharedPreferences(context?.getString(R.string.preferences_key_file), Context.MODE_PRIVATE)?.let {
+            viewModel.sharedPreferences.onNext(it)
+        }
+
+        viewModel.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context!!)
 
         viewModel.currentLocation.subscribe(
             {
@@ -132,7 +135,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
                             googleEventMap.moveCamera(CameraUpdateFactory.newLatLngBounds(region, 0))
                         }
                     } else {
-                        viewModel.getCurrentLocation()
+                        requestCurrentLocation()
                     }
 
                 },
@@ -147,8 +150,8 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         googleEventMap = googleMap
-
-        requestPermissions()
+        requestCurrentLocation()
+        displayEventsOnMap()
 
         val customInfoWindow = CustomInfoWindowGoogleMap(context = requireContext())
         googleMap.setOnInfoWindowClickListener {
@@ -185,19 +188,21 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
             val query = tv_start_event_detail_bottom_sheet_map.text.toString()
             val address = getString(R.string.map_query, query)
             if (query.isNotEmpty()) {
-                startActivity(viewModel.createMapIntent(address))
+                viewModel.createMapIntent(address)?.let {
+                    startActivity(it)
+                }
             }
 
         }
     }
 
-    private fun requestPermissions() {
+    private fun requestCurrentLocation() {
         val permissions = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
         permissionManager.executeFunctionWithPermissionNeeded(
-            this,
+            this as BaseFragment,
             permissions,
             { viewModel.getCurrentLocation() }
         )
@@ -205,7 +210,7 @@ class EventMapFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        displayEventsOnMap()
+        //displayEventsOnMap()
     }
 
     override fun onStart() {

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.PixelFormat
 import android.os.Environment
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.event_app.R
@@ -38,9 +39,36 @@ class DetailPhotoViewModel(
     val onBackPressedTrigger: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val numberOfLikes: BehaviorSubject<String> = BehaviorSubject.create()
 
+    val pictures: BehaviorSubject<List<String>> = BehaviorSubject.create()
+
     private val folderName = "Event-Moi-Ca"
     var isPhotoAlreadyLiked: Boolean = false
 
+    init {
+        userLike.subscribe(
+            {
+                isPhotoAlreadyLiked = it
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
+
+    fun getPicturesEvent(idEvent: String) {
+        eventsRepository.getAllPicturesStream(idEvent).map {
+            it.map {
+                it.id
+            }
+        }.subscribe(
+            {
+                pictures.onNext(it)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(disposeBag)
+    }
 
     fun getPhotoDetail(eventId: String, photoId: String) {
         getNumberOfLikes(photoId)
@@ -269,6 +297,7 @@ class DetailPhotoViewModel(
                 },
                 { error ->
                     Timber.e(error)
+                    Log.e("Testtt", error.localizedMessage)
                     messageDispatcher.onNext(R.string.unable_to_delete_picture)
                 }
             ).addTo(disposeBag)
@@ -337,9 +366,7 @@ class DetailPhotoViewModel(
         eventsRepository.getLikesFromPhoto(photoId).subscribe(
             {
                 it.find { item -> item.userId == userRepository.currentUser.value?.id }?.let {
-                    isPhotoAlreadyLiked = true
                     userLike.onNext(true)
-                    isPhotoAlreadyLiked = true
                 } ?: userLike.onNext(false)
                 numberOfLikes.onNext(it.size.toString())
             },
@@ -355,7 +382,7 @@ class DetailPhotoViewModel(
                 eventsRepository.deleteLike(userId, photoId)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            isPhotoAlreadyLiked = false
+                            getNumberOfLikes(photoId)
                         } else {
                             Timber.e(task.exception)
                         }
@@ -364,7 +391,7 @@ class DetailPhotoViewModel(
                 eventsRepository.setNewLike(userId, photoId)
                     .subscribe(
                         {
-                            isPhotoAlreadyLiked = true
+                            getNumberOfLikes(photoId)
                         },
                         {
                             Timber.e(it)

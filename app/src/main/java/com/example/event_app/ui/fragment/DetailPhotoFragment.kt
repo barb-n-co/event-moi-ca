@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,16 +32,22 @@ class DetailPhotoFragment : BaseFragment() {
     private var eventId: String? = null
     private var photoId: String? = null
     private var idOrganizer: String? = null
-    private var photoAuthorId: String? = null
     private var photoURL: String? = null
     private var adapter: CommentsAdapter? = null
     private var photo: Photo? = null
     private val viewModel: DetailPhotoViewModel by instance(arg = this)
 
-    private var isValidatePhoto: Boolean? = null
-
     companion object {
-        fun newInstance(): DetailPhotoFragment = DetailPhotoFragment()
+        fun newInstance(idPhoto: String, idEvent: String, idOrganizer: String): DetailPhotoFragment {
+                val bundle = bundleOf(
+                    "idPhoto" to idPhoto,
+                    "idEvent" to idEvent,
+                    "idOrganizer" to idOrganizer
+                )
+                val fragment = DetailPhotoFragment()
+                fragment.arguments = bundle
+                return fragment
+        }
     }
 
 
@@ -48,20 +55,18 @@ class DetailPhotoFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        eventId = arguments?.let {
-            DetailPhotoFragmentArgs.fromBundle(it).eventId
-        }
-        photoId = arguments?.let {
-            DetailPhotoFragmentArgs.fromBundle(it).photoId
-        }
-        idOrganizer = arguments?.let {
-            DetailPhotoFragmentArgs.fromBundle(it).idOrganizer
-        }
         return inflater.inflate(R.layout.fragment_detail_photo, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        eventId = arguments?.getString("idEvent")
+
+        photoId = arguments?.getString("idPhoto")
+
+        idOrganizer = arguments?.getString("idOrganizer")
+
         setHasOptionsMenu(true)
         initAdapter(view)
         setActions()
@@ -129,9 +134,6 @@ class DetailPhotoFragment : BaseFragment() {
             { photo ->
                 this.photo = photo
                 photoURL = photo.url
-                photoAuthorId = photo.auteurId
-
-                tv_like.text = photo.like.toString()
 
                 tv_auteur.text = photo.authorName
                 setMenu()
@@ -169,54 +171,6 @@ class DetailPhotoFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_detail_photo_fragment, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        UserRepository.currentUser.value?.id?.let {userId ->
-            if (userId == idOrganizer || userId == photoAuthorId) {
-                menu.findItem(R.id.action_delete_photo).isVisible = true
-                if(userId != photoAuthorId){
-                    menu.findItem(R.id.action_report_photo).isVisible = true
-                }
-            }
-            photo?.let {
-                if (userId == idOrganizer && it.isReported == 1) {
-                    menu.findItem(R.id.action_validate_photo).isVisible = true
-                }
-            }
-        }
-        super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId){
-            R.id.action_report_photo -> {
-                reportImage()
-                true
-            }
-            R.id.action_delete_photo -> {
-                deleteAction()
-                true
-            }
-            R.id.action_download_photo -> {
-                permissionManager.executeFunctionWithPermissionNeeded(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    { downloadImage() }
-                )
-                true
-            }
-            R.id.action_validate_photo -> {
-                authorizeImage()
-                true
-            }
-            else -> false
-        }
-    }
-
     private fun setActions() {
         btn_validate_comment.setOnClickListener {
             photoId?.let { photoId ->
@@ -240,8 +194,8 @@ class DetailPhotoFragment : BaseFragment() {
 
         iv_photo.setOnClickListener {
             photoURL?.let {
-                val action = DetailPhotoFragmentDirections.actionDetailPhotoFragmentToPhotoFullscreenFragment(it)
-                NavHostFragment.findNavController(this).navigate(action)
+                //val action = DetailPhotoFragmentDirections.actionDetailPhotoFragmentToPhotoFullscreenFragment(it)
+                //NavHostFragment.findNavController(this).navigate(action)
             }
         }
     }
@@ -293,69 +247,8 @@ class DetailPhotoFragment : BaseFragment() {
         activity?.invalidateOptionsMenu()
     }
 
-    private fun authorizeImage() {
-        eventId?.let { eventId ->
-            photo?.let { photo ->
-                if (photo.isReported == 1) {
-                    viewModel.reportOrValidateImage(
-                        eventId,
-                        photo,
-                        -1
-                    )
-                    isValidatePhoto = false
-                    activity?.invalidateOptionsMenu()
-                }
-            }
-        }
-    }
-
-    private fun reportImage() {
-        eventId?.let { eventId ->
-            photo?.let { photo ->
-                if (photo.isReported == 0) {
-                    viewModel.reportOrValidateImage(
-                        eventId, photo, 1
-                    )
-                } else {
-                    context?.toast(R.string.picture_already_reported, Toast.LENGTH_SHORT)
-                }
-            }
-        }
-    }
-
-    private fun downloadImage() {
-        photoURL?.let {
-            viewModel.downloadImageOnPhone(it, eventId!!, photoId!!)
-        }
-    }
-
-    private fun deleteImage() {
-        eventId?.let { eventId ->
-            viewModel.photo.value?.let { photo ->
-                photoId?.let { id ->
-                    photoURL?.let {photoURL ->
-                        viewModel.deleteImageOrga(
-                            eventId, id, photoURL, photo.isReported
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun deleteAction() {
-        val dialog = AlertDialog.Builder(activity!!)
-        dialog.setTitle(getString(R.string.delete_photo_alert_title_detail_photo_fragment))
-            .setMessage(getString(R.string.delete_photo_alert_message_detail_photo_fragment))
-            .setNegativeButton(getString(R.string.tv_delete_event_cancel_detail_event_fragment)) { _, _ -> }
-            .setPositiveButton(getString(R.string.tv_delete_event_valider_detail_event_fragment)) { _, _ ->
-                deleteImage()
-            }.show()
-
-    }
-
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         setTitleToolbar(getString(R.string.title_detail_photo))
         photoId?.let {photoId ->
             viewModel.fetchComments(photoId)

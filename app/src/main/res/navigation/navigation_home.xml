@@ -45,8 +45,8 @@
                 android:name="eventId"
                 app:argType="string"/>
         <action
-                android:id="@+id/action_detail_event_fragment_to_detailPhotoFragment"
-                app:destination="@id/detailPhotoFragment"
+                android:id="@+id/action_detail_event_fragment_to_photoSliderFragment"
+                app:destination="@id/photoSliderFragment"
                 app:enterAnim="@anim/fade_in"
                 app:popExitAnim="@anim/fade_out"
                 app:exitAnim="@anim/fade_out"
@@ -62,10 +62,10 @@
     </fragment>
 
     <fragment
-            android:id="@+id/detailPhotoFragment"
-            android:name="com.example.event_app.ui.fragment.DetailPhotoFragment"
-            android:label="fragment_detail_photo"
-            tools:layout="@layout/fragment_detail_photo">
+            android:id="@+id/photoSliderFragment"
+            android:name="com.example.event_app.ui.fragment.PhotoSliderFragment"
+            android:label="fragment_photo_slider"
+            tools:layout="@layout/fragment_photo_slider">
         <argument
                 android:name="eventId"
                 app:argType="string"/>
@@ -75,13 +75,6 @@
         <argument
                 android:name="idOrganizer"
                 app:argType="string"/>
-        <action
-                android:id="@+id/action_detailPhotoFragment_to_photoFullscreenFragment"
-                app:destination="@id/photoFullscreenFragment"
-                app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
 
     <fragment

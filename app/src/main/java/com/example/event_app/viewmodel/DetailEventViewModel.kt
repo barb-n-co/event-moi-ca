@@ -21,7 +21,6 @@ import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.storage.StorageReference
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -399,8 +398,8 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         ).addTo(disposeBag)
     }
 
-    fun createMapIntent(address: String): Intent {
-        return Uri.parse(address).let { location ->
+    fun createMapIntent(address: String): Intent? {
+        return Uri.parse(address)?.let { location ->
             Intent(Intent.ACTION_VIEW, location)
         }
     }

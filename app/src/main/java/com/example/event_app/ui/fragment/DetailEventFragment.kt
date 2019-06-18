@@ -88,7 +88,7 @@ class DetailEventFragment : BaseFragment() {
 
             adapter.photosClickPublisher.subscribe(
                 { photoId ->
-                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToDetailPhotoFragment(
+                    val action = DetailEventFragmentDirections.actionDetailEventFragmentToPhotoSliderFragment(
                         it,
                         photoId,
                         idOrganizer

@@ -44,7 +44,6 @@ class ProfileFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
         setVisibilityNavBar(true)
 
         iv_photo_fragment_profile.setOnClickListener {
@@ -151,7 +150,7 @@ class ProfileFragment : BaseFragment() {
                     it
                 )
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, PermissionManager.CAPTURE_PHOTO)
+                startActivityForResult(takePictureIntent, CAPTURE_PHOTO)
             }
         }
     }
@@ -160,7 +159,7 @@ class ProfileFragment : BaseFragment() {
         viewModel.pickImageFromGallery().also { galleryIntent ->
             val chooser =
                 Intent.createChooser(galleryIntent, "My Gallery")
-            startActivityForResult(chooser, PermissionManager.IMAGE_PICK_CODE)
+            startActivityForResult(chooser, IMAGE_PICK_CODE)
         }
     }
 

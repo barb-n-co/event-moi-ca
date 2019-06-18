@@ -44,6 +44,9 @@ class CommentsAdapter(
     inner class CommentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(comment: CommentaireItem) {
+
+            val scale = itemView.resources.displayMetrics.density
+
             if (comment.authorId.equals(idUser)) {
                 itemView.iv_user_comment_item.visibility = GONE
                 itemView.tv_name_comment_item.visibility = GONE
@@ -59,9 +62,12 @@ class CommentsAdapter(
                     itemView.tv_message_user_comment_item.visibility = VISIBLE
                     editCommentListener(makeEditedCommentFrom(comment))
                 }
-                itemView.chip_like_user_comment_item.text = comment.likes.size.toString()
-                itemView.chip_like_other_comment_item.visibility = INVISIBLE
-                itemView.chip_like_user_comment_item.visibility = if (comment.likes.size > 0) VISIBLE else GONE
+                itemView.tv_like_user_comment_item.text = comment.likes.size.toString()
+                itemView.cv_like_other_comment_item.visibility = GONE
+                itemView.cv_like_comment_item.visibility = if (comment.likes.size > 0) VISIBLE else GONE
+                if(comment.likes.size > 0){
+                    itemView.card_view_user_comment_item.setPadding(0,0,0, (4*scale+0.5).toInt())
+                }
 
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_user_comment_item.visibility = if (comment.reported == 0) GONE else VISIBLE
@@ -76,10 +82,12 @@ class CommentsAdapter(
                 itemView.tv_message_other_user_comment_item.text = URLDecoder.decode(comment.comment, "utf-8")
                 itemView.tv_date_other_user_comment_item.text = comment.date
                 itemView.tv_name_comment_item.text = comment.author
-                itemView.chip_like_other_comment_item.text = comment.likes.size.toString()
-                itemView.chip_like_user_comment_item.visibility = GONE
-                if (comment.likes.size > 0) itemView.chip_like_other_comment_item.visibility =
-                    if (comment.likes.size > 0) VISIBLE else INVISIBLE
+                itemView.tv_like_other_user_comment_item.text = comment.likes.size.toString()
+                itemView.cv_like_comment_item.visibility = GONE
+                itemView.cv_like_other_comment_item.visibility = if (comment.likes.size > 0) VISIBLE else GONE
+                if(comment.likes.size > 0){
+                    itemView.card_view_other_user_comment_item.setPadding(0,0,0, (4*scale+0.5).toInt())
+                }
                 if (idOrganizer.equals(idUser)) {
                     itemView.iv_reported_other_user_comment_item.visibility =
                         if (comment.reported == 0) GONE else VISIBLE

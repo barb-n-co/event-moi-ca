@@ -16,7 +16,6 @@
             android:icon="@drawable/ic_report_problem"
             android:menuCategory="alternative"
             android:title="@string/detail_photo_fragment_fab_signaler"
-            android:visible="false"
             app:showAsAction="never"/>
 
     <item

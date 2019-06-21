@@ -14,7 +14,6 @@ import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
@@ -242,6 +241,7 @@ class DetailPhotoViewModel(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        Timber.e("FOLDER IMAGEPATH:  $imagePath")
         return imagePath
     }
 
@@ -379,7 +379,7 @@ class DetailPhotoViewModel(
     fun addLikes(photoId: String) {
         userRepository.currentUser.value?.id?.let { userId ->
             if (isPhotoAlreadyLiked) {
-                eventsRepository.deleteLike(userId, photoId)
+                return@let eventsRepository.deleteLike(userId, photoId)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             getNumberOfLikes(photoId)
@@ -388,7 +388,7 @@ class DetailPhotoViewModel(
                         }
                     }
             } else {
-                eventsRepository.setNewLike(userId, photoId)
+                return@let eventsRepository.setNewLike(userId, photoId)
                     .subscribe(
                         {
                             getNumberOfLikes(photoId)

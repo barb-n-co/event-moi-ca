@@ -309,15 +309,16 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     e.printStackTrace()
                 }
             }
-
+        Timber.e("FOLDER BASE : $imagePath")
         return imagePath
     }
+
 
     private fun getPublicAlbumStorageDir(albumName: String): File? {
         // Get the directory for the user's public pictures directory.
         val file = File(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_PICTURES), albumName)
-        if (!file?.mkdirs()) {
+        if (!file.mkdirs()) {
             Timber.e("Directory not created")
         }
         return file

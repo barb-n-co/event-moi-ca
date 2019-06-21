@@ -132,4 +132,8 @@ dependencies {
 
     //Zoom ImageView
     implementation "com.github.chrisbanes:PhotoView:$versions.photoview"
+
+    //FileChooser
+    implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
+    implementation 'com.github.angads25:filepicker:1.1.1'
 }

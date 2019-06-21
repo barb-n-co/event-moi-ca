@@ -1,17 +1,23 @@
 package com.example.event_app.ui.fragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.*
 import android.view.View.*
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -28,15 +34,20 @@ import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.DetailEventViewModel
+import com.obsez.android.lib.filechooser.ChooserDialog
+import com.obsez.android.lib.filechooser.tool.RootFile
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import kotlinx.android.synthetic.main.file_chooser_item.view.*
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class DetailEventFragment : BaseFragment() {
@@ -177,6 +188,11 @@ class DetailEventFragment : BaseFragment() {
                     eventId?.let { eventId ->
                         viewModel.putImageWithBitmap(galleryBitmap, eventId, true)
                     }
+                }
+            }
+            42 -> {
+                returnIntent?.data?.also {
+                    Timber.tag("FOLDER").d("Uri: $it")
                 }
             }
         }
@@ -443,13 +459,125 @@ class DetailEventFragment : BaseFragment() {
         )
     }
 
+    fun performFileSearch() {
+
+
+        val chooseFile =  Intent(Intent.ACTION_OPEN_DOCUMENT)
+        chooseFile.type = "vnd.android.document/directory"
+        chooseFile.addCategory(Intent.CATEGORY_APP_BROWSER)
+        val intent = Intent.createChooser(chooseFile, "Choose a file")
+            startActivityForResult(chooseFile, 42)
+
+//        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
+//        // browser.
+//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+//            // Filter to only show results that can be "opened", such as a
+//            // file (as opposed to a list of contacts or timezones)
+//            addCategory(Intent.CATEGORY_OPENABLE)
+//
+//            // Filter to show only images, using the image MIME data type.
+//            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+//            // To search for all documents available via installed storage providers,
+//            // it would be "*/*".
+//            type = "vnd.android.cursor.dir/*"
+//        }
+//
+//        startActivityForResult(intent, 42)
+    }
+
     private fun downloadPictures() {
+        //performFileSearch()
+        @SuppressLint("SimpleDateFormat")
+        var format = SimpleDateFormat("yyyy")
+        val colorFilter = PorterDuffColorFilter(0x6033b5e5, PorterDuff.Mode.MULTIPLY)
+        var folderIcon = ContextCompat.getDrawable(context!!,
+            com.obsez.android.lib.filechooser.R.drawable.ic_folder)
+        var fileIcon = ContextCompat.getDrawable(context!!,
+            com.obsez.android.lib.filechooser.R.drawable.ic_file)
+        val filter = PorterDuffColorFilter(0x600000aa,
+                PorterDuff.Mode.SRC_ATOP)
+        folderIcon?.mutate()?.colorFilter = filter
+        fileIcon?.mutate()?.colorFilter = filter
+
+        ChooserDialog(activity, R.style.FileChooserStyle_Dark)
+            .withFilter(true, false)
+            .withStartFile(Environment.getExternalStorageDirectory().toString())
+            .withStringResources("Choisissez un dossier", "OK", "Annuler")
+            .withOptionStringResources("Nouveau", "Supprimer", "Annuler", "OK")
+            .withOptionIcons(R.drawable.ic_more_menu, R.drawable.ic_create_new_folder, R.drawable.ic_delete)
+            .withAdapterSetter { adapter ->
+                adapter.overrideGetView { file, isSelected, isFocused, convertView, parent, inflater ->
+//                    val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup
+//                    Timber.tag("FOLDER").d("name = ${file.name} / date = ${file.lastModified()} / size = ${file.totalSpace}")
+//                    view.text.text = file.name
+//                    view.txt_date.text = file.lastModified().toString()
+//                    view.txt_size.text = file.totalSpace.toString()
+//                    view.setBackgroundColor(Color.RED)
+//                    view
+                    val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup
+
+                    val tvName = view.file_name
+                    val tvPath = view.file_path
+                    val tvDate = view.file_date
+
+                    tvName.setTextColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+                    tvPath.setTextColor(ContextCompat.getColor(context!!, R.color.grey))
+                    tvDate.setTextColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+
+                    tvDate.visibility = VISIBLE
+                    tvName.text = file.name
+                        val icon: Drawable?
+                        if (file.isDirectory) {
+                            icon = folderIcon?.constantState?.newDrawable()
+                            if (file.lastModified() != 0L) {
+                                tvDate.text = format.format(Date(file.lastModified()))
+                            } else {
+                                tvDate.visibility = GONE
+                            }
+                        } else {
+                            icon = fileIcon?.constantState?.newDrawable()
+                            tvDate.text = format.format( Date(file.lastModified()))
+                        }
+                        if (file.isHidden) {
+                            tvName.text = "HIDDEN"
+                        }
+                        tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null)
+
+                        if (file !is RootFile) {
+                            tvPath.text = file.path
+                        } else {
+                            tvPath.text = ""
+                        }
+
+                        val root = view.findViewById<View>(R.id.root)
+                        if (root?.background == null) {
+                            root?.setBackgroundResource(R.color.colorPrimary)
+                        }
+                        if (!isSelected) {
+                            root?.background?.clearColorFilter()
+                        } else {
+                            root?.background?.colorFilter = colorFilter
+                        }
+
+                    view
+                }
+            }
+            .withChosenListener { path, pathFile ->
+                Timber.e("FOLDER: $path // PATHFILE: $pathFile")
+            }
+            .enableOptions(true)
+            .titleFollowsDir(true)
+            .withIcon(R.drawable.ic_folder_title)
+            .build()
+            .show()
+
         eventId?.let { id ->
             val eventName = tv_event_name_detail_fragment.text.toString()
             viewModel.getAllPictures(id, weakContext.get()!!, eventName)
             true
         }
     }
+
 
     override fun onResume() {
         super.onResume()

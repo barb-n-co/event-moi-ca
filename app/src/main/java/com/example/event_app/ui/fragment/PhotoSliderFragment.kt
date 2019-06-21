@@ -3,7 +3,6 @@ package com.example.event_app.ui.fragment
 import android.Manifest
 import android.os.Bundle
 import android.view.*
-import android.view.animation.Animation
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
@@ -168,6 +167,18 @@ class PhotoSliderFragment : BaseFragment() {
     }
 
     private fun downloadImage() {
+
+//        ChooserDialog(activity)
+//            .withFilter(true, false)
+//            .withStartFile(Environment.getExternalStorageDirectory().toString())
+//            // to handle the result(s)
+//            .withChosenListener { path, pathFile ->
+//                Timber.e("FOLDER: $path // PATHFILE: $pathFile")
+//            }
+//            .build()
+//            .show()
+
+
         viewModel.photo.value?.id?.let {
             viewModel.downloadImageOnPhone(it, eventId!!, photoId!!)
         }

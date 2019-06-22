@@ -77,7 +77,7 @@
         <item name="android:textColorSecondary">@color/black_grey</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/black_grey</item>
         <item name="android:textColorPrimary">@android:color/black</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">@color/colorPrimary</item>
@@ -88,10 +88,12 @@
     </style>
 
     <style name="FileChooserTitleStyle_Dark" parent="FileChooserTitleStyle">
-        <item name="android:textAppearance">@android:style/TextAppearance.Holo.DialogWindowTitle</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Material.DialogWindowTitle</item>
     </style>
 
+
     <style name="FileChooserButtonStyle_Dark" parent="FileChooserButtonStyle">
+        <item name="android:textAppearanceButton">@style/TextAppearance.AppCompat.Button</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
 
@@ -101,7 +103,7 @@
         <item name="fileChooserTextDateStyle">@style/FileChooserTextSizeDateStyle_Dark</item>
         <item name="android:background">@color/white</item>
         <item name="fileListItemSelectedTint">@color/colorPrimary_transparent</item>
-        <item name="fileListItemFocusedDrawable">@drawable/back_shadow</item>
+        <item name="fileListItemFocusedDrawable">@drawable/back_button_file_chooser</item>
     </style>
 
     <style name="FileChooserTextNameStyle_Dark" parent="FileChooserTextNameStyle">
@@ -119,8 +121,8 @@
     </style>
 
     <style name="FileChooserNewFolderStyle_Dark">
-        <item name="fileChooserNewFolderOverlayColor">@color/transparent_black</item>
-        <item name="fileChooserNewFolderBackgroundColor">@color/white</item>
+        <item name="fileChooserNewFolderOverlayColor">@color/transparent_grey</item>
+        <item name="fileChooserNewFolderBackgroundColor">@color/black_grey</item>
         <item name="fileChooserNewFolderWidthWeight">0.8</item>
         <item name="fileChooserNewFolderElevation">50</item>
         <item name="fileChooserNewFolderTextColor">@android:color/black</item>

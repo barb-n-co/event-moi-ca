@@ -19,6 +19,7 @@ import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.GlideApp
+import com.example.event_app.utils.or
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import io.reactivex.Observable
@@ -233,7 +234,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return BitmapFactory.decodeFile(currentPhotoPath)
     }
 
-    fun getAllPictures(eventId: String, context: Context, folderName: String) {
+    fun getAllPictures(eventId: String, context: Context, folderName: String?, choosenFolder: String?) {
 
         eventsRepository.fetchPictures(eventId)
             .subscribe(
@@ -255,7 +256,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     Timber.d("image downloading in progress")
                                     if (isExternalStorageWritable()) {
-                                        val path = saveImage(resource, folderName, photo.id)
+                                        val path = saveImage(resource, folderName, choosenFolder, photo.id)
                                         if (path.isNotEmpty()) {
                                             number.add(path)
                                         }
@@ -290,12 +291,13 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
         return Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED
     }
 
-    fun saveImage(finalBitmap: Bitmap, eventName: String, photoId: String): String {
+    fun saveImage(finalBitmap: Bitmap, eventName: String?, chosenFolder: String?, photoId: String): String {
 
         var imagePath = ""
-        val albumName = "/Event-Moi-Ca/${eventName.replace(" ", "_")}/"
-        getPublicAlbumStorageDir(albumName)
-            ?.let {
+        var albumName: String
+        chosenFolder?.let {
+            albumName = chosenFolder
+            File(albumName).let {
                 val outletFrame = "$photoId.jpg"
                 val file = File(it, outletFrame)
                 if (file.exists()) file.delete()
@@ -309,7 +311,25 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     e.printStackTrace()
                 }
             }
-        Timber.e("FOLDER BASE : $imagePath")
+        }.or {
+            albumName = "/Event-Moi-Ca/${eventName?.replace(" ", "_")}/"
+            getPublicAlbumStorageDir(albumName)
+                ?.let {
+                    val outletFrame = "$photoId.jpg"
+                    val file = File(it, outletFrame)
+                    if (file.exists()) file.delete()
+                    try {
+                        val out = FileOutputStream(file)
+                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
+                        imagePath = file.absolutePath
+                        out.flush()
+                        out.close()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+        }
+
         return imagePath
     }
 

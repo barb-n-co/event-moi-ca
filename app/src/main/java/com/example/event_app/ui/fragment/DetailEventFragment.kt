@@ -459,61 +459,27 @@ class DetailEventFragment : BaseFragment() {
         )
     }
 
-    fun performFileSearch() {
-
-
-        val chooseFile =  Intent(Intent.ACTION_OPEN_DOCUMENT)
-        chooseFile.type = "vnd.android.document/directory"
-        chooseFile.addCategory(Intent.CATEGORY_APP_BROWSER)
-        val intent = Intent.createChooser(chooseFile, "Choose a file")
-            startActivityForResult(chooseFile, 42)
-
-//        // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-//        // browser.
-//        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-//            // Filter to only show results that can be "opened", such as a
-//            // file (as opposed to a list of contacts or timezones)
-//            addCategory(Intent.CATEGORY_OPENABLE)
-//
-//            // Filter to show only images, using the image MIME data type.
-//            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-//            // To search for all documents available via installed storage providers,
-//            // it would be "*/*".
-//            type = "vnd.android.cursor.dir/*"
-//        }
-//
-//        startActivityForResult(intent, 42)
-    }
-
-    private fun downloadPictures() {
-        //performFileSearch()
+    private fun chooseFolder() {
         @SuppressLint("SimpleDateFormat")
-        var format = SimpleDateFormat("yyyy")
-        val colorFilter = PorterDuffColorFilter(0x6033b5e5, PorterDuff.Mode.MULTIPLY)
-        var folderIcon = ContextCompat.getDrawable(context!!,
-            com.obsez.android.lib.filechooser.R.drawable.ic_folder)
-        var fileIcon = ContextCompat.getDrawable(context!!,
+        val format = SimpleDateFormat("yyyy")
+        val colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context!!, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY)
+        val folderIcon = ContextCompat.getDrawable(context!!,
+            R.drawable.ic_folder_title)
+        val fileIcon = ContextCompat.getDrawable(context!!,
             com.obsez.android.lib.filechooser.R.drawable.ic_file)
-        val filter = PorterDuffColorFilter(0x600000aa,
-                PorterDuff.Mode.SRC_ATOP)
+        val filter = PorterDuffColorFilter(ContextCompat.getColor(context!!, R.color.black),
+            PorterDuff.Mode.SRC_ATOP)
         folderIcon?.mutate()?.colorFilter = filter
         fileIcon?.mutate()?.colorFilter = filter
 
         ChooserDialog(activity, R.style.FileChooserStyle_Dark)
             .withFilter(true, false)
             .withStartFile(Environment.getExternalStorageDirectory().toString())
-            .withStringResources("Choisissez un dossier", "OK", "Annuler")
-            .withOptionStringResources("Nouveau", "Supprimer", "Annuler", "OK")
+            .withStringResources("Choisissez un dossier", " OK ", " Annuler ")
+            .withOptionStringResources(" Nouveau ", " Supprimer ", " Annuler ", " OK ")
             .withOptionIcons(R.drawable.ic_more_menu, R.drawable.ic_create_new_folder, R.drawable.ic_delete)
             .withAdapterSetter { adapter ->
                 adapter.overrideGetView { file, isSelected, isFocused, convertView, parent, inflater ->
-//                    val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup
-//                    Timber.tag("FOLDER").d("name = ${file.name} / date = ${file.lastModified()} / size = ${file.totalSpace}")
-//                    view.text.text = file.name
-//                    view.txt_date.text = file.lastModified().toString()
-//                    view.txt_size.text = file.totalSpace.toString()
-//                    view.setBackgroundColor(Color.RED)
-//                    view
                     val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup
 
                     val tvName = view.file_name
@@ -526,58 +492,74 @@ class DetailEventFragment : BaseFragment() {
 
                     tvDate.visibility = VISIBLE
                     tvName.text = file.name
-                        val icon: Drawable?
-                        if (file.isDirectory) {
-                            icon = folderIcon?.constantState?.newDrawable()
-                            if (file.lastModified() != 0L) {
-                                tvDate.text = format.format(Date(file.lastModified()))
-                            } else {
-                                tvDate.visibility = GONE
-                            }
+                    val icon: Drawable?
+                    if (file.isDirectory) {
+                        icon = folderIcon?.constantState?.newDrawable()
+                        if (file.lastModified() != 0L) {
+                            tvDate.text = format.format(Date(file.lastModified()))
                         } else {
-                            icon = fileIcon?.constantState?.newDrawable()
-                            tvDate.text = format.format( Date(file.lastModified()))
+                            tvDate.visibility = GONE
                         }
-                        if (file.isHidden) {
-                            tvName.text = "HIDDEN"
-                        }
-                        tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null)
+                    } else {
+                        icon = fileIcon?.constantState?.newDrawable()
+                        tvDate.text = format.format( Date(file.lastModified()))
+                    }
+                    if (file.isHidden) {
+                        tvName.text = "HIDDEN"
+                    }
+                    tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null)
 
-                        if (file !is RootFile) {
-                            tvPath.text = file.path
-                        } else {
-                            tvPath.text = ""
-                        }
+                    if (file !is RootFile) {
+                        tvPath.text = file.path
+                    } else {
+                        tvPath.text = ""
+                    }
 
-                        val root = view.findViewById<View>(R.id.root)
-                        if (root?.background == null) {
-                            root?.setBackgroundResource(R.color.colorPrimary)
-                        }
-                        if (!isSelected) {
-                            root?.background?.clearColorFilter()
-                        } else {
-                            root?.background?.colorFilter = colorFilter
-                        }
+                    val root = view.findViewById<View>(R.id.root)
+                    if (root?.background == null) {
+                        root?.setBackgroundResource(R.color.colorPrimary)
+                    }
+                    if (!isSelected) {
+                        root?.background?.clearColorFilter()
+                    } else {
+                        root?.background?.colorFilter = colorFilter
+                    }
 
                     view
                 }
             }
-            .withChosenListener { path, pathFile ->
-                Timber.e("FOLDER: $path // PATHFILE: $pathFile")
+            .withChosenListener { chosenFolder, pathFile ->
+
+                eventId?.let { id ->
+                    viewModel.getAllPictures(id, weakContext.get()!!, null, chosenFolder)
+                    true
+                }
+
             }
             .enableOptions(true)
             .titleFollowsDir(true)
             .withIcon(R.drawable.ic_folder_title)
             .build()
             .show()
-
-        eventId?.let { id ->
-            val eventName = tv_event_name_detail_fragment.text.toString()
-            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
-            true
-        }
     }
 
+    private fun downloadPictures() {
+
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle("Où enregistrer ?")
+            .setMessage("Voulez-vous choisir l'endroit où enregistrer vos photo ?")
+            .setNegativeButton("Non") { _, _ ->
+                eventId?.let { id ->
+                    val eventName = tv_event_name_detail_fragment.text.toString()
+                    viewModel.getAllPictures(id, weakContext.get()!!, eventName, null)
+                    true
+                }
+            }
+            .setPositiveButton("Oui") { _, _ ->
+                chooseFolder()
+            }.show()
+
+    }
 
     override fun onResume() {
         super.onResume()

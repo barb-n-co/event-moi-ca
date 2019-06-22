@@ -1,23 +1,17 @@
 package com.example.event_app.ui.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.*
 import android.view.View.*
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -25,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
+import com.example.event_app.adapter.FolderChooserDialog
 import com.example.event_app.manager.CAPTURE_PHOTO
 import com.example.event_app.manager.IMAGE_PICK_CODE
 import com.example.event_app.model.*
@@ -34,20 +29,15 @@ import com.example.event_app.ui.activity.MainActivity
 import com.example.event_app.utils.GlideApp
 import com.example.event_app.utils.toast
 import com.example.event_app.viewmodel.DetailEventViewModel
-import com.obsez.android.lib.filechooser.ChooserDialog
-import com.obsez.android.lib.filechooser.tool.RootFile
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.subjects.BehaviorSubject
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
-import kotlinx.android.synthetic.main.file_chooser_item.view.*
 import kotlinx.android.synthetic.main.fragment_detail_event.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class DetailEventFragment : BaseFragment() {
@@ -333,12 +323,10 @@ class DetailEventFragment : BaseFragment() {
                                     Timber.e(task2.exception?.localizedMessage)
                                 }
                             }
-
                         } else {
                             context?.toast(R.string.error_occured_leaving_event, Toast.LENGTH_SHORT)
                             Timber.e(task.exception?.localizedMessage)
                         }
-
                     }
                 context?.toast(R.string.exit_event_toast_detail_event_fragment, Toast.LENGTH_SHORT)
             }.show()
@@ -398,8 +386,6 @@ class DetailEventFragment : BaseFragment() {
                 else -> false
             }
         }
-
-
     }
 
     private fun takePhotoByCamera() {
@@ -460,105 +446,35 @@ class DetailEventFragment : BaseFragment() {
     }
 
     private fun chooseFolder() {
-        @SuppressLint("SimpleDateFormat")
-        val format = SimpleDateFormat("yyyy")
-        val colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context!!, R.color.colorPrimary), PorterDuff.Mode.MULTIPLY)
-        val folderIcon = ContextCompat.getDrawable(context!!,
-            R.drawable.ic_folder_title)
-        val fileIcon = ContextCompat.getDrawable(context!!,
-            com.obsez.android.lib.filechooser.R.drawable.ic_file)
-        val filter = PorterDuffColorFilter(ContextCompat.getColor(context!!, R.color.black),
-            PorterDuff.Mode.SRC_ATOP)
-        folderIcon?.mutate()?.colorFilter = filter
-        fileIcon?.mutate()?.colorFilter = filter
-
-        ChooserDialog(activity, R.style.FileChooserStyle_Dark)
-            .withFilter(true, false)
-            .withStartFile(Environment.getExternalStorageDirectory().toString())
-            .withStringResources("Choisissez un dossier", " OK ", " Annuler ")
-            .withOptionStringResources(" Nouveau ", " Supprimer ", " Annuler ", " OK ")
-            .withOptionIcons(R.drawable.ic_more_menu, R.drawable.ic_create_new_folder, R.drawable.ic_delete)
-            .withAdapterSetter { adapter ->
-                adapter.overrideGetView { file, isSelected, isFocused, convertView, parent, inflater ->
-                    val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup
-
-                    val tvName = view.file_name
-                    val tvPath = view.file_path
-                    val tvDate = view.file_date
-
-                    tvName.setTextColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
-                    tvPath.setTextColor(ContextCompat.getColor(context!!, R.color.grey))
-                    tvDate.setTextColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
-
-                    tvDate.visibility = VISIBLE
-                    tvName.text = file.name
-                    val icon: Drawable?
-                    if (file.isDirectory) {
-                        icon = folderIcon?.constantState?.newDrawable()
-                        if (file.lastModified() != 0L) {
-                            tvDate.text = format.format(Date(file.lastModified()))
-                        } else {
-                            tvDate.visibility = GONE
-                        }
-                    } else {
-                        icon = fileIcon?.constantState?.newDrawable()
-                        tvDate.text = format.format( Date(file.lastModified()))
-                    }
-                    if (file.isHidden) {
-                        tvName.text = "HIDDEN"
-                    }
-                    tvName.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null)
-
-                    if (file !is RootFile) {
-                        tvPath.text = file.path
-                    } else {
-                        tvPath.text = ""
-                    }
-
-                    val root = view.findViewById<View>(R.id.root)
-                    if (root?.background == null) {
-                        root?.setBackgroundResource(R.color.colorPrimary)
-                    }
-                    if (!isSelected) {
-                        root?.background?.clearColorFilter()
-                    } else {
-                        root?.background?.colorFilter = colorFilter
-                    }
-
-                    view
-                }
-            }
+        val folderChooserDialog = FolderChooserDialog(context!!)
+        folderChooserDialog
+            .getDialog()
             .withChosenListener { chosenFolder, pathFile ->
-
                 eventId?.let { id ->
                     viewModel.getAllPictures(id, weakContext.get()!!, null, chosenFolder)
                     true
                 }
-
             }
-            .enableOptions(true)
-            .titleFollowsDir(true)
-            .withIcon(R.drawable.ic_folder_title)
             .build()
             .show()
     }
 
     private fun downloadPictures() {
-
         val dialog = AlertDialog.Builder(activity!!)
         dialog.setTitle("Où enregistrer ?")
-            .setMessage("Voulez-vous choisir l'endroit où enregistrer vos photo ?")
-            .setNegativeButton("Non") { _, _ ->
+            .setMessage("Voulez-vous enregistrer dans le répertoire par défaut ou choisir un emplacement ?")
+            .setNegativeButton("Défault") { _, _ ->
                 eventId?.let { id ->
                     val eventName = tv_event_name_detail_fragment.text.toString()
                     viewModel.getAllPictures(id, weakContext.get()!!, eventName, null)
                     true
                 }
             }
-            .setPositiveButton("Oui") { _, _ ->
+            .setPositiveButton("Choisir") { _, _ ->
                 chooseFolder()
-            }.show()
-
+            }
+            .setNeutralButton("Annuler") { _, _ -> }
+            .show()
     }
 
     override fun onResume() {

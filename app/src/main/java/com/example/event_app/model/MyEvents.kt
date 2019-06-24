@@ -7,6 +7,6 @@ import kotlinx.android.parcel.Parcelize
 data class MyEvents(
     var idEvent: String? = null,
     var accepted: Int = 0,
-    var organizer: Int = 0,
-    var isEmtyEvent: Int = 0
+    var IsOrganizer: Int = 0,
+    var IsEmptyEvent: Int = 0
 ) : Parcelable

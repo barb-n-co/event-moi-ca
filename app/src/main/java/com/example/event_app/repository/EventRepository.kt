@@ -66,9 +66,9 @@ object EventRepository {
             response.second.filter {
                 when {
                     stateUserEvent.equals(UserEventState.NOTHING) -> true
-                    stateUserEvent.equals(UserEventState.INVITATION) && it.organizer == 0 && it.accepted == 0 -> true
-                    stateUserEvent.equals(UserEventState.PARTICIPATE) && it.organizer == 0 && it.accepted == 1 -> true
-                    stateUserEvent.equals(UserEventState.ORGANIZER) && it.organizer == 1 && it.accepted == 1 -> true
+                    stateUserEvent.equals(UserEventState.INVITATION) && it.IsOrganizer == 0 && it.accepted == 0 -> true
+                    stateUserEvent.equals(UserEventState.PARTICIPATE) && it.IsOrganizer == 0 && it.accepted == 1 -> true
+                    stateUserEvent.equals(UserEventState.ORGANIZER) && it.IsOrganizer == 1 && it.accepted == 1 -> true
                     else -> false
                 }
             }.map { myEvents ->
@@ -85,7 +85,7 @@ object EventRepository {
                         it.dateStart,
                         it.dateEnd,
                         myEvents.accepted,
-                        myEvents.organizer,
+                        myEvents.IsOrganizer,
                         it.description,
                         it.idOrganizer,
                         it.reportedPhotoCount,
@@ -124,7 +124,7 @@ object EventRepository {
         ).map {
             myEvents.onNext(it)
             it.filter {
-                it.isEmtyEvent == 0
+                it.IsEmptyEvent == 0
             }
         }.toObservable()
     }
@@ -139,7 +139,6 @@ object EventRepository {
         myEventsRef.child(idUser).removeValue()
         return fetchMyEvents(idUser)
     }
-
 
     fun addEvent(nameOrganizer: String, event: Event) {
         if (event.isEmptyEvent == 0) {

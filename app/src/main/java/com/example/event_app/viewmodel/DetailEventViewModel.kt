@@ -168,7 +168,7 @@ class DetailEventViewModel(private val eventsRepository: EventRepository, privat
                     response.first.dateStart,
                     response.first.dateEnd,
                     response.second.accepted,
-                    response.second.organizer,
+                    response.second.IsOrganizer,
                     response.first.description,
                     response.first.idOrganizer,
                     response.first.reportedPhotoCount,

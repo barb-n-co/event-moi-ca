@@ -245,7 +245,7 @@ class DetailEventFragment : BaseFragment() {
 
         root_layout.visibility = VISIBLE
 
-        if (it.organizer != 1) {
+        if (it.isOrganizer != 1) {
             switch_activate_detail_event_fragment.visibility = GONE
             if (it.accepted != 1) {
                 navigation_detail_event.visibility = GONE

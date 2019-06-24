@@ -89,7 +89,7 @@ class EventMapViewModel(private val eventRepository: EventRepository, private va
                                 it.dateStart,
                                 it.dateEnd,
                                 myEvents.accepted,
-                                myEvents.organizer,
+                                myEvents.IsOrganizer,
                                 it.description,
                                 it.idOrganizer,
                                 it.reportedPhotoCount,

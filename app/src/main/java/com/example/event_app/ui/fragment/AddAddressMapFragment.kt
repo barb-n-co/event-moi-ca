@@ -21,7 +21,6 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_maps.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
-import java.util.*
 
 
 
@@ -77,7 +76,7 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
 
         val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_event_fragment) as AutocompleteSupportFragment?
 
-        autocompleteFragment?.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG))
+        autocompleteFragment?.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG))
 
         autocompleteFragment?.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
@@ -88,6 +87,7 @@ class AddAddressMapFragment : BaseFragment(), OnMapReadyCallback {
                 Timber.i( "An error occurred: $status")
             }
         })
+        autocompleteFragment?.a?.performClick()
     }
 
     private fun initMap() {

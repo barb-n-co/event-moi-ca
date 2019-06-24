@@ -48,8 +48,8 @@ class FolderChooserDialog(private val context: Context) {
             )
             .withOptionIcons(
                 R.drawable.ic_more_menu,
-                R.drawable.ic_create_new_folder,
-                R.drawable.ic_delete)
+                R.drawable.ic_folder_2,
+                R.drawable.trash_basket)
             .withAdapterSetter { adapter ->
                 adapter.overrideGetView { file, isSelected, _, _, parent, inflater ->
                     val view = inflater.inflate(R.layout.file_chooser_item, parent, false) as ViewGroup

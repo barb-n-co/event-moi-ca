@@ -8,5 +8,5 @@ data class EventParticipant(
     var id: String? = null,
     var name: String? = null,
     var accepted: Int = 0,
-    var organizer: Int = 0
+    var IsOrganizer: Int = 0
 ) : Parcelable

@@ -55,7 +55,7 @@ class ShareGalleryViewModel(private val userRepository: UserRepository, private 
                             it.dateStart,
                             it.dateEnd,
                             myEvents.accepted,
-                            myEvents.organizer,
+                            myEvents.IsOrganizer,
                             it.description,
                             it.idOrganizer,
                             it.reportedPhotoCount,

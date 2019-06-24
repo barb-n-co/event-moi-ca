@@ -41,17 +41,17 @@ class ListMyEventsAdapter(val context: Context, val fragmentViewModel: HomeFragm
         fun bind(event: EventItem) {
             //disposition
 
-            if (event.reportedPhotoCount > 0 && event.organizer == 1) {
+            if (event.reportedPhotoCount > 0 && event.isOrganizer == 1) {
                 itemView.btn_reported_photo.visibility = VISIBLE
             }
 
             itemView.tv_name_myevents_item.text = event.nameEvent
             itemView.tv_organizer_myevents_item.text = event.nameOrganizer
             itemView.tv_startDate_myevents_item.text = event.dateStart
-            if (event.organizer == 1 || event.accepted == 1) {
+            if (event.isOrganizer == 1 || event.accepted == 1) {
                 itemView.b_accept_myevents_item.visibility = GONE
                 itemView.b_refuse_myevents_item.visibility = GONE
-                if (event.organizer == 1) {
+                if (event.isOrganizer == 1) {
                     itemView.chip_user_state_myevents_item.chipBackgroundColor =
                         ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_orange))
                     itemView.chip_user_state_myevents_item.text = context.getString(R.string.tv_state_organizer)

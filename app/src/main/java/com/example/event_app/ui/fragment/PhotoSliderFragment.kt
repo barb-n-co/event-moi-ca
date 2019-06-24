@@ -88,6 +88,15 @@ class PhotoSliderFragment : BaseFragment() {
                 Timber.e(it)
             }
         ).addTo(viewDisposable)
+
+        viewModel.messageDispatcher.subscribe(
+            {
+                context!!.toast(it, Toast.LENGTH_SHORT)
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -204,7 +213,7 @@ class PhotoSliderFragment : BaseFragment() {
         eventId?.let { eventId ->
             viewModel.photo.value?.let { photo ->
                 photoId?.let { id ->
-                    viewModel.photo.value?.id?.let { photoURL ->
+                    viewModel.photo.value?.url?.let { photoURL ->
                         viewModel.deleteImageOrga(
                             eventId, id, photoURL, photo.isReported
                         )

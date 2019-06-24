@@ -228,5 +228,10 @@
     <string name="no_sdCard_mounted">Erreur : Aucune carte SD ne semble être disponible</string>
     <string name="delete_participant_alert_title_dialog_fragment">Suppression participant</string>
     <string name="delete_participant_alert_message_dialog_fragment">Êtes-vous sûr de vouloir supprimer ce participant ?</string>
+    <string name="choose_folder_title">Choisissez un dossier</string>
+    <string name="chose_folder_ok">OK</string>
+    <string name="chose_folder_cancel">Annuler</string>
+    <string name="chose_folder_delete">Supprimer</string>
+    <string name="chose_folder_new_folder">Nouveau</string>
 
 </resources>

@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.GenericTransitionOptions
 import com.example.event_app.R
 import com.example.event_app.adapter.CustomAdapter
+import com.example.event_app.adapter.FolderChooserDialog
 import com.example.event_app.manager.CAPTURE_PHOTO
 import com.example.event_app.manager.IMAGE_PICK_CODE
 import com.example.event_app.model.*
@@ -179,6 +180,11 @@ class DetailEventFragment : BaseFragment() {
                     }
                 }
             }
+            42 -> {
+                returnIntent?.data?.also {
+                    Timber.tag("FOLDER").d("Uri: $it")
+                }
+            }
         }
     }
 
@@ -317,12 +323,10 @@ class DetailEventFragment : BaseFragment() {
                                     Timber.e(task2.exception?.localizedMessage)
                                 }
                             }
-
                         } else {
                             context?.toast(R.string.error_occured_leaving_event, Toast.LENGTH_SHORT)
                             Timber.e(task.exception?.localizedMessage)
                         }
-
                     }
                 context?.toast(R.string.exit_event_toast_detail_event_fragment, Toast.LENGTH_SHORT)
             }.show()
@@ -382,8 +386,6 @@ class DetailEventFragment : BaseFragment() {
                 else -> false
             }
         }
-
-
     }
 
     private fun takePhotoByCamera() {
@@ -443,12 +445,36 @@ class DetailEventFragment : BaseFragment() {
         )
     }
 
+    private fun chooseFolder() {
+        val folderChooserDialog = FolderChooserDialog(context!!)
+        folderChooserDialog
+            .getDialog()
+            .withChosenListener { chosenFolder, pathFile ->
+                eventId?.let { id ->
+                    viewModel.getAllPictures(id, weakContext.get()!!, null, chosenFolder)
+                    true
+                }
+            }
+            .build()
+            .show()
+    }
+
     private fun downloadPictures() {
-        eventId?.let { id ->
-            val eventName = tv_event_name_detail_fragment.text.toString()
-            viewModel.getAllPictures(id, weakContext.get()!!, eventName)
-            true
-        }
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle("Où enregistrer ?")
+            .setMessage("Voulez-vous enregistrer dans le répertoire par défaut ou choisir un emplacement ?")
+            .setNegativeButton("Défault") { _, _ ->
+                eventId?.let { id ->
+                    val eventName = tv_event_name_detail_fragment.text.toString()
+                    viewModel.getAllPictures(id, weakContext.get()!!, eventName, null)
+                    true
+                }
+            }
+            .setPositiveButton("Choisir") { _, _ ->
+                chooseFolder()
+            }
+            .setNeutralButton("Annuler") { _, _ -> }
+            .show()
     }
 
     override fun onResume() {

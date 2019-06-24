@@ -12,9 +12,9 @@ import com.example.event_app.model.*
 import com.example.event_app.repository.EventRepository
 import com.example.event_app.repository.NotificationRepository
 import com.example.event_app.repository.UserRepository
+import com.example.event_app.utils.or
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
@@ -203,11 +203,11 @@ class DetailPhotoViewModel(
         }
     }
 
-    fun downloadImageOnPhone(url: String, eventId: String, photoId: String) {
+    fun downloadImageOnPhone(url: String, folderName: String?, chosenFolder: String?, photoId: String) {
         eventsRepository.downloadImageFile(url)
             .subscribe(
                 { byteArray ->
-                    if (saveImage(byteArray, eventId, photoId).isNotEmpty()) {
+                    if (saveImage(byteArray, folderName, chosenFolder, photoId).isNotEmpty()) {
                         messageDispatcher.onNext(R.string.picture_downloaded_toast)
                     } else {
                         messageDispatcher.onNext(R.string.error_on_download_toast)
@@ -220,28 +220,59 @@ class DetailPhotoViewModel(
             ).addTo(disposeBag)
     }
 
-    private fun saveImage(byteArray: ByteArray, eventName: String, photoId: String): String {
+    private fun getPublicAlbumStorageDir(albumName: String): File? {
+        // Get the directory for the user's public pictures directory.
+        val file = File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES), albumName)
+        if (!file.mkdirs()) {
+            Timber.e("Directory not created")
+        }
+        return file
+    }
+
+    private fun saveImage(byteArray: ByteArray, eventName: String?, chosenFolder: String?, photoId: String): String {
 
         val options = BitmapFactory.Options()
         options.inTargetDensity = PixelFormat.RGBA_8888
         val finalBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size - 1, options)
 
         var imagePath = ""
-        val root = Environment.getExternalStorageDirectory().toString()
-        val photoFolder = File("$root/$folderName/$eventName/")
-        photoFolder.mkdirs()
-        val outletFrame = "$photoId.jpg"
-        val file = File(photoFolder, outletFrame)
-        if (file.exists()) file.delete()
-        try {
-            val out = FileOutputStream(file)
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
-            imagePath = file.absolutePath
-            out.flush()
-            out.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        var albumName: String
+        chosenFolder?.let {
+            albumName = chosenFolder
+            File(albumName).let {
+                val outletFrame = "$photoId.jpg"
+                val file = File(it, outletFrame)
+                if (file.exists()) file.delete()
+                try {
+                    val out = FileOutputStream(file)
+                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
+                    imagePath = file.absolutePath
+                    out.flush()
+                    out.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }.or {
+            albumName = "/Event-Moi-Ca/${eventName?.replace(" ", "_")}/"
+            getPublicAlbumStorageDir(albumName)
+                ?.let {
+                    val outletFrame = "$photoId.jpg"
+                    val file = File(it, outletFrame)
+                    if (file.exists()) file.delete()
+                    try {
+                        val out = FileOutputStream(file)
+                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, out)
+                        imagePath = file.absolutePath
+                        out.flush()
+                        out.close()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
         }
+
         return imagePath
     }
 
@@ -379,7 +410,7 @@ class DetailPhotoViewModel(
     fun addLikes(photoId: String) {
         userRepository.currentUser.value?.id?.let { userId ->
             if (isPhotoAlreadyLiked) {
-                eventsRepository.deleteLike(userId, photoId)
+                return@let eventsRepository.deleteLike(userId, photoId)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             getNumberOfLikes(photoId)
@@ -388,7 +419,7 @@ class DetailPhotoViewModel(
                         }
                     }
             } else {
-                eventsRepository.setNewLike(userId, photoId)
+                return@let eventsRepository.setNewLike(userId, photoId)
                     .subscribe(
                         {
                             getNumberOfLikes(photoId)

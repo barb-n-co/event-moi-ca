@@ -2,8 +2,9 @@
 <resources>
     <color name="colorPrimary">#ffab00</color>
     <color name="colorPrimaryDark">#262626</color>
-    <color name="colorAccent">#ffab00</color>
+    <color name="colorAccent">#777777</color>
 
+    <color name="transparent_grey">#72000000</color>
     <color name="colorPrimary_transparent">#50ffab00</color>
     <color name="dark_orange">#FF7700</color>
     <color name="light_orange">#FFD027</color>

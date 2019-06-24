@@ -3,10 +3,10 @@ package com.example.event_app.ui.fragment
 import android.Manifest
 import android.os.Bundle
 import android.view.*
-import android.view.animation.Animation
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.event_app.R
+import com.example.event_app.adapter.FolderChooserDialog
 import com.example.event_app.adapter.PicturesViewPagerAdapter
 import com.example.event_app.repository.UserRepository
 import com.example.event_app.utils.AnimationZoomOutPageTransformer
@@ -83,6 +83,15 @@ class PhotoSliderFragment : BaseFragment() {
             {
                 photoAuthorId = it.auteurId
                 activity?.invalidateOptionsMenu()
+            },
+            {
+                Timber.e(it)
+            }
+        ).addTo(viewDisposable)
+
+        viewModel.messageDispatcher.subscribe(
+            {
+                context!!.toast(it, Toast.LENGTH_SHORT)
             },
             {
                 Timber.e(it)
@@ -167,17 +176,44 @@ class PhotoSliderFragment : BaseFragment() {
         }
     }
 
+    private fun chooseFolder() {
+        val folderChooserDialog = FolderChooserDialog(context!!)
+        folderChooserDialog
+            .getDialog()
+            .withChosenListener { chosenFolder, pathFile ->
+
+                viewModel.photo.value?.url?.let {
+                    viewModel.downloadImageOnPhone(it, null, chosenFolder, photoId!!)
+                }
+
+            }
+            .build()
+            .show()
+    }
+
     private fun downloadImage() {
-        viewModel.photo.value?.id?.let {
-            viewModel.downloadImageOnPhone(it, eventId!!, photoId!!)
-        }
+
+        val dialog = AlertDialog.Builder(activity!!)
+        dialog.setTitle("Où enregistrer ?")
+            .setMessage("Voulez-vous enregistrer dans le répertoire par défaut ou choisir un emplacement ?")
+            .setNegativeButton("Défault") { _, _ ->
+
+                viewModel.photo.value?.url?.let {
+                    viewModel.downloadImageOnPhone(it, eventId!!, null, photoId!!)
+                }
+            }
+            .setPositiveButton("Choisir") { _, _ ->
+                chooseFolder()
+            }
+            .setNeutralButton("Annuler") { _, _ -> }
+            .show()
     }
 
     private fun deleteImage() {
         eventId?.let { eventId ->
             viewModel.photo.value?.let { photo ->
                 photoId?.let { id ->
-                    viewModel.photo.value?.id?.let { photoURL ->
+                    viewModel.photo.value?.url?.let { photoURL ->
                         viewModel.deleteImageOrga(
                             eventId, id, photoURL, photo.isReported
                         )
